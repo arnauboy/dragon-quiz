@@ -87,8 +87,6 @@ h1{font-size:clamp(28px,8vw,40px);line-height:1.1;margin:.2em 0 .3em;text-align:
 .loading3d{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-style:italic}
 .float-fx{position:absolute;pointer-events:none;font-size:24px;animation:floatup 1.6s ease-out forwards;z-index:5}
 @keyframes floatup{0%{opacity:0;transform:translateY(0) scale(.6)}15%{opacity:1}100%{opacity:0;transform:translateY(-140px) scale(1.2)}}
-.svg-happy{animation:bounce .5s ease 4}
-@keyframes bounce{50%{transform:translateY(-18px)}}
 /* result */
 .badge{display:inline-block;font-family:'Cinzel',serif;font-size:12px;letter-spacing:.2em;color:var(--gold);border:1px solid var(--line);padding:4px 10px;border-radius:99px;text-transform:uppercase}
 .result-title{font-size:clamp(24px,7vw,32px);margin:.35em 0 .1em;color:var(--gold2);text-align:center}
@@ -122,6 +120,72 @@ label.lbl{display:block;text-align:center;color:var(--muted);margin:16px 0 8px}
 footer{text-align:center;color:#6d6357;font-size:13px;margin-top:26px;font-style:italic}
 .small-links{display:flex;justify-content:center;gap:18px;margin-top:14px}
 .small-links button{background:none;border:none;color:var(--muted);font:inherit;font-size:15px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+
+.layer{position:absolute;inset:0}
+.viewtoggle{position:absolute;top:8px;right:8px;z-index:6;display:flex;background:rgba(10,7,14,.7);border:1px solid var(--line);border-radius:99px;padding:3px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.viewtoggle button{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.08em;color:var(--muted);background:none;border:0;padding:6px 12px;border-radius:99px;cursor:pointer}
+.viewtoggle button.on{background:linear-gradient(180deg,#f0d79a,#c9a25c);color:#1a1008;font-weight:700}
+.viewtoggle button:disabled{opacity:.35;cursor:not-allowed}
+/* chibi */
+.chibi-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:18px 0 4px}
+.chibi{height:100%;max-height:340px;width:auto;overflow:visible;filter:drop-shadow(0 8px 18px rgba(0,0,0,.45))}
+.chibi .hn{fill:#f3e6c8}.chibi .hn2{stroke:#d8c69e}.chibi .dk{fill:var(--d)}.chibi .nos{fill:var(--d)}
+.chibi .vein{fill:none;stroke:var(--d);stroke-width:2;stroke-linecap:round;opacity:.7}
+.chibi .belly{fill:none;stroke:var(--m);stroke-width:2;opacity:.35;stroke-linecap:round}
+.chibi .blush{fill:#ff7aa8;opacity:.5}
+.chibi .smile,.chibi .frown,.chibi .happyeyes,.chibi .brows{fill:none;stroke:#1d1226;stroke-width:3.2;stroke-linecap:round}
+.chibi .fang{fill:#fff}
+.chibi .tear{fill:#8fd3ff;opacity:0}
+.chibi .frown,.chibi .brows,.chibi .happyeyes{opacity:0}
+.chibi .shadow{fill:#000;opacity:.45;transform-origin:100px 187px;animation:cShadow 2.4s ease-in-out infinite}
+.chibi .bob{transform-origin:100px 186px;animation:cBob 2.4s ease-in-out infinite}
+.chibi .head{transform-origin:100px 128px;animation:cHead 4.8s ease-in-out infinite}
+.chibi .wl{transform-origin:84px 128px;animation:cWingL 1s ease-in-out infinite alternate}
+.chibi .wr{transform-origin:116px 128px;animation:cWingR 1s ease-in-out infinite alternate}
+.chibi .tail{transform-origin:82px 158px;animation:cWag 1.5s ease-in-out infinite alternate}
+.chibi .eye{transform-box:fill-box;transform-origin:center;animation:cBlink 4.6s infinite}
+.chibi .eye:nth-child(2){animation-delay:.04s}
+.chibi .spark{animation:cSpark 1.8s ease-in-out infinite}
+@keyframes cBob{0%,100%{transform:translateY(0) scale(1,1)}50%{transform:translateY(-7px) scale(1.015,.985)}}
+@keyframes cShadow{0%,100%{transform:scale(1)}50%{transform:scale(.88);opacity:.32}}
+@keyframes cHead{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2.5deg)}}
+@keyframes cWingL{from{transform:rotate(8deg)}to{transform:rotate(-16deg)}}
+@keyframes cWingR{from{transform:rotate(-8deg)}to{transform:rotate(16deg)}}
+@keyframes cWag{from{transform:rotate(-7deg)}to{transform:rotate(9deg)}}
+@keyframes cBlink{0%,90%,100%{transform:scaleY(1)}93%{transform:scaleY(.08)}96%{transform:scaleY(1)}}
+@keyframes cSpark{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3}}
+/* triste */
+.chibi-wrap.sad .chibi{filter:drop-shadow(0 8px 18px rgba(0,0,0,.45)) saturate(.65) brightness(.9)}
+.chibi-wrap.sad .bob{animation:cBobSad 4.5s ease-in-out infinite}
+.chibi-wrap.sad .head{animation:none;transform:translateY(5px) rotate(5deg)}
+.chibi-wrap.sad .wl{animation:cWingSadL 3s ease-in-out infinite alternate}
+.chibi-wrap.sad .wr{animation:cWingSadR 3s ease-in-out infinite alternate}
+.chibi-wrap.sad .tail{animation:cWagSad 3.5s ease-in-out infinite alternate}
+.chibi-wrap.sad .smile,.chibi-wrap.sad .fang,.chibi-wrap.sad .spark{opacity:0}
+.chibi-wrap.sad .frown,.chibi-wrap.sad .brows{opacity:1}
+.chibi-wrap.sad .tear{animation:cTear 2.6s ease-in infinite}
+.chibi-wrap.sad .blush{opacity:.2}
+.chibi-wrap.sad .eye{animation:cBlinkSad 5s infinite}
+@keyframes cBobSad{0%,100%{transform:translateY(3px) scale(1.02,.97)}50%{transform:translateY(1px)}}
+@keyframes cWingSadL{from{transform:rotate(30deg)}to{transform:rotate(24deg)}}
+@keyframes cWingSadR{from{transform:rotate(-30deg)}to{transform:rotate(-24deg)}}
+@keyframes cWagSad{from{transform:rotate(14deg)}to{transform:rotate(18deg)}}
+@keyframes cTear{0%,20%{opacity:0;transform:translateY(0)}35%{opacity:.9}100%{opacity:0;transform:translateY(16px)}}
+@keyframes cBlinkSad{0%,100%{transform:scaleY(.72)}90%{transform:scaleY(.72)}94%{transform:scaleY(.08)}}
+/* feliz */
+.chibi-wrap.happy .bob{animation:cHop .42s ease-in-out infinite}
+.chibi-wrap.happy .shadow{animation:cShadowHop .42s ease-in-out infinite}
+.chibi-wrap.happy .wl{animation:cWingL .14s linear infinite alternate}
+.chibi-wrap.happy .wr{animation:cWingR .14s linear infinite alternate}
+.chibi-wrap.happy .tail{animation:cWag .25s ease-in-out infinite alternate}
+.chibi-wrap.happy .head{animation:none;transform:none}
+.chibi-wrap.happy .eyes,.chibi-wrap.happy .frown,.chibi-wrap.happy .brows,.chibi-wrap.happy .tear{opacity:0!important}
+.chibi-wrap.happy .happyeyes,.chibi-wrap.happy .smile{opacity:1}
+.chibi-wrap.happy .blush{opacity:.8}
+.chibi-wrap.happy .chibi{filter:drop-shadow(0 8px 18px rgba(0,0,0,.45))}
+@keyframes cHop{0%,100%{transform:translateY(0) scale(1.05,.94)}50%{transform:translateY(-22px) scale(.97,1.04)}}
+@keyframes cShadowHop{0%,100%{transform:scale(1)}50%{transform:scale(.7);opacity:.25}}
+@media (prefers-reduced-motion: reduce){.chibi *{animation-duration:6s!important}}
 </style>
 </head>
 <body>
@@ -203,7 +267,12 @@ footer{text-align:center;color:#6d6357;font-size:13px;margin-top:26px;font-style
   </section>
 
   <!-- shared viewer stage (moved between screens) -->
-  <div class="hidden"><div id="viewer" style="position:absolute;inset:0"><div class="loading3d" id="loading3d">Despertando a tu dragón…</div><div class="hint" id="hint">Arrastra para girarlo</div></div></div>
+  <div class="hidden"><div id="viewer" style="position:absolute;inset:0">
+    <div id="layer3d" class="layer hidden"></div>
+    <div id="layer2d" class="layer hidden"></div>
+    <div class="viewtoggle" id="viewToggle" role="group" aria-label="Cómo ver a tu dragón"><button data-m="3d">3D</button><button data-m="2d">Dibujo</button></div>
+    <div class="hint" id="hint">Arrastra para girarlo</div>
+  </div></div>
 </main>
 <div class="toast" id="toast"></div>
 
@@ -503,70 +572,144 @@ async function share(){
   }catch(e){ if(e.name!=='AbortError') toast(url); }
 }
 
-/* ======================= VIEWER (3D con 2D de respaldo) ======================= */
-let viewerApi = null, viewerReady = null, currentKey = null;
-function mountViewer(slotId, d){
-  const slot = $(slotId), v = $('viewer');
-  v.style.position='absolute'; v.style.inset='0';
-  slot.appendChild(v);
-  if(!viewerReady) viewerReady = initViewer();
-  viewerReady.then(()=>{ if(currentKey!==d.key){ currentKey=d.key; viewerApi.setDragon(d); } viewerApi.resize(); if(S.bonded) viewerApi.setMood?.(S.hunger,S.happy); else viewerApi.setMood?.(80,80); });
-}
+/* ======================= VIEWER (3D o Dibujo) ======================= */
+const VIEW_KEY = 'valle-dragon-view';
+let viewerApi = null;
+const V = { mode:null, d:null, h:80, f:80, api:{}, keys:{}, gl:null, failed3d:false };
 function hasWebGL(){ try{ const c=document.createElement('canvas'); return !!(window.WebGLRenderingContext && (c.getContext('webgl2')||c.getContext('webgl'))); }catch(e){ return false; } }
-
-async function initViewer(){
-  const host = $('viewer');
-  const force2D = new URLSearchParams(location.search).has('2d');
-  if(!force2D && hasWebGL()){
-    try{
-      const THREE = await import('three');
-      const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
-      viewerApi = make3D(THREE, OrbitControls, host);
-      $('loading3d').remove();
-      window.__viewerMode = '3d';
-      return;
-    }catch(e){ console.warn('3D no disponible, uso 2D', e); }
-  }
-  viewerApi = make2D(host);
-  $('loading3d')?.remove(); $('hint').textContent='';
-  window.__viewerMode = '2d';
+function lowEnd(){
+  const n=navigator; return (n.deviceMemory && n.deviceMemory<=2) || (n.hardwareConcurrency && n.hardwareConcurrency<=2) || (n.connection && n.connection.saveData);
 }
+function can3D(){ if(V.gl===null) V.gl = hasWebGL(); return V.gl && !V.failed3d; }
+function preferredMode(){
+  if(new URLSearchParams(location.search).has('2d') || !can3D()) return '2d';
+  const saved = localStorage.getItem(VIEW_KEY); if(saved==='3d'||saved==='2d') return saved;
+  return lowEnd() ? '2d' : '3d';
+}
+function syncToggle(){
+  document.querySelectorAll('#viewToggle button').forEach(b=>{
+    b.classList.toggle('on', b.dataset.m===V.mode);
+    if(b.dataset.m==='3d'){ b.disabled = !can3D(); b.title = can3D() ? '' : 'Tu dispositivo no puede mostrar 3D'; }
+  });
+  $('layer3d').classList.toggle('hidden', V.mode!=='3d');
+  $('layer2d').classList.toggle('hidden', V.mode!=='2d');
+  $('hint').style.display = V.mode==='3d' ? '' : 'none';
+}
+async function ensureApi(m){
+  if(V.api[m]) return V.api[m];
+  if(m==='2d'){ V.api['2d'] = makeChibi($('layer2d')); return V.api['2d']; }
+  $('layer3d').insertAdjacentHTML('beforeend','<div class="loading3d" id="loading3d">Despertando a tu dragón…</div>');
+  try{
+    const THREE = await import('three');
+    const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
+    V.api['3d'] = make3D(THREE, OrbitControls, $('layer3d'));
+    return V.api['3d'];
+  }catch(e){ console.warn('3D no disponible, uso el dibujo', e); V.failed3d = true; return null; }
+  finally{ $('loading3d')?.remove(); }
+}
+async function setMode(m, persist){
+  if(persist) localStorage.setItem(VIEW_KEY, m);
+  if(m==='3d' && !can3D()) m='2d';
+  V.mode = m; syncToggle();
+  let api = await ensureApi(m);
+  if(!api){ V.mode='2d'; syncToggle(); api = await ensureApi('2d'); }
+  if(V.mode!==m && api!==V.api[V.mode]) return;
+  refreshApi();
+}
+function refreshApi(){
+  const api = V.api[V.mode]; if(!api || !V.d) return;
+  if(V.keys[V.mode]!==V.d.key){ V.keys[V.mode]=V.d.key; api.setDragon(V.d); }
+  api.setMood(V.h, V.f); api.resize();
+  window.__viewerMode = V.mode;
+}
+viewerApi = {
+  setMood(h,f){ V.h=h; V.f=f; V.api[V.mode]?.setMood(h,f); },
+  happy(a){ V.api[V.mode]?.happy(a); }
+};
+function mountViewer(slotId, d){
+  $(slotId).appendChild($('viewer'));
+  V.d = d;
+  if(S.bonded){ V.h=S.hunger; V.f=S.happy; } else { V.h=85; V.f=85; }
+  if(!V.mode) setMode(preferredMode(), false); else refreshApi();
+}
+document.querySelectorAll('#viewToggle button').forEach(b=>b.addEventListener('click', e=>{ e.stopPropagation(); if(!b.disabled && b.dataset.m!==V.mode) setMode(b.dataset.m, true); }));
 
-/* ---------- 2D SVG ---------- */
-function make2D(host){
-  const wrap = document.createElement('div'); wrap.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center';
-  host.prepend(wrap);
+/* ---------- Dibujo: dragón chibi en SVG animado ---------- */
+function shade(hex, amt){ // amt>0 aclara hacia crema, <0 oscurece
+  const n=parseInt(hex.slice(1),16); let r=n>>16, g=n>>8&255, b=n&255;
+  const t = amt>0 ? [255,236,214] : [0,0,0], k=Math.abs(amt);
+  r=Math.round(r+(t[0]-r)*k); g=Math.round(g+(t[1]-g)*k); b=Math.round(b+(t[2]-b)*k);
+  return '#'+((1<<24)|(r<<16)|(g<<8)|b).toString(16).slice(1);
+}
+function makeChibi(host){
   const tips = {
-    daga:'<path d="M28 150 l-26 -14 l22 4 l-20 -22 l26 18 l-6 -24 l14 28z"/>',
-    espada:'<path d="M30 148 L-14 140 L30 132 Z"/>',
-    escorpion:'<path d="M30 140 c-18 -6 -22 -30 -6 -40 l-8 -14 l18 10 c-8 8 -8 22 4 30z"/>',
-    garrota:'<circle cx="18" cy="142" r="13"/>',
-    maza:'<g><circle cx="18" cy="142" r="11"/><path d="M18 122l3 9h-6zM18 162l3-9h-6zM-2 142l9 3v-6zM38 142l-9 3v-6zM4 128l8 5-4 4zM32 128l-8 5 4 4zM4 156l8-5-4-4zM32 156l-8-5 4-4z"/></g>'
+    daga:'<path class="hn" d="M-5 3 L-14 -14 L-3 -5 L0 -26 L3 -5 L14 -14 L5 3 Z"/>',
+    espada:'<path class="hn" d="M-7 2 L0 -32 L7 2 Z"/><path class="hn2" d="M0 -30 L0 0" stroke-width="1.5"/><rect class="dk" x="-9" y="0" width="18" height="5" rx="2.5"/>',
+    escorpion:'<ellipse class="dk" cx="0" cy="-6" rx="7" ry="9"/><path class="hn" d="M-3 -12 Q-2 -30 13 -30 Q4 -25 4 -12 Z"/>',
+    garrota:'<circle class="dk" cx="0" cy="-10" r="12"/><circle class="hn" cx="-8" cy="-17" r="3.5"/><circle class="hn" cx="8" cy="-17" r="3.5"/><circle class="hn" cx="0" cy="-22" r="3.5"/>',
+    maza:'<g class="hn"><path d="M0 -32 L4 -22 L-4 -22Z M0 12 L4 2 L-4 2Z M-21 -10 L-11 -14 L-11 -6Z M21 -10 L11 -14 L11 -6Z M-15 -25 L-6 -20 L-11 -15Z M15 -25 L6 -20 L11 -15Z M-15 5 L-11 -5 L-6 0Z M15 5 L11 -5 L6 0Z"/></g><circle class="dk" cx="0" cy="-10" r="11"/>'
   };
-  let d0=null;
+  const wrap = document.createElement('div'); wrap.className='chibi-wrap'; host.appendChild(wrap);
+  let state = { sad:false }, happyTimer;
   return {
     setDragon(d){
-      d0=d; const col = COLORS[d.c].hex;
-      wrap.innerHTML = `<svg viewBox="-20 0 300 220" style="max-width:420px">
-        <defs><linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity="1"/><stop offset="1" stop-color="#000" stop-opacity=".9"/></linearGradient>
-        <filter id="glow"><feGaussianBlur stdDeviation="3"/></filter></defs>
-        <ellipse cx="140" cy="200" rx="100" ry="10" fill="#000" opacity=".5"/>
-        <g id="dr" fill="url(#g2)" stroke="${col}" stroke-opacity=".6" stroke-width="1">
-          <path d="M120 100 L60 20 L80 70 L40 40 L70 95 L30 85 L100 120 Z" opacity=".85"/>
-          <path d="M30 140 C60 150 90 160 110 140" fill="none" stroke="url(#g2)" stroke-width="10" stroke-linecap="round"/>
-          ${tips[d.t]}
-          <ellipse cx="140" cy="135" rx="45" ry="28"/>
-          <path d="M120 155 l-6 40 h12 l4 -36zM160 155 l6 40 h12 l-4 -40z"/>
-          <path d="M170 120 C190 100 195 80 205 62 l14 6 C210 90 200 115 185 140z"/>
-          <path d="M200 58 l30 4 l18 12 l-26 4 l-20 -2z"/>
-          <path d="M205 58 l-10 -18 l18 14z M214 58 l-4 -20 l12 18z"/>
-          <path d="M150 105 L200 15 L190 70 L235 40 L200 100 L240 95 L160 125 Z"/>
-        </g>
-        <circle cx="222" cy="66" r="2.2" fill="#ffd36a" filter="url(#glow)"/><circle cx="222" cy="66" r="1.4" fill="#ffe9a8"/>
-      </svg>`;
+      const c = COLORS[d.c].hex;
+      const main = d.c==='negro' ? '#3a3448' : c;
+      const light = shade(main, d.c==='negro' ? .38 : .55), dark = shade(main, -.35), wingc = shade(main, -.12);
+      wrap.style.cssText = `--m:${main};--l:${light};--d:${dark};--w:${wingc}`;
+      wrap.innerHTML = `
+<svg class="chibi" viewBox="0 0 200 200" role="img" aria-label="Tu dragón">
+  <ellipse class="shadow" cx="100" cy="187" rx="44" ry="7"/>
+  <g class="bob">
+    <g class="tail">
+      <path d="M82 158 C58 170 36 162 32 140" fill="none" stroke="var(--m)" stroke-width="15" stroke-linecap="round"/>
+      <path d="M70 165 l-3 -8 l7 3z M54 165 l-4 -8 l8 2z M41 158 l-6 -6 l8 0z" class="dk"/>
+      <g transform="translate(32 138) rotate(-14) scale(1.3)">${tips[d.t]}</g>
+    </g>
+    <g class="wing wl"><path d="M84 124 C66 96 42 92 32 104 C42 106 44 112 40 120 C50 118 54 124 50 132 C62 128 72 132 84 140 Z" fill="var(--w)"/><path d="M84 124 C66 102 48 100 34 104 M80 128 C66 116 54 116 42 120 M80 134 C70 128 60 128 52 131" class="vein"/></g>
+    <g class="wing wr"><path d="M116 124 C134 96 158 92 168 104 C158 106 156 112 160 120 C150 118 146 124 150 132 C138 128 128 132 116 140 Z" fill="var(--w)"/><path d="M116 124 C134 102 152 100 166 104 M120 128 C134 116 146 116 158 120 M120 134 C130 128 140 128 148 131" class="vein"/></g>
+    <ellipse cx="85" cy="178" rx="12" ry="8" fill="var(--m)"/><ellipse cx="115" cy="178" rx="12" ry="8" fill="var(--m)"/>
+    <g class="hn"><circle cx="79" cy="183" r="2"/><circle cx="85" cy="184.5" r="2"/><circle cx="91" cy="183" r="2"/><circle cx="109" cy="183" r="2"/><circle cx="115" cy="184.5" r="2"/><circle cx="121" cy="183" r="2"/></g>
+    <ellipse cx="100" cy="151" rx="34" ry="30" fill="var(--m)"/>
+    <ellipse cx="100" cy="157" rx="21" ry="20" fill="var(--l)"/>
+    <path d="M86 150 q14 5 28 0 M84 159 q16 5 32 0 M87 168 q13 4 26 0" class="belly"/>
+    <ellipse class="arm" cx="76" cy="152" rx="7" ry="11" fill="var(--m)" transform="rotate(25 76 152)"/>
+    <ellipse class="arm" cx="124" cy="152" rx="7" ry="11" fill="var(--m)" transform="rotate(-25 124 152)"/>
+    <g class="head">
+      <path class="hn" d="M70 58 C62 40 60 30 64 22 C70 34 78 44 84 50 Z"/>
+      <path class="hn" d="M130 58 C138 40 140 30 136 22 C130 34 122 44 116 50 Z"/>
+      <path class="dk" d="M48 82 L34 72 L46 96 Z M152 82 L166 72 L154 96 Z"/>
+      <path class="dk" d="M92 42 L100 28 L108 42 Z M80 46 L84 34 L92 44 Z M120 46 L116 34 L108 44 Z"/>
+      <ellipse cx="100" cy="86" rx="54" ry="46" fill="var(--m)"/>
+      <ellipse cx="86" cy="62" rx="16" ry="8" fill="#fff" opacity=".12" transform="rotate(-18 86 62)"/>
+      <ellipse cx="100" cy="108" rx="27" ry="16" fill="var(--l)"/>
+      <ellipse cx="92" cy="103" rx="2.6" ry="1.8" class="nos"/><ellipse cx="108" cy="103" rx="2.6" ry="1.8" class="nos"/>
+      <g class="eyes">
+        <g class="eye"><ellipse cx="77" cy="86" rx="12" ry="15" fill="#1d1226"/><ellipse cx="77" cy="91" rx="8" ry="8" fill="var(--d)" opacity=".9"/><circle cx="72" cy="80" r="5" fill="#fff"/><circle cx="82" cy="93" r="2.4" fill="#fff"/><circle cx="80" cy="79" r="1.4" fill="#fff" class="spark"/></g>
+        <g class="eye"><ellipse cx="123" cy="86" rx="12" ry="15" fill="#1d1226"/><ellipse cx="123" cy="91" rx="8" ry="8" fill="var(--d)" opacity=".9"/><circle cx="118" cy="80" r="5" fill="#fff"/><circle cx="128" cy="93" r="2.4" fill="#fff"/><circle cx="126" cy="79" r="1.4" fill="#fff" class="spark"/></g>
+      </g>
+      <path class="happyeyes" d="M66 88 q11 -14 22 0 M112 88 q11 -14 22 0"/>
+      <path class="brows" d="M64 70 L86 63 M136 70 L114 63"/>
+      <path class="tear" d="M66 100 q-4 7 0 10 q4 -3 0 -10z"/>
+      <ellipse cx="62" cy="103" rx="9" ry="5.5" class="blush"/><ellipse cx="138" cy="103" rx="9" ry="5.5" class="blush"/>
+      <path class="smile" d="M93 115 q7 7 14 0"/>
+      <path class="frown" d="M93 119 q7 -6 14 0"/>
+      <path class="fang" d="M96 116 l2 4 l2 -3.5z"/>
+    </g>
+  </g>
+</svg>`;
+      this.setMood(state.h??80, state.f??80, true);
     },
-    resize(){}, setMood(){},
-    happy(){ const g=wrap.querySelector('svg'); if(!g) return; g.classList.remove('svg-happy'); void g.getBoundingClientRect(); g.classList.add('svg-happy'); }
+    setMood(h,f){ state.h=h; state.f=f; state.sad = h<35 || f<30; wrap.classList.toggle('sad', state.sad); },
+    resize(){},
+    happy(amp=1){
+      wrap.classList.remove('happy'); void wrap.offsetWidth; wrap.classList.add('happy');
+      clearTimeout(happyTimer); happyTimer=setTimeout(()=>wrap.classList.remove('happy'), 1900*Math.max(.6,amp));
+      const n = amp<1 ? 4 : 7;
+      for(let i=0;i<n;i++) setTimeout(()=>{ const s=document.createElement('div'); s.className='float-fx heart';
+        s.textContent=['💖','💗','💕'][i%3]; s.style.left=(28+Math.random()*44)+'%'; s.style.top=(30+Math.random()*25)+'%';
+        s.style.fontSize=(18+Math.random()*14)+'px'; host.appendChild(s); setTimeout(()=>s.remove(),1700); }, i*120);
+    }
   };
 }
 

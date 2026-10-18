@@ -229,6 +229,36 @@ footer{text-align:center;color:#6d6357;font-size:13px;margin-top:26px;font-style
 .chip .chibi-wrap.mini{width:34px;height:34px}.chip .chibi-wrap.mini .chibi{max-height:34px}
 .chip.on{border-color:#5ad6a0;background:rgba(90,214,160,.18)}
 .chip:disabled{opacity:.45;cursor:not-allowed}
+
+.coinbar{display:flex;justify-content:space-between;align-items:center;margin:-4px 0 6px}
+.coins{font-family:'Cinzel',serif;font-size:17px;background:rgba(255,211,77,.12);border:1px solid rgba(255,211,77,.45);padding:3px 12px;border-radius:99px;color:#ffe08a}
+.coins b{font-weight:700}
+.shopbtn{font-family:'Cinzel',serif;font-size:14px;font-weight:700;padding:7px 14px;border-radius:99px;border:1px solid rgba(240,215,154,.5);background:linear-gradient(180deg,#f0d79a,#c9a25c);color:#1a1008;cursor:pointer}
+.daily{position:relative;margin:0 0 12px}
+.daily .note{margin-top:6px}
+.btn.gold{background:linear-gradient(180deg,#ffe58a,#f0b429 60%,#c98a10);border-color:rgba(255,230,140,.7)}
+.shop-stage{background:radial-gradient(ellipse at 50% 70%, color-mix(in srgb,var(--dragon) 30%,transparent), transparent 65%)}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:10px;padding-bottom:2px}
+.tab{flex:1;font-family:'Cinzel',serif;font-size:13px;padding:8px 6px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);cursor:pointer;white-space:nowrap}
+.tab.on{background:rgba(201,162,92,.22);color:var(--gold2);border-color:var(--gold)}
+.shop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.item{position:relative;text-align:center;background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:14px;padding:10px 8px;cursor:pointer;transition:border-color .2s,background .2s}
+.item .icon{font-size:30px;line-height:1.2}
+.item .iname{font-family:'Cinzel',serif;font-size:13.5px;color:var(--text);margin:2px 0;min-height:2.4em;display:flex;align-items:center;justify-content:center}
+.item .rar{font-size:11px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px}
+.item.com .rar{color:#b9b0a2}.item.unc .rar{color:#6fe0a0}.item.rare .rar{color:#7cb8ff}.item.leg .rar{color:#ffcf5a}
+.item.leg{border-color:rgba(255,207,90,.45);background:linear-gradient(180deg,rgba(255,207,90,.08),rgba(255,255,255,.02))}
+.item.sel{border-color:#f0d79a;background:rgba(240,215,154,.12)}
+.item.worn::after{content:'✓ Puesto';position:absolute;top:6px;right:6px;font-size:10px;font-family:'Cinzel',serif;background:#5ad6a0;color:#062417;padding:1px 6px;border-radius:99px}
+.ibtn{width:100%;font-family:'Cinzel',serif;font-size:13px;font-weight:700;padding:8px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--gold2);cursor:pointer}
+.ibtn.buy{background:linear-gradient(180deg,#ffe58a,#f0b429);color:#2a1a02;border-color:rgba(255,230,140,.7)}
+.ibtn:disabled{filter:grayscale(1) brightness(.55);cursor:not-allowed}
+.chibi .acc-float{animation:accFloat 2.6s ease-in-out infinite}
+@keyframes accFloat{50%{transform:translateY(-4px)}}
+.chibi .acc-flutter{transform-origin:100px 132px;animation:accFlutter .9s ease-in-out infinite alternate}
+@keyframes accFlutter{to{transform:scaleX(.9)}}
+.chibi .acc-twinkle{animation:cSpark 1.6s ease-in-out infinite}
+.chibi .acc-glow{animation:cSpark 2.2s ease-in-out infinite}
 </style>
 </head>
 <body>
@@ -282,6 +312,7 @@ footer{text-align:center;color:#6d6357;font-size:13px;margin-top:26px;font-style
   <!-- CARE -->
   <section id="care" class="hidden">
     <div class="panel fade">
+      <div class="coinbar"><span class="coins">🪙 <b class="coin-count">0</b></span><button class="shopbtn" id="shopBtn">🛍️ Tienda</button></div>
       <div class="care-head">
         <h2 id="cName"></h2>
         <div class="kind" id="cKind"></div>
@@ -298,6 +329,7 @@ footer{text-align:center;color:#6d6357;font-size:13px;margin-top:26px;font-style
         <div class="stat"><div class="n" id="sBest">0</div><div class="l">Récord</div></div>
         <div class="stat"><div class="n" id="sDays">1</div><div class="l">Días juntos</div></div>
       </div>
+      <div class="daily" id="dailyBox"><button class="btn gold" id="claimBtn">🎁 Recoger monedas</button><p class="note" id="dailyTxt"></p></div>
       <button class="btn red" id="feedBtn">Darle de comer</button>
       <div style="height:10px"></div>
       <div class="row">
@@ -316,6 +348,19 @@ footer{text-align:center;color:#6d6357;font-size:13px;margin-top:26px;font-style
       <button class="btn ghost" id="parkBtn" style="margin-top:12px">🌳 Ir al Parque de dragones</button>
     </div>
     <footer>Vuelve mañana. Cada día que le das de comer suma a tu racha.</footer>
+  </section>
+
+  <!-- SHOP -->
+  <section id="shop" class="hidden">
+    <h1 style="font-size:clamp(24px,7vw,32px)">Tienda del valle</h1>
+    <div class="panel fade">
+      <div class="coinbar"><span class="coins">🪙 <b class="coin-count">0</b></span><button class="shopbtn" id="shopBackBtn">← Volver</button></div>
+      <div class="stage shop-stage" id="shopStage"></div>
+      <p class="note" id="shopNote" style="margin:0 0 10px"></p>
+      <div class="tabs" id="shopTabs"></div>
+      <div class="shop-grid" id="shopGrid"></div>
+      <p class="sec-sub" style="margin-top:14px">Consigue monedas pasando cada día (con bonus por racha), dándole de comer (+3) y jugando en el parque (+5).</p>
+    </div>
   </section>
 
   <!-- PARK -->
@@ -493,7 +538,8 @@ const clamp = v => Math.max(0, Math.min(100, v));
 
 function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; } }
 let S = load();
-const SCHEMA = 2;   // v1 = versión original (sin campo v); v2 = diversión + amigos
+const SCHEMA = 3;   // v1 = versión original (sin campo v); v2 = diversión + amigos; v3 = monedas + tienda
+const WELCOME_BONUS = 50;
 const effHappy = () => Math.min(S.happy, (S.fun ?? 100) + 10);   // aburrido = triste
 function migrate(){
   if(!S.bonded){ if(S.pendingKey && !S.v){ S.v = SCHEMA; save(); } return; }
@@ -506,7 +552,14 @@ function migrate(){
     if(!Array.isArray(S.friends)) S.friends = [];
     if(!S.plays || typeof S.plays !== 'object') S.plays = {};
   }
-  // aquí irán futuras migraciones: if(v < 3){ ... }
+  if(v < 3){
+    S.coins = (typeof S.coins === 'number' ? S.coins : 0) + WELCOME_BONUS;   // regalo para quien ya jugaba
+    if(!Array.isArray(S.inv)) S.inv = [];
+    if(!S.eq || typeof S.eq !== 'object') S.eq = {};
+    S.claimStreak ||= 0; S.lastClaimDay ||= null;
+    S.welcomePending = WELCOME_BONUS;
+  }
+  // aquí irán futuras migraciones: if(v < 4){ ... }
   S.v = SCHEMA; S.migratedFrom = v; save();
 }
 migrate();
@@ -532,7 +585,7 @@ function decay(){
 
 /* ======================= UI HELPERS ======================= */
 const $ = id => document.getElementById(id);
-const screens = ['intro','quiz','result','care','park'];
+const screens = ['intro','quiz','result','care','park','shop'];
 function show(id){
   screens.forEach(s => $(s).classList.toggle('hidden', s!==id));
   window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
@@ -604,7 +657,8 @@ function bond(){
   if(!name){ toast('Tu dragón necesita un nombre'); $('nameInput').focus(); return; }
   const now = Date.now();
   S = { v:SCHEMA, bonded:true, id:newId(), key:d.key, name, hunger:55, happy:70, fun:80, lastUpdate:now, createdDay:today(),
-        lastFedDay:null, streak:0, best:0, feeds:0, petDay:null, pets:0, friends:[], plays:{} };
+        lastFedDay:null, streak:0, best:0, feeds:0, petDay:null, pets:0, friends:[], plays:{},
+        coins:0, inv:[], eq:{}, claimStreak:0, lastClaimDay:null };
   save();
   const hadInvite = acceptPendingAfterBond();
   openCare(!hadInvite);
@@ -649,7 +703,8 @@ function render(){
   renderFriends();
 }
 function openCare(first){
-  decay(); show('care'); mountViewer('stageCareSlot', byKey(S.key)); render();
+  decay(); show('care'); mountViewer('stageCareSlot', byKey(S.key)); render(); renderDaily();
+  if(S.welcomePending){ const n=S.welcomePending; delete S.welcomePending; save(); setTimeout(()=>{ toast(`🎁 Regalo de bienvenida: ${n} monedas para la Tienda`); coinBurst($('dailyBox')); }, 500); }
   if(first) setTimeout(()=>toast(`${S.name} te ha elegido. Vuelve cada día a alimentarle.`),400);
 }
 function feed(){
@@ -662,7 +717,8 @@ function feed(){
   S.hunger = clamp(S.hunger + 65); S.happy = clamp(S.happy + 25);
   save(); render();
   const food = FOODS[Math.floor(Math.random()*FOODS.length)];
-  toast(`¡${S.name} devora ${food}! Racha: ${S.streak} 🔥`);
+  addCoins(3);
+  toast(`¡${S.name} devora ${food}! Racha: ${S.streak} 🔥 · +3 🪙`);
   celebrate(['🔥','🍖','✨','🔥','💛']);
 }
 function pet(){
@@ -689,18 +745,152 @@ async function share(){
   }catch(e){ if(e.name!=='AbortError') toast(url); }
 }
 
+/* ======================= TIENDA Y ACCESORIOS ======================= */
+const SLOTS = { cabeza:'Cabeza', cara:'Cara', cuello:'Cuello', espalda:'Espalda', cola:'Cola' };
+const RARITY = p => p>=250 ? ['Legendario','leg'] : p>=120 ? ['Raro','rare'] : p>=50 ? ['Poco común','unc'] : ['Común','com'];
+// Todas las piezas son SVG original en las coordenadas del dragón chibi (viewBox 200x200).
+// En "cola" las coordenadas son locales a la punta (0,0 = base de la punta, -y hacia la punta).
+const ITEMS = [
+  { id:'lazo', slot:'cabeza', name:'Lazo rosa', icon:'🎀', price:15,
+    svg:'<g transform="translate(120 46) rotate(18)"><path d="M0 0 L-17 -10 Q-21 0 -17 10Z M0 0 L17 -10 Q21 0 17 10Z" fill="#ff6fa3" stroke="#d94c82" stroke-width="1.5"/><circle r="4.5" fill="#ff4d8d"/></g>' },
+  { id:'flor', slot:'cabeza', name:'Flor de valle', icon:'🌸', price:20,
+    svg:'<g transform="translate(78 48)"><g fill="#ffd1e6" stroke="#f19ac0" stroke-width="1"><circle cx="0" cy="-8" r="6"/><circle cx="7.6" cy="-2.5" r="6"/><circle cx="4.7" cy="6.5" r="6"/><circle cx="-4.7" cy="6.5" r="6"/><circle cx="-7.6" cy="-2.5" r="6"/></g><circle r="4" fill="#ffcf3a"/></g>' },
+  { id:'gorra', slot:'cabeza', name:'Gorra de cadete', icon:'🧢', price:40,
+    svg:'<path d="M60 58 Q100 8 140 58 Q100 48 60 58Z" fill="#3a7bd5"/><path d="M128 56 Q162 52 170 64 Q144 66 126 61Z" fill="#2d63b0"/><path d="M100 18 L100 54" stroke="#2d63b0" stroke-width="2"/><circle cx="100" cy="20" r="4" fill="#ffd34d"/>' },
+  { id:'mago', slot:'cabeza', name:'Sombrero de mago', icon:'🧙', price:120,
+    svg:'<path d="M66 54 L108 -16 Q112 -20 112 -12 L134 54Z" fill="#4b2a9a"/><path d="M71 44 Q100 36 131 44 L134 54 Q100 46 66 54Z" fill="#ffd34d"/><ellipse cx="100" cy="54" rx="50" ry="9" fill="#3b1f80"/><path d="M98 14 l2 -6 l2 6 l6 2 l-6 2 l-2 6 l-2 -6 l-6 -2z M114 30 l1.5 -4 l1.5 4 l4 1.5 l-4 1.5 l-1.5 4 l-1.5 -4 l-4 -1.5z" fill="#ffe680"/>' },
+  { id:'aureola', slot:'cabeza', name:'Aureola', icon:'😇', price:220,
+    svg:'<g class="acc-float"><ellipse cx="100" cy="20" rx="30" ry="7" fill="none" stroke="#fff3a8" stroke-width="7" opacity=".35"/><ellipse cx="100" cy="20" rx="30" ry="7" fill="none" stroke="#ffe066" stroke-width="4"/></g>' },
+  { id:'corona', slot:'cabeza', name:'Corona del valle', icon:'👑', price:350,
+    svg:'<path d="M70 52 L68 24 L84 38 L100 14 L116 38 L132 24 L130 52 Q100 46 70 52Z" fill="#ffd34d" stroke="#c99a1e" stroke-width="2" stroke-linejoin="round"/><circle cx="100" cy="38" r="5" fill="#e23b5a"/><circle cx="82" cy="45" r="3.5" fill="#3cc4c9"/><circle cx="118" cy="45" r="3.5" fill="#3cc4c9"/><circle cx="68" cy="24" r="3" fill="#ffe680"/><circle cx="100" cy="14" r="3" fill="#ffe680"/><circle cx="132" cy="24" r="3" fill="#ffe680"/>' },
+  { id:'gafas', slot:'cara', name:'Gafas de biblioteca', icon:'👓', price:35,
+    svg:'<g fill="rgba(255,255,255,.18)" stroke="#5a3a1a" stroke-width="3"><circle cx="77" cy="86" r="17"/><circle cx="123" cy="86" r="17"/></g><path d="M94 84 Q100 78 106 84 M60 82 L48 78 M140 82 L152 78" stroke="#5a3a1a" stroke-width="3" fill="none" stroke-linecap="round"/>' },
+  { id:'solares', slot:'cara', name:'Gafas de sol', icon:'🕶️', price:60,
+    svg:'<path d="M58 76 H96 Q98 100 80 100 Q60 100 58 76Z M104 76 H142 Q140 100 120 100 Q102 100 104 76Z" fill="#141018"/><path d="M96 80 Q100 76 104 80 M58 78 L46 74 M142 78 L154 74" stroke="#141018" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M64 81 l10 0 M110 81 l10 0" stroke="#fff" stroke-width="3" opacity=".55" stroke-linecap="round"/>' },
+  { id:'monoculo', slot:'cara', name:'Monóculo de estratega', icon:'🧐', price:90,
+    svg:'<circle cx="123" cy="86" r="17" fill="rgba(255,255,255,.15)" stroke="#d9a72c" stroke-width="3.5"/><path d="M138 94 Q150 120 140 140" stroke="#d9a72c" stroke-width="1.8" fill="none" stroke-dasharray="3 2"/>' },
+  { id:'antifaz', slot:'cara', name:'Antifaz de espía', icon:'🎭', price:150,
+    svg:'<path fill-rule="evenodd" d="M50 80 Q60 66 100 76 Q140 66 150 80 Q152 100 128 104 Q110 104 100 94 Q90 104 72 104 Q48 100 50 80Z M65 86 a12 14 0 1 0 24 0 a12 14 0 1 0 -24 0Z M111 86 a12 14 0 1 0 24 0 a12 14 0 1 0 -24 0Z" fill="#2a1240"/><path d="M50 80 L38 70 M150 80 L162 70" stroke="#2a1240" stroke-width="3" stroke-linecap="round"/>' },
+  { id:'cascabel', slot:'cuello', name:'Cascabel', icon:'🔔', price:25,
+    svg:'<path d="M66 126 Q100 142 134 126" stroke="#d63a3a" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="100" cy="140" r="7" fill="#ffd34d" stroke="#c99a1e" stroke-width="1.5"/><path d="M96 142 h8" stroke="#8a6414" stroke-width="1.5"/>' },
+  { id:'bufanda', slot:'cuello', name:'Bufanda de invierno', icon:'🧣', price:30,
+    svg:'<path d="M62 122 Q100 142 138 122 L140 134 Q100 154 60 134Z" fill="#e2483d"/><path d="M70 128 l3 9 M84 133 l2 9 M116 133 l-2 9 M130 128 l-3 9" stroke="#fff" stroke-width="3" opacity=".7"/><path d="M116 136 l8 30 l12 -3 l-8 -29z" fill="#c93a30"/><path d="M122 160 l14 -3" stroke="#fff" stroke-width="3" opacity=".7"/>' },
+  { id:'perlas', slot:'cuello', name:'Collar de perlas', icon:'📿', price:80,
+    svg:'<g fill="#fdf6ec" stroke="#d8cbb8" stroke-width=".8">'+Array.from({length:11},(_,i)=>{const t=i/10, x=68+64*t, y=126+14*Math.sin(Math.PI*t); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.6"/>`;}).join('')+'</g><circle cx="100" cy="144" r="5" fill="#ffd1e6" stroke="#f19ac0"/>' },
+  { id:'medallon', slot:'cuello', name:'Medallón de jinete', icon:'🏅', price:180,
+    svg:'<path d="M70 124 Q100 140 130 124" stroke="#d9a72c" stroke-width="2.5" fill="none" stroke-dasharray="4 2"/><circle cx="100" cy="144" r="11" fill="#ffd34d" stroke="#c99a1e" stroke-width="2"/><path d="M100 136 l3 6 l6 1 l-4.5 4 l1 6 l-5.5 -3 l-5.5 3 l1 -6 l-4.5 -4 l6 -1z" fill="#c9302c"/>' },
+  { id:'capa', slot:'espalda', name:'Capa escarlata', icon:'🦸', price:110, back:true,
+    svg:'<path d="M70 120 Q100 128 130 120 L156 188 Q100 200 44 188Z" fill="#a3122a"/><path d="M70 120 Q100 128 130 120 L134 130 Q100 138 66 130Z" fill="#7d0d20"/>' },
+  { id:'hada', slot:'espalda', name:'Alas de hada', icon:'🧚', price:140, back:true,
+    svg:'<g class="acc-flutter" opacity=".8"><path d="M96 130 C70 92 30 96 38 124 C44 140 76 140 96 136Z M104 130 C130 92 170 96 162 124 C156 140 124 140 104 136Z" fill="#c9f2ff" stroke="#8fd3ff" stroke-width="2"/><path d="M96 138 C80 150 60 168 74 172 C86 174 94 156 98 142Z M104 138 C120 150 140 168 126 172 C114 174 106 156 102 142Z" fill="#ffd9f2" stroke="#f3a6d6" stroke-width="2"/></g>' },
+  { id:'silla', slot:'espalda', name:'Silla de montar', icon:'🐎', price:200,
+    svg:'<path d="M66 156 Q100 172 134 156 L133 166 Q100 182 67 166Z" fill="#7a4a24"/><rect x="94" y="163" width="12" height="10" rx="2" fill="none" stroke="#ffd34d" stroke-width="2.5"/><path d="M66 138 Q60 156 66 168 L76 162 Q72 150 76 140Z M134 138 Q140 156 134 168 L124 162 Q128 150 124 140Z" fill="#9a5f30"/>' },
+  { id:'estrellas', slot:'espalda', name:'Capa de las estrellas', icon:'🌌', price:280, back:true,
+    svg:'<path d="M70 120 Q100 128 130 120 L160 190 Q100 202 40 190Z" fill="#1b1f5e"/><path d="M70 120 Q100 128 130 120 L134 130 Q100 138 66 130Z" fill="#ffd34d"/><g fill="#fff6c2" class="acc-twinkle"><circle cx="52" cy="180" r="2"/><circle cx="148" cy="178" r="2.2"/><circle cx="58" cy="160" r="1.5"/><circle cx="144" cy="156" r="1.6"/><path d="M150 168 l1.5 -4 l1.5 4 l4 1.5 l-4 1.5 l-1.5 4 l-1.5 -4 l-4 -1.5z M46 170 l1.5 -4 l1.5 4 l4 1.5 l-4 1.5 l-1.5 4 l-1.5 -4 l-4 -1.5z"/></g>' },
+  { id:'lazocola', slot:'cola', name:'Lacito de cola', icon:'🎀', price:12,
+    svg:'<g transform="translate(0 6)"><path d="M0 0 L-11 -7 Q-14 0 -11 7Z M0 0 L11 -7 Q14 0 11 7Z" fill="#8fd3ff" stroke="#5aa8d8" stroke-width="1"/><circle r="3" fill="#5aa8d8"/></g>' },
+  { id:'anillo', slot:'cola', name:'Anillo de oro', icon:'💍', price:45,
+    svg:'<ellipse cx="0" cy="6" rx="9" ry="4" fill="none" stroke="#ffd34d" stroke-width="3.5"/><circle cx="0" cy="10" r="2.2" fill="#3cc4c9"/>' },
+  { id:'protector', slot:'cola', name:'Protector de punta', icon:'🗡️', price:70,
+    svg:'<path d="M-9 4 L0 -20 L9 4 Q0 9 -9 4Z" fill="#c9d3dc" stroke="#7d8a96" stroke-width="1.5"/><path d="M-3 0 L0 -12" stroke="#fff" stroke-width="2" opacity=".8"/><rect x="-10" y="3" width="20" height="5" rx="2.5" fill="#d9a72c"/>' },
+  { id:'farolillo', slot:'cola', name:'Farolillo del valle', icon:'🏮', price:95,
+    svg:'<path d="M2 4 Q10 10 10 18" stroke="#5a3a1a" stroke-width="1.5" fill="none"/><g class="acc-glow"><circle cx="10" cy="26" r="11" fill="#ffd36a" opacity=".35"/><rect x="4" y="18" width="12" height="15" rx="5" fill="#ff8a3d" stroke="#a8451a" stroke-width="1.5"/><rect x="6" y="16" width="8" height="3" fill="#5a3a1a"/></g>' }
+];
+const itemById = id => ITEMS.find(i=>i.id===id);
+function cleanEq(eq){ const out={}; for(const [slot,id] of Object.entries(eq||{})){ const it=itemById(id); if(it && it.slot===slot) out[slot]=id; } return out; }
+const eqSig = eq => Object.keys(SLOTS).map(s=>(eq||{})[s]||'').join('.');
+function accLayers(eq){
+  const L={ back:'', front:'', head:'', face:'', tail:'' };
+  for(const id of Object.values(cleanEq(eq))){ const it=itemById(id);
+    if(it.slot==='cabeza') L.head+=it.svg; else if(it.slot==='cara') L.face+=it.svg; else if(it.slot==='cola') L.tail+=it.svg;
+    else if(it.back) L.back+=it.svg; else L.front+=it.svg; }
+  return L;
+}
+
+/* --- monedas --- */
+const dailyAmount = streak => 10 + Math.min(Math.max(streak,1)-1, 6)*5;   // 10, 15 … 40
+function nextClaimStreak(){ return S.lastClaimDay === yesterday() ? (S.claimStreak||0)+1 : 1; }
+function addCoins(n, why){ S.coins = (S.coins||0) + n; save(); renderCoins(); return n; }
+function renderCoins(){ document.querySelectorAll('.coin-count').forEach(e=>e.textContent = S.coins||0); }
+function claimDaily(){
+  if(!S.bonded) return;
+  if(S.lastClaimDay === today()){ toast('Ya has recogido las monedas de hoy. Vuelve mañana.'); return; }
+  const streak = nextClaimStreak(), n = dailyAmount(streak);
+  S.claimStreak = streak; S.lastClaimDay = today(); addCoins(n);
+  toast(`🪙 +${n} monedas${streak>1?` · racha de ${streak} días`:''}`);
+  renderDaily(); coinBurst($('dailyBox'));
+}
+function renderDaily(){
+  const box=$('dailyBox'); if(!box) return;
+  const claimed = S.lastClaimDay === today();
+  const streakNow = claimed ? (S.claimStreak||1) : nextClaimStreak();
+  $('claimBtn').classList.toggle('hidden', claimed);
+  $('claimBtn').textContent = `🎁 Recoger +${dailyAmount(streakNow)} monedas`;
+  $('dailyTxt').textContent = claimed
+    ? `Recogidas hoy (racha de ${streakNow} ${streakNow===1?'día':'días'}). Mañana: +${dailyAmount(streakNow+1)}.`
+    : (streakNow>1 ? `Racha de recompensas: día ${streakNow}. ¡Cuantos más días seguidos, más monedas!` : 'Pasa cada día a recoger tus monedas: la racha da más.');
+  renderCoins();
+}
+function coinBurst(host){
+  for(let i=0;i<6;i++) setTimeout(()=>{ const s=el('div','float-fx','🪙'); s.style.left=(20+Math.random()*60)+'%'; s.style.top='40%'; host.appendChild(s); setTimeout(()=>s.remove(),1700); }, i*90);
+}
+
+/* --- tienda --- */
+let shop = { slot:'cabeza', preview:null, api:null };
+function openShop(){
+  if(!S.bonded) return;
+  show('shop'); shop.preview = null;
+  if(!shop.api) shop.api = makeChibi($('shopStage'));
+  renderShop();
+}
+function previewEq(){ const eq = {...(S.eq||{})}; if(shop.preview){ const it=itemById(shop.preview); eq[it.slot]=it.id; } return eq; }
+function renderShop(){
+  renderCoins();
+  shop.api.setDragon(byKey(S.key), previewEq()); shop.api.setMood(S.hunger, effHappy());
+  const tabs=$('shopTabs'); tabs.innerHTML='';
+  Object.entries(SLOTS).forEach(([k,label])=>{ const b=el('button','tab'+(shop.slot===k?' on':''), label); b.onclick=()=>{ shop.slot=k; renderShop(); }; tabs.appendChild(b); });
+  const grid=$('shopGrid'); grid.innerHTML='';
+  ITEMS.filter(i=>i.slot===shop.slot).sort((a,b)=>a.price-b.price).forEach(it=>{
+    const owned=(S.inv||[]).includes(it.id), worn=(S.eq||{})[it.slot]===it.id, [rn,rc]=RARITY(it.price);
+    const card=el('div','item '+rc+(shop.preview===it.id?' sel':'')+(worn?' worn':'')); card.dataset.id=it.id;
+    card.appendChild(el('div','icon', it.icon)); card.appendChild(el('div','iname', it.name)); card.appendChild(el('div','rar', rn));
+    const b=el('button','ibtn');
+    if(worn){ b.textContent='Quitar'; b.onclick=e=>{ e.stopPropagation(); unequip(it.slot); }; }
+    else if(owned){ b.textContent='Ponérselo'; b.onclick=e=>{ e.stopPropagation(); equip(it.id); }; }
+    else { b.textContent=`🪙 ${it.price}`; b.classList.add('buy'); b.disabled=(S.coins||0)<it.price; b.onclick=e=>{ e.stopPropagation(); buy(it.id); }; }
+    card.appendChild(b);
+    card.onclick=()=>{ shop.preview = shop.preview===it.id ? null : it.id; renderShop(); };
+    grid.appendChild(card);
+  });
+  const p = shop.preview && itemById(shop.preview);
+  $('shopNote').textContent = p ? `Probándose: ${p.name}${(S.inv||[]).includes(p.id)?'':' (aún no es tuyo)'}` : 'Toca una pieza para probártela. Una por zona.';
+}
+function buy(id){
+  const it=itemById(id); if(!it || (S.inv||[]).includes(id)) return;
+  if((S.coins||0) < it.price){ toast(`Te faltan ${it.price-(S.coins||0)} monedas`); return; }
+  S.coins -= it.price; S.inv=[...(S.inv||[]), id]; save();
+  toast(`¡${it.name} comprado!`); equip(id, true);
+}
+function equip(id, quiet){
+  const it=itemById(id); if(!it || !(S.inv||[]).includes(id)) return;
+  S.eq = {...(S.eq||{}), [it.slot]:id}; save(); shop.preview=null; renderShop();
+  shop.api.happy(0.5); if(!quiet) toast(`${S.name} lleva ${it.name.toLowerCase()}`);
+}
+function unequip(slot){ const eq={...(S.eq||{})}; delete eq[slot]; S.eq=eq; save(); shop.preview=null; renderShop(); }
+
 /* ======================= AMIGOS E INVITACIONES ======================= */
 const INV_KEY = 'valle-dragon-invite';
 const newId = () => (Math.random().toString(36).slice(2,8) + Date.now().toString(36).slice(-4));
 const baseUrl = () => location.origin + location.pathname;
-function myInviteLink(){ const q = new URLSearchParams({ amigo:'1', i:S.id, n:S.name, k:S.key }); return baseUrl() + '#' + q.toString(); }
+function myInviteLink(){ const q = new URLSearchParams({ amigo:'1', i:S.id, n:S.name, k:S.key }); const a=Object.values(cleanEq(S.eq)); if(a.length) q.set('a', a.join('.')); return baseUrl() + '#' + q.toString(); }
 function parseInvite(hash){
   if(!hash || hash.length<2) return null;
   const q = new URLSearchParams(hash.replace(/^#/,''));
   if(!q.has('amigo')) return null;
   const i=(q.get('i')||'').toLowerCase(), n=(q.get('n')||'').trim().slice(0,18), k=q.get('k')||'';
   if(!/^[a-z0-9]{4,20}$/.test(i) || !n || !byKey(k)) return null;
-  return { id:i, name:n, key:k };
+  const eq={}; (q.get('a')||'').split('.').forEach(id=>{ const it=itemById(id); if(it) eq[it.slot]=it.id; });
+  return { id:i, name:n, key:k, eq };
 }
 function openWhatsApp(text){
   const url = 'https://wa.me/?text=' + encodeURIComponent(text);
@@ -721,15 +911,15 @@ async function copyInvite(){
 function addFriend(inv){
   S.friends ||= [];
   const ex = S.friends.find(f=>f.id===inv.id);
-  if(ex){ ex.name=inv.name; ex.key=inv.key; save(); return false; }
-  S.friends.push({ id:inv.id, name:inv.name, key:inv.key, since:today() }); save(); return true;
+  if(ex){ ex.name=inv.name; ex.key=inv.key; ex.eq=inv.eq||{}; save(); return false; }
+  S.friends.push({ id:inv.id, name:inv.name, key:inv.key, eq:inv.eq||{}, since:today() }); save(); return true;
 }
 function closeModal(){ $('modal').classList.add('hidden'); $('modalCard').innerHTML=''; }
 function modal(build){ const c=$('modalCard'); c.innerHTML=''; c.classList.remove('fade'); void c.offsetWidth; c.classList.add('fade'); build(c); $('modal').classList.remove('hidden'); }
 function el(tag, cls, text){ const e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
 function showInviteCard(inv){
   modal(c=>{
-    const fd = byKey(inv.key); const pic = miniChibi(fd); pic.classList.replace('mini','big'); c.appendChild(pic);
+    const fd = byKey(inv.key); const pic = miniChibi(fd, inv.eq); pic.classList.replace('mini','big'); c.appendChild(pic);
     c.appendChild(el('h3', null, `${inv.name} quiere ser tu amigo`));
     c.appendChild(el('p','kind', fd.title));
     c.appendChild(el('p', null, `Si aceptas, ${inv.name} y ${S.name} podrán jugar juntos en el Parque de dragones.`));
@@ -742,7 +932,7 @@ function showInviteCard(inv){
 function showFriendsNow(inv){
   modal(c=>{
     const row = el('div'); row.style.cssText='display:flex;justify-content:center;gap:4px';
-    const a = miniChibi(byKey(S.key)), b = miniChibi(byKey(inv.key)); [a,b].forEach(x=>{ x.classList.replace('mini','big'); x.style.width=x.style.height='120px'; x.classList.add('happy'); });
+    const a = miniChibi(byKey(S.key), S.eq), b = miniChibi(byKey(inv.key), inv.eq); [a,b].forEach(x=>{ x.classList.replace('mini','big'); x.style.width=x.style.height='120px'; x.classList.add('happy'); });
     row.append(a,b); c.appendChild(row);
     c.appendChild(el('h3', null, `¡${S.name} y ${inv.name} ya son amigos! 💖`));
     c.appendChild(el('p', null, `Para que ${inv.name} también vea a ${S.name} en su lista, mándale tu enlace de vuelta.`));
@@ -783,7 +973,7 @@ function renderFriends(){
   if(!fs.length){ box.appendChild(el('div','empty','Todavía no tienes amigos. Invita a alguien y llevad a vuestros dragones al parque.')); }
   fs.forEach(f=>{
     const d=byKey(f.key); if(!d) return;
-    const row=el('div','friend'); row.appendChild(miniChibi(d));
+    const row=el('div','friend'); row.appendChild(miniChibi(d, f.eq));
     const who=el('div','who'); who.appendChild(el('b',null,f.name)); who.appendChild(el('span',null,d.title)); row.appendChild(who);
     const b=el('button',null, playedToday(f)?'Mañana':'Jugar'); b.disabled=playedToday(f); b.onclick=()=>openPark(f.id);
     row.appendChild(b); box.appendChild(row);
@@ -797,7 +987,7 @@ function openPark(friendId){
   decay(); show('park');
   $('parkMyName').textContent = S.name;
   if(!park.me){ park.me = makeChibi($('actorMe')); park.fr = makeChibi($('actorFriend')); }
-  park.me.setDragon(byKey(S.key)); park.me.setMood(S.hunger, effHappy());
+  park.me.setDragon(byKey(S.key), S.eq); park.me.setMood(S.hunger, effHappy());
   $('tagMe').textContent = S.name;
   const fs = S.friends||[];
   park.sel = (friendId && fs.find(f=>f.id===friendId)) || fs.find(f=>!playedToday(f)) || fs[0] || null;
@@ -813,10 +1003,10 @@ function renderPark(){
   const fs=S.friends||[], chips=$('parkChips'); chips.innerHTML='';
   $('parkFunBar').style.width=S.fun+'%'; $('parkFunTxt').textContent=Math.round(S.fun)+'%';
   fs.forEach(f=>{ const d=byKey(f.key); if(!d) return; const c=el('button','chip'+(park.sel&&park.sel.id===f.id?' on':''));
-    c.appendChild(miniChibi(d)); c.appendChild(el('span',null, f.name + (playedToday(f)?' · mañana':''))); c.disabled = park.playing;
+    c.appendChild(miniChibi(d, f.eq)); c.appendChild(el('span',null, f.name + (playedToday(f)?' · mañana':''))); c.disabled = park.playing;
     c.onclick=()=>{ park.sel=f; renderPark(); }; chips.appendChild(c); });
   const fr=$('actorFriend');
-  if(park.sel){ fr.classList.remove('hidden'); park.fr.setDragon(byKey(park.sel.key)); park.fr.setMood(80,80); $('tagFriend').textContent=park.sel.name; }
+  if(park.sel){ fr.classList.remove('hidden'); park.fr.setDragon(byKey(park.sel.key), park.sel.eq); park.fr.setMood(80,80); $('tagFriend').textContent=park.sel.name; }
   else fr.classList.add('hidden');
   $('parkPickLbl').classList.toggle('hidden', !fs.length);
   const btn=$('playBtn');
@@ -870,11 +1060,11 @@ function playDate(forceGame){
   setTimeout(()=>{
     clearInterval(fx); anims.forEach(a=>a.cancel()); $('ball').classList.add('hidden'); homePositions();
     S.plays ||= {}; S.plays[f.id]=today(); S.playCount=(S.playCount||0)+1;
-    S.fun = 100; S.happy = clamp(S.happy+10); S.lastUpdate=Date.now(); save();
+    S.fun = 100; S.happy = clamp(S.happy+10); S.lastUpdate=Date.now(); S.coins=(S.coins||0)+5; save(); renderCoins();
     park.playing=false; park.me.setMood(S.hunger, effHappy()); renderPark(); renderFriends();
     $('sceneMsg').textContent = `¡Qué tarde más buena! Diversión al 100 %`;
     park.me.happy(1); park.fr.happy(1);
-    toast(`${S.name} y ${f.name} lo han pasado en grande 🎈`);
+    toast(`${S.name} y ${f.name} lo han pasado en grande 🎈 · +5 🪙`);
   }, DUR);
 }
 
@@ -924,7 +1114,8 @@ async function setMode(m, persist){
 }
 function refreshApi(){
   const api = V.api[V.mode]; if(!api || !V.d) return;
-  if(V.keys[V.mode]!==V.d.key){ V.keys[V.mode]=V.d.key; api.setDragon(V.d); }
+  const eq = S.bonded ? (S.eq||{}) : {}, sig = V.d.key+'|'+eqSig(eq);
+  if(V.keys[V.mode]!==sig){ V.keys[V.mode]=sig; api.setDragon(V.d, eq); }
   api.setMood(V.h, V.f); api.resize();
   window.__viewerMode = V.mode;
 }
@@ -954,18 +1145,20 @@ const CHIBI_TIPS = {
     garrota:'<circle class="dk" cx="0" cy="-10" r="12"/><circle class="hn" cx="-8" cy="-17" r="3.5"/><circle class="hn" cx="8" cy="-17" r="3.5"/><circle class="hn" cx="0" cy="-22" r="3.5"/>',
     maza:'<g class="hn"><path d="M0 -32 L4 -22 L-4 -22Z M0 12 L4 2 L-4 2Z M-21 -10 L-11 -14 L-11 -6Z M21 -10 L11 -14 L11 -6Z M-15 -25 L-6 -20 L-11 -15Z M15 -25 L6 -20 L11 -15Z M-15 5 L-11 -5 L-6 0Z M15 5 L11 -5 L6 0Z"/></g><circle class="dk" cx="0" cy="-10" r="11"/>'
 };
-function chibiMarkup(d){
-      const c = COLORS[d.c].hex;
+function chibiMarkup(d, eq){
+  const A = accLayers(eq);
+  const c = COLORS[d.c].hex;
   const main = d.c==='negro' ? '#3a3448' : c;
   const light = shade(main, d.c==='negro' ? .38 : .55), dark = shade(main, -.35), wingc = shade(main, -.12);
   return { vars:`--m:${main};--l:${light};--d:${dark};--w:${wingc}`, html:`
 <svg class="chibi" viewBox="0 0 200 200" role="img" aria-label="Tu dragón">
   <ellipse class="shadow" cx="100" cy="187" rx="44" ry="7"/>
   <g class="bob">
+    ${A.back}
     <g class="tail">
   <path d="M82 158 C58 170 36 162 32 140" fill="none" stroke="var(--m)" stroke-width="15" stroke-linecap="round"/>
   <path d="M70 165 l-3 -8 l7 3z M54 165 l-4 -8 l8 2z M41 158 l-6 -6 l8 0z" class="dk"/>
-  <g transform="translate(32 138) rotate(-14) scale(1.3)">${CHIBI_TIPS[d.t]}</g>
+  <g transform="translate(32 138) rotate(-14) scale(1.3)">${CHIBI_TIPS[d.t]}${A.tail}</g>
     </g>
     <g class="wing wl"><path d="M84 124 C66 96 42 92 32 104 C42 106 44 112 40 120 C50 118 54 124 50 132 C62 128 72 132 84 140 Z" fill="var(--w)"/><path d="M84 124 C66 102 48 100 34 104 M80 128 C66 116 54 116 42 120 M80 134 C70 128 60 128 52 131" class="vein"/></g>
     <g class="wing wr"><path d="M116 124 C134 96 158 92 168 104 C158 106 156 112 160 120 C150 118 146 124 150 132 C138 128 128 132 116 140 Z" fill="var(--w)"/><path d="M116 124 C134 102 152 100 166 104 M120 128 C134 116 146 116 158 120 M120 134 C130 128 140 128 148 131" class="vein"/></g>
@@ -996,17 +1189,19 @@ function chibiMarkup(d){
   <path class="smile" d="M93 115 q7 7 14 0"/>
   <path class="frown" d="M93 119 q7 -6 14 0"/>
   <path class="fang" d="M96 116 l2 4 l2 -3.5z"/>
+  ${A.face}${A.head}
     </g>
+    ${A.front}
   </g>
 </svg>` };
 }
-function miniChibi(d){ const m=chibiMarkup(d); const el=document.createElement('div'); el.className='chibi-wrap mini'; el.style.cssText=m.vars; el.innerHTML=m.html; return el; }
+function miniChibi(d, eq){ const m=chibiMarkup(d, eq); const el=document.createElement('div'); el.className='chibi-wrap mini'; el.style.cssText=m.vars; el.innerHTML=m.html; return el; }
 function makeChibi(host){
   const wrap = document.createElement('div'); wrap.className='chibi-wrap'; host.appendChild(wrap);
   let state = { sad:false }, happyTimer;
   return {
-    setDragon(d){
-      const m = chibiMarkup(d); wrap.style.cssText = m.vars; wrap.innerHTML = m.html;
+    setDragon(d, eq){
+      const m = chibiMarkup(d, eq); wrap.style.cssText = m.vars; wrap.innerHTML = m.html;
       this.setMood(state.h??80, state.f??80, true);
     },
     setMood(h,f){ state.h=h; state.f=f; state.sad = h<35 || f<30; wrap.classList.toggle('sad', state.sad); },
@@ -1245,6 +1440,9 @@ $('feedBtn').onclick = feed;
 $('petBtn').onclick = pet;
 $('shareBtn').onclick = share;
 $('aboutBtn').onclick = ()=>showResult(byKey(S.key), true);
+$('shopBtn').onclick = openShop;
+$('shopBackBtn').onclick = ()=>openCare();
+$('claimBtn').onclick = claimDaily;
 $('inviteBtn').onclick = ()=>openWhatsApp(inviteText());
 $('copyInviteBtn').onclick = copyInvite;
 $('parkBtn').onclick = ()=>openPark();
@@ -1262,6 +1460,7 @@ handleIncomingInvite();
 // refresca medidores cada minuto
 setInterval(()=>{ if(S.bonded && !$('care').classList.contains('hidden')){ decay(); render(); } }, 60000);
 window.__park = { play:playDate, get state(){ return park; } };
+window.__shop = { ITEMS };
 window.__app = { get state(){ return S; }, DRAGONS };
 </script>
 </body>

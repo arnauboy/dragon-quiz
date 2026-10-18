@@ -259,6 +259,64 @@ footer{text-align:center;color:#6d6357;font-size:13px;margin-top:26px;font-style
 @keyframes accFlutter{to{transform:scaleX(.9)}}
 .chibi .acc-twinkle{animation:cSpark 1.6s ease-in-out infinite}
 .chibi .acc-glow{animation:cSpark 2.2s ease-in-out infinite}
+
+.levelrow{display:flex;align-items:center;gap:10px;margin:0 0 12px}
+.levelrow .lvl{font-family:'Cinzel',serif;font-size:14px;color:var(--gold2);background:rgba(201,162,92,.15);border:1px solid var(--line);border-radius:99px;padding:3px 10px;white-space:nowrap}
+.levelrow .lvl b{font-size:17px}
+.levelrow .bar{flex:1;height:10px}
+#xpBar{background:linear-gradient(90deg,#c9a25c,#ffe58a,#fff6d0)}
+.levelrow .xptxt{font-size:13px;color:var(--muted);white-space:nowrap;min-width:72px;text-align:right}
+.skill{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:14px;padding:8px 10px}
+.skill .sicon{font-size:26px;width:38px;text-align:center}
+.skill .who{flex:1;min-width:0}
+.skill .who b{display:block;font-family:'Cinzel',serif;color:var(--gold2);font-size:15.5px}
+.skill .who span{display:block;font-size:13px;color:var(--muted);line-height:1.25}
+.skill button{font-family:'Cinzel',serif;font-size:13px;font-weight:700;padding:9px 12px;border-radius:10px;border:1px solid rgba(240,215,154,.5);background:linear-gradient(180deg,#f0d79a,#c9a25c);color:#1a1008;cursor:pointer;white-space:nowrap}
+.skill.locked{opacity:.55}
+.skill.locked button{background:rgba(255,255,255,.05);color:var(--muted);border-color:var(--line);cursor:not-allowed}
+.modal-card.lvlup{background:radial-gradient(ellipse at 50% 20%,rgba(255,211,77,.25),transparent 60%),var(--panel);border-color:rgba(255,211,77,.6);overflow:hidden}
+.lvl-burst{font-family:'Cinzel',serif;font-weight:900;font-size:clamp(30px,10vw,44px);background:linear-gradient(180deg,#fff6d0,#ffd34d 60%,#c98a10);-webkit-background-clip:text;background-clip:text;color:transparent;animation:lvlPop .8s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes lvlPop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+.lvl-stage{position:relative;height:190px;margin:4px 0}
+.newskill{background:rgba(255,211,77,.1);border:1px solid rgba(255,211,77,.4);border-radius:12px;padding:8px 10px}
+.newskill b{display:block;font-family:'Cinzel',serif;color:#ffe08a}
+.newskill span{display:block;font-size:15px;color:var(--muted)}
+/* habilidades en el dibujo */
+.chibi .mouthopen{opacity:0}
+.chibi-wrap.sk-humo .mouthopen,.chibi-wrap.sk-rugido .mouthopen,.chibi-wrap.sk-fuego .mouthopen,.chibi-wrap.sk-aliento .mouthopen{opacity:1}
+.chibi-wrap.sk-humo .smile,.chibi-wrap.sk-rugido .smile,.chibi-wrap.sk-fuego .smile,.chibi-wrap.sk-aliento .smile,.chibi-wrap.sk .frown,.chibi-wrap.sk .tear,.chibi-wrap.sk .brows{opacity:0!important}
+.chibi-wrap.sk .chibi{filter:drop-shadow(0 8px 18px rgba(0,0,0,.45))}
+.chibi-wrap.sk.sk-voltereta .bob{transform-origin:100px 130px;animation:skFlip 1.6s cubic-bezier(.4,0,.3,1)}
+@keyframes skFlip{0%{transform:none}15%{transform:translateY(6px) scale(1.06,.9)}50%{transform:translateY(-60px) rotate(360deg)}85%{transform:translateY(-20px) rotate(720deg)}100%{transform:rotate(720deg)}}
+.chibi-wrap.sk.sk-rugido .head{transform-origin:100px 128px;animation:skRoar 1.6s ease}
+.chibi-wrap.sk.sk-rugido .chibi{animation:skShake .12s linear 10 .2s}
+@keyframes skRoar{0%,100%{transform:none}20%,70%{transform:scale(1.12) translateY(-4px)}}
+@keyframes skShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+.chibi-wrap.sk.sk-brillo .chibi{animation:skShine 2s ease}
+@keyframes skShine{0%,100%{filter:drop-shadow(0 8px 18px rgba(0,0,0,.45))}30%,70%{filter:drop-shadow(0 0 18px #fff3a8) brightness(1.35) saturate(1.3)}}
+.chibi-wrap.sk.sk-fuego .head,.chibi-wrap.sk.sk-aliento .head{transform-origin:100px 128px;animation:skBreath 1.8s ease}
+@keyframes skBreath{0%,100%{transform:none}15%{transform:translateY(-6px) rotate(-4deg)}30%,80%{transform:translateY(4px) rotate(2deg)}}
+.chibi-wrap.sk.sk-danza .bob{transform-origin:100px 186px;animation:skDance .5s ease-in-out 4 alternate}
+@keyframes skDance{from{transform:rotate(-12deg) translateY(0)}to{transform:rotate(12deg) translateY(-14px)}}
+.chibi-wrap.sk.sk-danza .tail{animation:cWag .25s ease-in-out infinite alternate}
+.chibi-wrap.sk.sk-rasante .bob{animation:skSwoop 2s ease-in-out}
+@keyframes skSwoop{0%{transform:none}20%{transform:translate(-50px,-70px) rotate(-12deg) scale(.8)}55%{transform:translate(60px,8px) rotate(14deg) scale(1)}75%{transform:translate(20px,-30px) rotate(4deg)}100%{transform:none}}
+.chibi-wrap.sk.sk-rasante .wl,.chibi-wrap.sk.sk-legendario .wl,.chibi-wrap.sk.sk-voltereta .wl{animation:cWingL .14s linear infinite alternate}
+.chibi-wrap.sk.sk-rasante .wr,.chibi-wrap.sk.sk-legendario .wr,.chibi-wrap.sk.sk-voltereta .wr{animation:cWingR .14s linear infinite alternate}
+.chibi-wrap.sk.sk-escudo .wl{animation:none;transform:rotate(-42deg) translateX(10px)}
+.chibi-wrap.sk.sk-escudo .wr{animation:none;transform:rotate(42deg) translateX(-10px)}
+.chibi-wrap.sk.sk-escudo .wing{transition:transform .3s}
+.chibi-wrap.sk.sk-legendario .bob{transform-origin:100px 120px;animation:skLegend 2.2s ease-in-out}
+.chibi-wrap.sk.sk-legendario .chibi{animation:skGold 2.2s ease}
+@keyframes skLegend{0%{transform:none}25%{transform:translateY(-42px) scale(.9)}55%{transform:translateY(-42px) rotate(360deg) scale(1.05)}80%{transform:translateY(-30px) rotate(360deg)}100%{transform:rotate(360deg)}}
+@keyframes skGold{0%,100%{filter:drop-shadow(0 8px 18px rgba(0,0,0,.45))}30%,75%{filter:drop-shadow(0 0 22px #ffd34d) brightness(1.2)}}
+
+.flame{font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:#ffb347;background:rgba(255,120,40,.14);border:1px solid rgba(255,140,60,.45);border-radius:99px;padding:3px 8px;white-space:nowrap}
+.flame.off{color:var(--muted);background:rgba(255,255,255,.04);border-color:var(--line);filter:grayscale(1)}
+.friend .mini-wa{background:linear-gradient(180deg,#3fe07a,#1fa855);border-color:rgba(160,255,190,.5);padding:8px 9px}
+.streakline{text-align:center;font-size:15px;color:#ffc27a;margin:10px 0 0;min-height:1.2em}
+.chibi-wrap.sk.sk-flash .chibi{animation:skFlash 1.4s steps(1) .15s}
+@keyframes skFlash{0%,30%,60%,100%{filter:drop-shadow(0 8px 18px rgba(0,0,0,.45))}15%,45%{filter:drop-shadow(0 0 20px #fff36a) brightness(1.6)}}
 </style>
 </head>
 <body>
@@ -319,6 +377,7 @@ footer{text-align:center;color:#6d6357;font-size:13px;margin-top:26px;font-style
       </div>
       <div class="stage" id="stageCareSlot"></div>
       <div class="mood" id="cMood"></div>
+      <div class="levelrow"><span class="lvl">Nivel <b id="lvlNum">1</b></span><div class="bar xp"><i id="xpBar"></i></div><span class="xptxt" id="xpTxt"></span></div>
       <div class="meters">
         <div class="meter"><div class="top"><b>🍖 Saciedad</b><span id="hungerTxt"></span></div><div class="bar"><i id="hungerBar"></i></div></div>
         <div class="meter"><div class="top"><b>💜 Felicidad</b><span id="happyTxt"></span></div><div class="bar"><i id="happyBar"></i></div></div>
@@ -338,6 +397,11 @@ footer{text-align:center;color:#6d6357;font-size:13px;margin-top:26px;font-style
       </div>
       <p class="note" id="feedNote"></p>
       <div class="small-links"><button id="aboutBtn">Ver su descripción</button><button id="resetBtn">Empezar de cero</button></div>
+    </div>
+    <div class="panel fade friends-panel" id="skillsPanel">
+      <h3 class="sec-title">Habilidades</h3>
+      <p class="sec-sub">Gana XP recogiendo monedas (+20), dándole de comer (+15), con mimos (+5) y jugando en el parque (+25). Cada nivel desbloquea algo nuevo.</p>
+      <div id="skillsList" class="friends"></div>
     </div>
     <div class="panel fade friends-panel">
       <h3 class="sec-title">Dragones amigos</h3>
@@ -395,6 +459,7 @@ footer{text-align:center;color:#6d6357;font-size:13px;margin-top:26px;font-style
         <div class="scene-msg" id="sceneMsg"></div>
       </div>
       <div class="meter" style="margin-top:12px"><div class="top"><b>🎈 Diversión de <span id="parkMyName"></span></b><span id="parkFunTxt"></span></div><div class="bar"><i id="parkFunBar"></i></div></div>
+      <p class="streakline" id="parkStreak"></p>
       <p class="sec-sub" id="parkPickLbl" style="margin-top:12px">¿Con quién juega hoy?</p>
       <div class="chips" id="parkChips"></div>
       <button class="btn red" id="playBtn" style="margin-top:12px">¡A jugar!</button>
@@ -538,8 +603,9 @@ const clamp = v => Math.max(0, Math.min(100, v));
 
 function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; } }
 let S = load();
-const SCHEMA = 3;   // v1 = versión original (sin campo v); v2 = diversión + amigos; v3 = monedas + tienda
+const SCHEMA = 4;   // v1 = versión original (sin campo v); v2 = diversión + amigos; v3 = monedas + tienda; v4 = XP + habilidades
 const WELCOME_BONUS = 50;
+function levelFromXpEarly(xp){ let l=1, r=xp||0; while(r >= 50+30*(l-1)){ r-=50+30*(l-1); l++; } return l; }
 const effHappy = () => Math.min(S.happy, (S.fun ?? 100) + 10);   // aburrido = triste
 function migrate(){
   if(!S.bonded){ if(S.pendingKey && !S.v){ S.v = SCHEMA; save(); } return; }
@@ -559,7 +625,14 @@ function migrate(){
     S.claimStreak ||= 0; S.lastClaimDay ||= null;
     S.welcomePending = WELCOME_BONUS;
   }
-  // aquí irán futuras migraciones: if(v < 4){ ... }
+  if(v < 4){
+    const days = S.createdDay ? Math.max(1, daysBetween(S.createdDay, today())+1) : 1;
+    if(typeof S.xp !== 'number') S.xp = days*20 + (S.feeds||0)*15 + (S.playCount||0)*25;   // XP inicial según lo jugado
+    S.levelSeen = levelFromXpEarly(S.xp);         // sin fiestas en bucle: ya conoce sus habilidades
+    S.xpWelcome = S.levelSeen;
+  }
+  // aquí irán futuras migraciones: if(v < 5){ ... }
+  (S.friends||[]).forEach(f=>{ if(typeof f.streak !== 'number') f.streak = 0; if(f.streakDay === undefined) f.streakDay = null; });   // amigos antiguos: racha 0
   S.v = SCHEMA; S.migratedFrom = v; save();
 }
 migrate();
@@ -658,7 +731,7 @@ function bond(){
   const now = Date.now();
   S = { v:SCHEMA, bonded:true, id:newId(), key:d.key, name, hunger:55, happy:70, fun:80, lastUpdate:now, createdDay:today(),
         lastFedDay:null, streak:0, best:0, feeds:0, petDay:null, pets:0, friends:[], plays:{},
-        coins:0, inv:[], eq:{}, claimStreak:0, lastClaimDay:null };
+        coins:0, inv:[], eq:{}, claimStreak:0, lastClaimDay:null, xp:0, levelSeen:1 };
   save();
   const hadInvite = acceptPendingAfterBond();
   openCare(!hadInvite);
@@ -703,7 +776,8 @@ function render(){
   renderFriends();
 }
 function openCare(first){
-  decay(); show('care'); mountViewer('stageCareSlot', byKey(S.key)); render(); renderDaily();
+  decay(); show('care'); mountViewer('stageCareSlot', byKey(S.key)); render(); renderDaily(); renderLevel();
+  if(S.xpWelcome){ const l=S.xpWelcome; delete S.xpWelcome; save(); setTimeout(()=>toast(`⭐ ¡Novedad! ${S.name} es nivel ${l} y conoce ${unlockedSkills(l).length} ${unlockedSkills(l).length===1?'habilidad':'habilidades'}`), S.welcomePending?3200:600); }
   if(S.welcomePending){ const n=S.welcomePending; delete S.welcomePending; save(); setTimeout(()=>{ toast(`🎁 Regalo de bienvenida: ${n} monedas para la Tienda`); coinBurst($('dailyBox')); }, 500); }
   if(first) setTimeout(()=>toast(`${S.name} te ha elegido. Vuelve cada día a alimentarle.`),400);
 }
@@ -717,7 +791,7 @@ function feed(){
   S.hunger = clamp(S.hunger + 65); S.happy = clamp(S.happy + 25);
   save(); render();
   const food = FOODS[Math.floor(Math.random()*FOODS.length)];
-  addCoins(3);
+  addCoins(3); gainXP(XP.feed);
   toast(`¡${S.name} devora ${food}! Racha: ${S.streak} 🔥 · +3 🪙`);
   celebrate(['🔥','🍖','✨','🔥','💛']);
 }
@@ -725,7 +799,7 @@ function pet(){
   decay();
   if(S.petDay !== today()){ S.petDay = today(); S.pets = 0; }
   if(S.pets >= 3){ toast(`${S.name} ya ha tenido suficientes mimos por hoy. Es un dragón, no un gato.`); return; }
-  S.pets++; S.happy = clamp(S.happy + 6); save(); render();
+  S.pets++; S.happy = clamp(S.happy + 6); save(); render(); gainXP(XP.pet);
   toast(['Suelta una nube de humo caliente. Le gusta.','Cierra los ojos un segundo. Eso es un sí.','Te empuja con el hocico. Casi te tira.'][S.pets-1]);
   celebrate(['💜','✨','💜'], true);
 }
@@ -743,6 +817,145 @@ async function share(){
     if(navigator.share){ await navigator.share({title:'¿Qué dragón te elegiría?', text, url}); return; }
     await navigator.clipboard.writeText(text+' '+url); toast('Enlace copiado');
   }catch(e){ if(e.name!=='AbortError') toast(url); }
+}
+
+/* ======================= NIVELES Y HABILIDADES ======================= */
+const XP = { claim:20, feed:15, pet:5, play:25 };
+const xpForNext = lvl => 50 + 30*(lvl-1);                 // 50, 80, 110… (sube cada pocos días jugando a diario)
+function levelInfo(xp){ let lvl=1, need=xpForNext(1), rest=xp||0; while(rest>=need){ rest-=need; lvl++; need=xpForNext(lvl); } return { lvl, into:rest, need }; }
+const ELEMENT = c => ({ azul:'rayo', negro:'rayo', verde:'hielo', marron:'hielo', rojo:'sol', naranja:'sol' })[c] || 'sol';
+const SKILLS = [
+  { id:'humo',      lvl:1,  icon:'💨', name:'Soplar humo',        desc:'Unas nubecitas de humo calentito por la nariz.' },
+  { id:'voltereta', lvl:2,  icon:'🤸', name:'Volteretas',         desc:'Dos vueltas en el aire y aterrizaje perfecto (casi).' },
+  { id:'rugido',    lvl:3,  icon:'📣', name:'Rugido',             desc:'Un rugido que hace temblar el valle… o al menos las hojas.' },
+  { id:'brillo',    lvl:4,  icon:'✨', name:'Brillo de escamas',  desc:'Sus escamas destellan como gemas al sol.' },
+  { id:'fuego',     lvl:5,  icon:'🔥', name:'Escupir fuego',      desc:'Por fin, fuego de verdad. Con cuidado con las cortinas.' },
+  { id:'danza',     lvl:6,  icon:'💃', name:'Danza del valle',    desc:'Un baile secreto que solo conocen los dragones.' },
+  { id:'rasante',   lvl:7,  icon:'🛫', name:'Vuelo rasante',      desc:'Despega y pasa rozando la hierba a toda velocidad.' },
+  { id:'aliento',   lvl:8,  icon:'🌀', name:'Aliento elemental',  desc:'Depende de su color: relámpago, hielo o llamarada solar.' },
+  { id:'escudo',    lvl:9,  icon:'🛡️', name:'Escudo de alas',     desc:'Se envuelve en sus alas y crea una burbuja protectora.' },
+  { id:'legendario',lvl:10, icon:'🌟', name:'Vuelo legendario',   desc:'El vuelo que cuentan las leyendas: aura dorada y lluvia de estrellas.' }
+];
+const ALIENTO = { rayo:['⚡','Relámpago'], hielo:['❄️','Aliento helado'], sol:['☀️','Llamarada solar'] };
+function skillLabel(sk, d){ if(sk.id!=='aliento' || !d) return [sk.icon, sk.name]; const [i,n]=ALIENTO[ELEMENT(d.c)]; return [i,n]; }
+const unlockedSkills = lvl => SKILLS.filter(s=>s.lvl<=lvl);
+
+function gainXP(n){
+  if(!S.bonded || !n) return;
+  S.xp = (S.xp||0) + n;
+  const L = levelInfo(S.xp);
+  const prev = S.levelSeen || 1;
+  save(); renderLevel();
+  if(L.lvl > prev){
+    S.levelSeen = L.lvl; save();
+    const news = SKILLS.filter(s=>s.lvl>prev && s.lvl<=L.lvl);
+    const tryShow = () => { if(!$('modal').classList.contains('hidden')) return setTimeout(tryShow, 700); showLevelUp(L.lvl, news); };
+    setTimeout(tryShow, 900);
+  }
+}
+function renderLevel(){
+  if(!$('lvlNum')) return;
+  const L = levelInfo(S.xp);
+  $('lvlNum').textContent = L.lvl;
+  $('xpBar').style.width = (L.into/L.need*100)+'%';
+  $('xpTxt').textContent = `${L.into} / ${L.need} XP`;
+  renderSkills();
+}
+function renderSkills(){
+  const box=$('skillsList'); if(!box) return; box.innerHTML='';
+  const lvl = levelInfo(S.xp).lvl, d=byKey(S.key);
+  SKILLS.forEach(sk=>{
+    const open = sk.lvl<=lvl, [ic,nm]=skillLabel(sk,d);
+    const row = el('div','skill'+(open?'':' locked')); row.dataset.id=sk.id;
+    row.appendChild(el('div','sicon', open?ic:'🔒'));
+    const who=el('div','who'); who.appendChild(el('b',null,nm)); who.appendChild(el('span',null, open?sk.desc:`Se desbloquea en el nivel ${sk.lvl}`)); row.appendChild(who);
+    const b=el('button',null, open?'Usar':`Nv. ${sk.lvl}`); b.disabled=!open; b.onclick=()=>useSkill(sk.id); row.appendChild(b);
+    box.appendChild(row);
+  });
+}
+let skillBusy=false;
+function useSkill(id){
+  const sk = SKILLS.find(s=>s.id===id); if(!sk || sk.lvl>levelInfo(S.xp).lvl || skillBusy) return;
+  if(V.mode!=='2d'){ viewerApi.happy(1); toast('Las habilidades se ven en modo Dibujo ✏️ (toca "Dibujo" arriba a la derecha)'); return; }
+  $('stageCareSlot').scrollIntoView({behavior:'smooth', block:'center'});
+  skillBusy=true; setTimeout(()=>skillBusy=false, 2300);
+  V.api['2d']?.skill(id, byKey(S.key));
+}
+function showStreakMilestone(f, R){
+  const m = STREAK_MILESTONES[R.milestone];
+  modal(c=>{
+    c.classList.add('lvlup');
+    c.appendChild(el('div','lvl-burst', `🔥 ${R.milestone} DÍAS`));
+    const row = el('div'); row.style.cssText='display:flex;justify-content:center;gap:4px';
+    const a = miniChibi(byKey(S.key), S.eq), b = miniChibi(byKey(f.key), f.eq); [a,b].forEach(x=>{ x.classList.replace('mini','big'); x.style.width=x.style.height='120px'; x.classList.add('happy'); }); row.append(a,b); c.appendChild(row);
+    c.appendChild(el('h3', null, `¡Racha compartida de ${R.milestone} días con ${f.name}!`));
+    c.appendChild(el('p', null, `Premio de racha: +${m.coins} 🪙 y +${m.xp} XP. Avisa a ${f.name} para que su racha también lo refleje.`));
+    const wa = el('button','btn wa', `Avisar a ${f.name} por WhatsApp`); wa.onclick=()=>openWhatsApp(inviteBackText(f));
+    const ok = el('button','btn ghost','¡Genial!'); ok.id='streakOkBtn'; ok.onclick=()=>{ c.classList.remove('lvlup'); closeModal(); };
+    c.append(wa, ok);
+  });
+}
+function showLevelUp(lvl, news){
+  const d = byKey(S.key);
+  modal(c=>{
+    c.classList.add('lvlup');
+    c.appendChild(el('div','lvl-burst','¡NIVEL '+lvl+'!'));
+    const stage = el('div','lvl-stage'); c.appendChild(stage);
+    const api = makeChibi(stage); api.setDragon(d, S.eq); api.setMood(90,90);
+    c.appendChild(el('h3', null, `${S.name} ha subido de nivel`));
+    if(news.length){
+      news.forEach(sk=>{ const [ic,nm]=skillLabel(sk,d); const p=el('p','newskill'); p.appendChild(el('b',null,`${ic} Nueva habilidad: ${nm}`)); p.appendChild(el('span',null,sk.desc)); c.appendChild(p); });
+      setTimeout(()=>api.skill(news[news.length-1].id, d), 500);
+    } else { c.appendChild(el('p',null,'Cada nivel le hace un poco más legendario.')); setTimeout(()=>api.happy(1),400); }
+    const n = levelInfo(S.xp); c.appendChild(el('p','kind', `Siguiente nivel: ${n.need-n.into} XP más`));
+    const ok = el('button','btn red', news.length?'¡Genial!':'Seguir'); ok.id='lvlOkBtn'; ok.onclick=()=>{ c.classList.remove('lvlup'); closeModal(); };
+    c.appendChild(ok);
+    for(let i=0;i<14;i++) setTimeout(()=>{ const s=el('div','float-fx',['⭐','✨','🌟','💛'][i%4]); s.style.left=(5+Math.random()*90)+'%'; s.style.top=(20+Math.random()*50)+'%'; c.appendChild(s); setTimeout(()=>s.remove(),1700); }, i*110);
+  });
+}
+
+/* --- animaciones de habilidades en el dibujo --- */
+const SVGNS='http://www.w3.org/2000/svg';
+function svgEl(tag, attrs){ const e=document.createElementNS(SVGNS, tag); for(const k in attrs) e.setAttribute(k, attrs[k]); return e; }
+const rnd=(a,b)=>a+Math.random()*(b-a);
+function runSkill(wrap, id, d){
+  const svg = wrap.querySelector('svg.chibi'); if(!svg) return;
+  const cls = 'sk-'+id;
+  wrap.classList.remove(...[...wrap.classList].filter(c=>c.startsWith('sk'))); void wrap.offsetWidth;
+  wrap.classList.add('sk', cls);
+  const g = svgEl('g',{class:'fxg'}); svg.appendChild(g);
+  const P = (tag, attrs, frames, opts) => { const e=svgEl(tag, attrs); e.style.transformBox='fill-box'; e.style.transformOrigin='center'; g.appendChild(e); e.animate(frames, {fill:'forwards', easing:'ease-out', ...opts}); return e; };
+  const MX=100, MY=116;     // boca
+  const el2 = ELEMENT(d.c);
+  if(id==='humo'){
+    for(let i=0;i<9;i++) P('circle',{cx:MX+rnd(-8,8),cy:MY-6,r:rnd(5,8),fill:'#d9d4dc',opacity:.9},[{transform:'translate(0,0) scale(.4)',opacity:.9},{transform:`translate(${rnd(-40,40)}px,${rnd(-90,-60)}px) scale(${rnd(1.6,2.4)})`,opacity:0}],{duration:1600,delay:i*110});
+  } else if(id==='rugido'){
+    for(let i=0;i<3;i++) P('circle',{cx:MX,cy:MY,r:12,fill:'none',stroke:'#fff3c4','stroke-width':4},[{transform:'scale(.5)',opacity:.9},{transform:'scale(7)',opacity:0}],{duration:1100,delay:200+i*300});
+    P('text',{x:100,y:36,'text-anchor':'middle','font-size':26,'font-weight':900,fill:'#fff3c4','font-family':'Cinzel,serif'},[{opacity:0,transform:'scale(.5)'},{opacity:1,transform:'scale(1.2)',offset:.3},{opacity:0,transform:'scale(1.4)'}],{duration:1600,delay:200}).textContent='¡GRR!';
+  } else if(id==='brillo'){
+    for(let i=0;i<14;i++){ const x=rnd(50,150), y=rnd(40,180); P('path',{d:`M${x} ${y-7} L${x+2} ${y-2} L${x+7} ${y} L${x+2} ${y+2} L${x} ${y+7} L${x-2} ${y+2} L${x-7} ${y} L${x-2} ${y-2}Z`,fill:i%2?'#fff':'#ffe680'},[{transform:'scale(0) rotate(0deg)',opacity:1},{transform:'scale(1.4) rotate(90deg)',opacity:1,offset:.5},{transform:'scale(0) rotate(180deg)',opacity:0}],{duration:900,delay:i*110}); }
+  } else if(id==='fuego' || (id==='aliento' && el2==='sol')){
+    const big = id==='aliento';
+    for(let i=0;i<(big?26:16);i++){ const col=['#ffdf5a','#ff9a2e','#ff5a1f'][i%3]; P('ellipse',{cx:MX,cy:MY+4,rx:6,ry:9,fill:col,opacity:.95},[{transform:'translate(0,0) scale(.5)',opacity:1},{transform:`translate(${rnd(-30,30)*(big?1.6:1)}px,${rnd(50,80)}px) scale(${big?rnd(2.5,3.5):rnd(1.6,2.4)})`,opacity:0}],{duration:800,delay:150+i*(big?50:70)}); }
+    if(big) P('circle',{cx:MX,cy:MY+30,r:40,fill:'#ffd34d',opacity:0},[{opacity:0},{opacity:.45,offset:.3},{opacity:0}],{duration:1600,delay:150});
+  } else if(id==='aliento' && el2==='hielo'){
+    for(let i=0;i<20;i++){ const e=P('text',{x:MX,y:MY+8,'font-size':rnd(12,20),'text-anchor':'middle',fill:'#bfefff'},[{transform:'translate(0,0) rotate(0deg) scale(.4)',opacity:1},{transform:`translate(${rnd(-50,50)}px,${rnd(40,80)}px) rotate(${rnd(90,270)}deg) scale(1.2)`,opacity:0}],{duration:1200,delay:120+i*55}); e.textContent='❄'; }
+    P('ellipse',{cx:MX,cy:MY+40,rx:30,ry:50,fill:'#bfefff',opacity:0},[{opacity:0},{opacity:.35,offset:.3},{opacity:0}],{duration:1500,delay:120});
+  } else if(id==='aliento' && el2==='rayo'){
+    for(let i=0;i<5;i++){ const x=rnd(20,180); P('path',{d:`M${x} 0 L${x-10} 40 L${x+6} 44 L${x-8} 90 L${x+14} 34 L${x-2} 30 L${x+8} 0Z`,fill:'#fff36a',stroke:'#fffbe0','stroke-width':2},[{opacity:0},{opacity:1,offset:.1},{opacity:.2,offset:.25},{opacity:1,offset:.35},{opacity:0}],{duration:700,delay:150+i*260}); }
+    wrap.classList.add('sk-flash');
+  } else if(id==='danza'){
+    for(let i=0;i<8;i++){ const e=P('text',{x:rnd(40,160),y:rnd(60,110),'font-size':rnd(16,22),fill:['#ffd1e6','#c9f2ff','#ffe680'][i%3]},[{transform:'translateY(0)',opacity:0},{opacity:1,offset:.2},{transform:`translateY(-50px) rotate(${rnd(-30,30)}deg)`,opacity:0}],{duration:1300,delay:i*220}); e.textContent=i%2?'♪':'♫'; }
+  } else if(id==='rasante'){
+    for(let i=0;i<8;i++) P('circle',{cx:rnd(30,170),cy:188,r:rnd(4,7),fill:'#d9c9a8',opacity:.8},[{transform:'scale(.3)',opacity:0},{opacity:.8,offset:.3},{transform:`translate(${rnd(-20,20)}px,-14px) scale(1.8)`,opacity:0}],{duration:900,delay:700+i*80});
+  } else if(id==='escudo'){
+    P('circle',{cx:100,cy:120,r:86,fill:'rgba(140,220,255,.15)',stroke:'#9fe3ff','stroke-width':4},[{transform:'scale(.2)',opacity:0},{transform:'scale(1.05)',opacity:1,offset:.25},{transform:'scale(1)',opacity:1,offset:.8},{transform:'scale(1.2)',opacity:0}],{duration:2000,delay:200});
+  } else if(id==='legendario'){
+    P('circle',{cx:100,cy:110,r:70,fill:'none',stroke:'#ffd34d','stroke-width':8},[{transform:'scale(.3)',opacity:0},{transform:'scale(1.2)',opacity:.9,offset:.4},{transform:'scale(2)',opacity:0}],{duration:1800,delay:300});
+    for(let i=0;i<22;i++){ const a=rnd(0,Math.PI*2), r=rnd(60,120); const e=P('text',{x:100,y:110,'font-size':rnd(12,22),'text-anchor':'middle',fill:'#ffe680'},[{transform:'translate(0,0) scale(.3)',opacity:1},{transform:`translate(${Math.cos(a)*r}px,${Math.sin(a)*r}px) scale(1.2)`,opacity:0}],{duration:1400,delay:500+i*45}); e.textContent='★'; }
+  }
+  clearTimeout(wrap._skT); wrap._skT = setTimeout(()=>{ wrap.classList.remove('sk', cls, 'sk-flash'); g.remove(); }, 2300);
+  window.__lastSkill = id;
 }
 
 /* ======================= TIENDA Y ACCESORIOS ======================= */
@@ -818,7 +1031,7 @@ function claimDaily(){
   const streak = nextClaimStreak(), n = dailyAmount(streak);
   S.claimStreak = streak; S.lastClaimDay = today(); addCoins(n);
   toast(`🪙 +${n} monedas${streak>1?` · racha de ${streak} días`:''}`);
-  renderDaily(); coinBurst($('dailyBox'));
+  renderDaily(); coinBurst($('dailyBox')); gainXP(XP.claim);
 }
 function renderDaily(){
   const box=$('dailyBox'); if(!box) return;
@@ -878,11 +1091,45 @@ function equip(id, quiet){
 }
 function unequip(slot){ const eq={...(S.eq||{})}; delete eq[slot]; S.eq=eq; save(); shop.preview=null; renderShop(); }
 
+/* ======================= RACHA COMPARTIDA ======================= */
+const STREAK_MILESTONES = { 3:{coins:15, xp:30}, 7:{coins:40, xp:60}, 14:{coins:80, xp:120}, 30:{coins:200, xp:250} };
+const recentDay = d => d===today() || d===yesterday();
+function normFriend(f){
+  if(typeof f.streak !== 'number' || !(f.streak>=0)) f.streak = 0;
+  if(typeof f.bestStreak !== 'number') f.bestStreak = f.streak;
+  if(f.streakDay === undefined) f.streakDay = null;
+  if(f.streak>0 && !recentDay(f.streakDay)){ f.lostStreak = f.streak; f.streak = 0; }   // se rompe si falta un día
+  return f;
+}
+const sharedStreak = f => (f.streak>0 && recentDay(f.streakDay)) ? f.streak : 0;
+// se llama al terminar un juego en el parque
+function bumpStreak(f){
+  normFriend(f);
+  const prev = f.streakDay;
+  if(prev === today()) return { streak:f.streak, coins:0, xp:0 };
+  f.streak = prev === yesterday() ? f.streak+1 : 1;
+  f.streakDay = today(); f.bestStreak = Math.max(f.bestStreak||0, f.streak); delete f.lostStreak;
+  let coins = 0, xp = 0, milestone = null;
+  if(f.streak >= 2){ coins += Math.min(2*f.streak, 20); xp += Math.min(5*f.streak, 50); }   // premio diario por mantenerla
+  const m = STREAK_MILESTONES[f.streak]; if(m && !(f.milestones||[]).includes(f.streak)){ coins += m.coins; xp += m.xp; milestone = f.streak; f.milestones = [...(f.milestones||[]), f.streak]; }
+  return { streak:f.streak, coins, xp, milestone };
+}
+// sincroniza con el valor que trae el enlace del amigo (nos quedamos con el mayor si los dos jugasteis hace poco)
+function syncStreak(f, theirs, theirDay){
+  normFriend(f);
+  if(!(theirs>0) || !recentDay(theirDay) || !recentDay(f.streakDay)) return false;
+  if(theirs <= f.streak) return false;
+  f.streak = Math.min(theirs, 3650); f.bestStreak = Math.max(f.bestStreak||0, f.streak);
+  if(theirDay === today()) f.streakDay = today();
+  return true;
+}
+
 /* ======================= AMIGOS E INVITACIONES ======================= */
 const INV_KEY = 'valle-dragon-invite';
 const newId = () => (Math.random().toString(36).slice(2,8) + Date.now().toString(36).slice(-4));
 const baseUrl = () => location.origin + location.pathname;
-function myInviteLink(){ const q = new URLSearchParams({ amigo:'1', i:S.id, n:S.name, k:S.key }); const a=Object.values(cleanEq(S.eq)); if(a.length) q.set('a', a.join('.')); return baseUrl() + '#' + q.toString(); }
+function myInviteLink(friend){ const q = new URLSearchParams({ amigo:'1', i:S.id, n:S.name, k:S.key });
+  if(friend){ normFriend(friend); q.set('to', friend.id); q.set('s', String(sharedStreak(friend))); if(friend.streakDay) q.set('sd', friend.streakDay); } const a=Object.values(cleanEq(S.eq)); if(a.length) q.set('a', a.join('.')); q.set('l', String(levelInfo(S.xp).lvl)); return baseUrl() + '#' + q.toString(); }
 function parseInvite(hash){
   if(!hash || hash.length<2) return null;
   const q = new URLSearchParams(hash.replace(/^#/,''));
@@ -890,7 +1137,9 @@ function parseInvite(hash){
   const i=(q.get('i')||'').toLowerCase(), n=(q.get('n')||'').trim().slice(0,18), k=q.get('k')||'';
   if(!/^[a-z0-9]{4,20}$/.test(i) || !n || !byKey(k)) return null;
   const eq={}; (q.get('a')||'').split('.').forEach(id=>{ const it=itemById(id); if(it) eq[it.slot]=it.id; });
-  return { id:i, name:n, key:k, eq };
+  const lvl = Math.max(1, Math.min(99, parseInt(q.get('l'))||1));
+  const to=(q.get('to')||'').toLowerCase(), st=Math.max(0, Math.min(3650, parseInt(q.get('s'))||0)), sd=/^\d{4}-\d{2}-\d{2}$/.test(q.get('sd')||'') ? q.get('sd') : null;
+  return { id:i, name:n, key:k, eq, lvl, to, streak:st, streakDay:sd };
 }
 function openWhatsApp(text){
   const url = 'https://wa.me/?text=' + encodeURIComponent(text);
@@ -903,7 +1152,9 @@ function inviteText(){
   return `🐉 ${S.name}, mi ${d.title.toLowerCase()}, quiere ser amigo de tu dragón. Haz el test, descubre qué dragón te elige y llevadlos a jugar al parque: ${myInviteLink()}`;
 }
 function inviteBackText(friend){
-  return `🐉 ¡${S.name} ya es amigo de ${friend.name}! Abre este enlace para añadir a ${S.name} a tus amigos y jugar en el parque: ${myInviteLink()}`;
+  const f = (S.friends||[]).find(x=>x.id===friend.id) || friend, n = sharedStreak(f);
+  return n>0 ? `🔥 ¡${S.name} y ${f.name} llevan ${n} ${n===1?'día':'días'} de racha compartida! Abre este enlace para sincronizarla y no perderla: ${myInviteLink(f)}`
+             : `🐉 ¡${S.name} ya es amigo de ${f.name}! Abre este enlace para añadir a ${S.name} a tus amigos y jugar en el parque: ${myInviteLink(f)}`;
 }
 async function copyInvite(){
   try{ await navigator.clipboard.writeText(myInviteLink()); toast('Enlace de amistad copiado'); }catch(e){ prompt('Copia tu enlace de amistad:', myInviteLink()); }
@@ -911,8 +1162,10 @@ async function copyInvite(){
 function addFriend(inv){
   S.friends ||= [];
   const ex = S.friends.find(f=>f.id===inv.id);
-  if(ex){ ex.name=inv.name; ex.key=inv.key; ex.eq=inv.eq||{}; save(); return false; }
-  S.friends.push({ id:inv.id, name:inv.name, key:inv.key, eq:inv.eq||{}, since:today() }); save(); return true;
+  if(ex){ ex.name=inv.name; ex.key=inv.key; ex.eq=inv.eq||{}; ex.lvl=inv.lvl||1; normFriend(ex);
+    if(inv.to && inv.to===S.id && syncStreak(ex, inv.streak, inv.streakDay)) inv.synced = ex.streak;
+    save(); return false; }
+  S.friends.push({ id:inv.id, name:inv.name, key:inv.key, eq:inv.eq||{}, lvl:inv.lvl||1, since:today(), streak:0, streakDay:null, bestStreak:0 }); save(); return true;
 }
 function closeModal(){ $('modal').classList.add('hidden'); $('modalCard').innerHTML=''; }
 function modal(build){ const c=$('modalCard'); c.innerHTML=''; c.classList.remove('fade'); void c.offsetWidth; c.classList.add('fade'); build(c); $('modal').classList.remove('hidden'); }
@@ -956,7 +1209,7 @@ function handleIncomingInvite(){
   }
   $('inviteBanner').classList.add('hidden');
   if(pending.id === S.id){ localStorage.removeItem(INV_KEY); toast('Este es tu propio enlace de amistad. Mándaselo a alguien 😉'); return; }
-  if((S.friends||[]).some(f=>f.id===pending.id)){ addFriend(pending); localStorage.removeItem(INV_KEY); renderFriends(); toast(`${pending.name} ya está en tu lista de amigos`); return; }
+  if((S.friends||[]).some(f=>f.id===pending.id)){ addFriend(pending); localStorage.removeItem(INV_KEY); renderFriends(); toast(pending.synced ? `🔥 Racha con ${pending.name} sincronizada: ${pending.synced} días` : `${pending.name} ya está en tu lista de amigos`); return; }
   showInviteCard(pending);
 }
 // tras crear el dragón con una invitación pendiente: se acepta sola
@@ -974,7 +1227,10 @@ function renderFriends(){
   fs.forEach(f=>{
     const d=byKey(f.key); if(!d) return;
     const row=el('div','friend'); row.appendChild(miniChibi(d, f.eq));
-    const who=el('div','who'); who.appendChild(el('b',null,f.name)); who.appendChild(el('span',null,d.title)); row.appendChild(who);
+    const who=el('div','who'); who.appendChild(el('b',null,f.name)); who.appendChild(el('span',null,`${d.title} · nivel ${f.lvl||1}`)); row.appendChild(who);
+    normFriend(f); const n=sharedStreak(f);
+    const fl=el('span','flame'+(n?'':' off'), `🔥 ${n}`); fl.title = n ? `Racha compartida: ${n} días` : (f.lostStreak?`Racha rota (era ${f.lostStreak})`:'Sin racha todavía'); row.appendChild(fl);
+    const wa=el('button','mini-wa','💬'); wa.title=`Avisar a ${f.name} por WhatsApp`; wa.setAttribute('aria-label', wa.title); wa.onclick=()=>openWhatsApp(inviteBackText(f)); row.appendChild(wa);
     const b=el('button',null, playedToday(f)?'Mañana':'Jugar'); b.disabled=playedToday(f); b.onclick=()=>openPark(f.id);
     row.appendChild(b); box.appendChild(row);
   });
@@ -1003,14 +1259,18 @@ function renderPark(){
   const fs=S.friends||[], chips=$('parkChips'); chips.innerHTML='';
   $('parkFunBar').style.width=S.fun+'%'; $('parkFunTxt').textContent=Math.round(S.fun)+'%';
   fs.forEach(f=>{ const d=byKey(f.key); if(!d) return; const c=el('button','chip'+(park.sel&&park.sel.id===f.id?' on':''));
-    c.appendChild(miniChibi(d, f.eq)); c.appendChild(el('span',null, f.name + (playedToday(f)?' · mañana':''))); c.disabled = park.playing;
+    normFriend(f); c.appendChild(miniChibi(d, f.eq)); c.appendChild(el('span',null, f.name + (sharedStreak(f)?` 🔥${sharedStreak(f)}`:'') + (playedToday(f)?' · mañana':''))); c.disabled = park.playing;
     c.onclick=()=>{ park.sel=f; renderPark(); }; chips.appendChild(c); });
   const fr=$('actorFriend');
   if(park.sel){ fr.classList.remove('hidden'); park.fr.setDragon(byKey(park.sel.key), park.sel.eq); park.fr.setMood(80,80); $('tagFriend').textContent=park.sel.name; }
   else fr.classList.add('hidden');
   $('parkPickLbl').classList.toggle('hidden', !fs.length);
   const btn=$('playBtn');
+  $('parkStreak').textContent='';
   if(!fs.length){ btn.disabled=true; btn.textContent='¡A jugar!'; $('parkNote').textContent='Aún no tienes amigos. Invita a alguien desde la pantalla de tu dragón.'; $('sceneMsg').textContent=`${S.name} está solo en el parque…`; return; }
+  normFriend(park.sel); const ns = sharedStreak(park.sel);
+  $('parkStreak').textContent = ns ? `🔥 Racha compartida con ${park.sel.name}: ${ns} ${ns===1?'día':'días'}${playedToday(park.sel)?'':' · ¡jugad hoy para mantenerla!'}`
+    : (park.sel.lostStreak ? `💔 Se rompió la racha de ${park.sel.lostStreak} días con ${park.sel.name}. ¡Empezad otra hoy!` : `🔥 Jugad días seguidos para empezar una racha compartida con ${park.sel.name}.`);
   const done = playedToday(park.sel);
   btn.disabled = park.playing || done;
   btn.textContent = park.playing ? 'Jugando…' : done ? `Ya han jugado hoy` : `¡A jugar con ${park.sel.name}!`;
@@ -1027,6 +1287,13 @@ function playDate(forceGame){
   const {W, aw, me:h1, fr:h2} = park.home, cx = W/2 - aw/2, DUR = 6500;
   $('sceneMsg').textContent = { chase:'¡A pillar!', ball:'¡Juegan a la pelota!', loops:'¡Piruetas en el aire!' }[game];
   park.me.setMood(80,80); park.me.happy(3.6); park.fr.happy(3.6);
+  const mySk = unlockedSkills(levelInfo(S.xp).lvl).filter(k=>!['rasante','legendario','voltereta'].includes(k.id) || game!=='loops');
+  const frSk = unlockedSkills(f.lvl||1);
+  const pick = a => a[Math.floor(Math.random()*a.length)];
+  window.__parkSkills = [];
+  [[1600, park.me, mySk, byKey(S.key), S.name], [3400, park.fr, frSk, byKey(f.key), f.name], [5000, park.me, mySk, byKey(S.key), S.name]].forEach(([t,api,list,d,nm])=>{
+    if(!list.length) return; setTimeout(()=>{ if(!park.playing) return; const k=pick(list); api.skill(k.id, d); window.__parkSkills.push(k.id); $('sceneMsg').textContent = `${nm}: ¡${skillLabel(k,d)[1]}!`; }, t);
+  });
   const N=48, A=[], B=[], C=[];
   const T = (x,y,r=0,s=1)=>({ transform:`translate(${x}px,${y}px) rotate(${r}deg) scale(${s})` });
   for(let i=0;i<=N;i++){
@@ -1060,11 +1327,14 @@ function playDate(forceGame){
   setTimeout(()=>{
     clearInterval(fx); anims.forEach(a=>a.cancel()); $('ball').classList.add('hidden'); homePositions();
     S.plays ||= {}; S.plays[f.id]=today(); S.playCount=(S.playCount||0)+1;
-    S.fun = 100; S.happy = clamp(S.happy+10); S.lastUpdate=Date.now(); S.coins=(S.coins||0)+5; save(); renderCoins();
+    const R = bumpStreak(f);
+    S.fun = 100; S.happy = clamp(S.happy+10); S.lastUpdate=Date.now(); S.coins=(S.coins||0)+5+R.coins; save(); renderCoins();
     park.playing=false; park.me.setMood(S.hunger, effHappy()); renderPark(); renderFriends();
     $('sceneMsg').textContent = `¡Qué tarde más buena! Diversión al 100 %`;
     park.me.happy(1); park.fr.happy(1);
-    toast(`${S.name} y ${f.name} lo han pasado en grande 🎈 · +5 🪙`);
+    toast(R.streak>=2 ? `🔥 Racha compartida con ${f.name}: ${R.streak} días · +${5+R.coins} 🪙 +${XP.play+R.xp} XP` : `${S.name} y ${f.name} lo han pasado en grande 🎈 · +5 🪙`);
+    if(R.milestone) setTimeout(()=>showStreakMilestone(f, R), 400);
+    gainXP(XP.play + R.xp);
   }, DUR);
 }
 
@@ -1188,6 +1458,7 @@ function chibiMarkup(d, eq){
   <ellipse cx="62" cy="103" rx="9" ry="5.5" class="blush"/><ellipse cx="138" cy="103" rx="9" ry="5.5" class="blush"/>
   <path class="smile" d="M93 115 q7 7 14 0"/>
   <path class="frown" d="M93 119 q7 -6 14 0"/>
+  <ellipse class="mouthopen" cx="100" cy="117" rx="8" ry="7" fill="#5a1020"/>
   <path class="fang" d="M96 116 l2 4 l2 -3.5z"/>
   ${A.face}${A.head}
     </g>
@@ -1206,6 +1477,7 @@ function makeChibi(host){
     },
     setMood(h,f){ state.h=h; state.f=f; state.sad = h<35 || f<30; wrap.classList.toggle('sad', state.sad); },
     resize(){},
+    skill(id, d){ runSkill(wrap, id, d); },
     happy(amp=1){
       wrap.classList.remove('happy'); void wrap.offsetWidth; wrap.classList.add('happy');
       clearTimeout(happyTimer); happyTimer=setTimeout(()=>wrap.classList.remove('happy'), 1900*Math.max(.6,amp));
@@ -1461,6 +1733,8 @@ handleIncomingInvite();
 setInterval(()=>{ if(S.bonded && !$('care').classList.contains('hidden')){ decay(); render(); } }, 60000);
 window.__park = { play:playDate, get state(){ return park; } };
 window.__shop = { ITEMS };
+window.__skills = { SKILLS, use:useSkill, levelInfo, gainXP };
+window.__streak = { bumpStreak, syncStreak, sharedStreak };
 window.__app = { get state(){ return S; }, DRAGONS };
 </script>
 </body>

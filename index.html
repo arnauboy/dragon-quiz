@@ -1931,6 +1931,48 @@ async function cloudStart(){
   await cloudAdoptOwn();                                  // si la nube tiene un récord mayor (otro móvil, copia), se queda el mayor
   await cloudPush(true);                                  // primero sube lo local: nunca se pierde progreso
   subscribeFriends();
+  subscribeInbox();                                       // amistades mutuas: quien me añade aparece en mi lista
+}
+/* Amistad mutua sin login: al añadir a B dejo inbox/B/from/<yo>; B lo lee y me añade */
+const ID_RE = /^[a-z0-9]{4,32}$/;
+function ensureFriendReqs(){
+  if(!CLOUD.db || !S.bonded || !ID_RE.test(S.id||'')) return;
+  S.reqSent ||= {}; CLOUD.reqBusy ||= new Set();
+  const { doc, getDoc, setDoc, serverTimestamp } = CLOUD.fs;
+  (S.friends||[]).slice(0,40).forEach(f=>{
+    if(!ID_RE.test(f.id) || f.id===S.id || S.reqSent[f.id] || CLOUD.reqBusy.has(f.id)) return;
+    CLOUD.reqBusy.add(f.id);
+    const ref = doc(CLOUD.db,'inbox',f.id,'from',S.id);
+    withTimeout(getDoc(ref), 8000).then(snap=> snap.exists() ? null : withTimeout(setDoc(ref, { at:serverTimestamp() }), 8000))
+      .then(()=>{ S.reqSent[f.id] = 1; localStorage.setItem(KEY, JSON.stringify(S)); })
+      .catch(e=>console.warn('aviso de amistad', f.id, e && e.code || e))
+      .finally(()=>CLOUD.reqBusy.delete(f.id));
+  });
+}
+function subscribeInbox(){
+  if(!CLOUD.db || !S.bonded || CLOUD.inboxUnsub || !ID_RE.test(S.id||'')) return;
+  const { collection, onSnapshot } = CLOUD.fs;
+  CLOUD.inboxUnsub = onSnapshot(collection(CLOUD.db,'inbox',S.id,'from'), snap=>{ snap.docs.forEach(d=>handleFriendReq(d.id)); }, e=>console.warn('buzón de amistad', e && e.code));
+}
+async function handleFriendReq(id){
+  S.reqSeen ||= {}; CLOUD.reqSeenBusy ||= new Set();
+  if(!ID_RE.test(id) || id===S.id || S.reqSeen[id] || CLOUD.reqSeenBusy.has(id)) return;
+  if((S.friends||[]).some(f=>f.id===id)){ S.reqSeen[id] = 1; localStorage.setItem(KEY, JSON.stringify(S)); return; }
+  CLOUD.reqSeenBusy.add(id);
+  try{
+    const { doc, getDoc } = CLOUD.fs;
+    const snap = await withTimeout(getDoc(doc(CLOUD.db,'players',id)), 8000), d = snap.exists() ? snap.data() : null;
+    if(!d || typeof d.key!=='string' || !byKey(d.key)) return;            // perfil aún no subido: se reintenta en el próximo aviso
+    const name = (typeof d.name==='string' && d.name.trim()) ? d.name.trim().slice(0,18) : 'Un dragón';
+    if((S.friends||[]).length >= 40){ S.reqSeen[id] = 1; save(); return; }
+    addFriend({ id, name, key:d.key, eq:{}, lvl:1, flightBest: Number.isInteger(d.flightBest) ? d.flightBest : undefined });
+    S.reqSent ||= {}; S.reqSent[id] = 1;                                // ya existe su aviso hacia mí: no hace falta devolverlo
+    S.reqSeen[id] = 1;
+    applyFriendDoc(id, d); save();
+    toast(`💖 ${name} te ha añadido como amigo`);
+    refreshFriendViews(); subscribeFriends(); try{ renderBadges(); }catch(e){}
+  }catch(e){ console.warn('amistad entrante', id, e && e.code || e); }
+  finally{ CLOUD.reqSeenBusy.delete(id); }
 }
 function subscribeFriends(){
   if(!CLOUD.db || !S.bonded) return;
@@ -1941,6 +1983,7 @@ function subscribeFriends(){
     if(!CLOUD.unsubs['p:'+f.id]) CLOUD.unsubs['p:'+f.id] = onSnapshot(doc(CLOUD.db,'players',f.id), s=>applyFriendDoc(f.id, s.exists()?s.data():null), e=>console.warn('amigo', f.id, e.code));
     if(!CLOUD.unsubs['s:'+f.id]) CLOUD.unsubs['s:'+f.id] = onSnapshot(doc(CLOUD.db,'streaks',pairId(S.id,f.id)), s=>applyStreakDoc(f.id, s.exists()?s.data():null), e=>console.warn('racha', f.id, e.code));
   });
+  ensureFriendReqs();                                      // incluye las amistades ya existentes (backfill)
 }
 function refreshFriendViews(){
   renderFriends();

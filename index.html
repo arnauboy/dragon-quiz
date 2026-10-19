@@ -251,7 +251,8 @@ footer{text-align:center;color:#6d6357;font-size:13px;margin-top:26px;font-style
 .tab.on{background:rgba(201,162,92,.22);color:var(--gold2);border-color:var(--gold)}
 .shop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .item{position:relative;text-align:center;background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:14px;padding:10px 8px;cursor:pointer;transition:border-color .2s,background .2s}
-.item .icon{font-size:30px;line-height:1.2}
+.item .icon{font-size:30px;line-height:1.2;height:64px;display:flex;align-items:center;justify-content:center}
+.item .icon.is3d img{width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 3px 5px rgba(0,0,0,.45))}
 .item .iname{font-family:'Cinzel',serif;font-size:13.5px;color:var(--text);margin:2px 0;min-height:2.4em;display:flex;align-items:center;justify-content:center}
 .item .rar{font-size:11px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px}
 .item.com .rar{color:#b9b0a2}.item.unc .rar{color:#6fe0a0}.item.rare .rar{color:#7cb8ff}.item.leg .rar{color:#ffcf5a}
@@ -1084,7 +1085,9 @@ function renderShop(){
   ITEMS.filter(i=>i.slot===shop.slot).sort((a,b)=>a.price-b.price).forEach(it=>{
     const owned=(S.inv||[]).includes(it.id), worn=(S.eq||{})[it.slot]===it.id, [rn,rc]=RARITY(it.price);
     const card=el('div','item '+rc+(shop.preview===it.id?' sel':'')+(worn?' worn':'')); card.dataset.id=it.id;
-    card.appendChild(el('div','icon', it.icon)); card.appendChild(el('div','iname', it.name)); card.appendChild(el('div','rar', rn));
+    const ic = el('div','icon', it.icon); card.appendChild(ic);
+    itemThumb(it.id).then(u=>{ ic.textContent=''; const im=document.createElement('img'); im.className='ithumb'; im.alt=''; im.draggable=false; im.src=u; ic.appendChild(im); ic.classList.add('is3d'); }, ()=>{});
+    card.appendChild(el('div','iname', it.name)); card.appendChild(el('div','rar', rn));
     const b=el('button','ibtn');
     if(worn){ b.textContent='Quitar'; b.onclick=e=>{ e.stopPropagation(); unequip(it.slot); }; }
     else if(owned){ b.textContent='Ponérselo'; b.onclick=e=>{ e.stopPropagation(); equip(it.id); }; }
@@ -2188,7 +2191,9 @@ function buildDragon3(d, eq){
   // burbuja del escudo
   rig.bubble = add(act, sph(1), Ph({ color:0x9fe3ff, roughness:0.05, clearcoat:1, transparent:true, opacity:0.22, depthWrite:false, side:THREE.DoubleSide }), V(0, 0.15, 0), V(1.35, 1.35, 1.35)); rig.bubble.visible = false;
   rig.floaters = []; rig.flutters = []; rig.swings = [];
+  const pre = new Set(); root.traverse(o=>pre.add(o));
   addAccessories3(rig, cleanEq(eq||{}), { THREE, V, M, Ph, Bs, sph, sm, cap, cone, tor, cyl, add, onEll, face, gk, P, head, hc, hr, bob, torso, tip });
+  root.traverse(o=>{ if(!pre.has(o)) o.userData.acc = true; });   // piezas de accesorio (para las fichas de la Tienda)
   root.userData.rig = rig;
   return root;
 }
@@ -2269,21 +2274,21 @@ function addAccessories3(rig, eq, K){
       add(md, star5, M(0xc9302c, { noOutline:true }), V(0, 0, 0.012), V(0.07, 0.07, 0.04));
       rig.swings.push({ o:md, a:0.18, sp:4 }); },
     // ---- espalda
-    capa(){ const g = grp(torso, V(0, 0.64, -0.05)); const red = M(0xa3122a, { side:THREE.DoubleSide });
-      add(g, cyl(0.47, 0.72, 0.95, 36, true, PI-1.25, 2.5), red, V(0, 0, -0.02));
+    capa(){ const g = grp(torso, V(0, 0.62, -0.1)); g.scale.set(1, 1, 1.12); const red = M(0xa3122a, { side:THREE.DoubleSide });
+      add(g, cyl(0.47, 0.84, 0.95, 36, true, PI-1.3, 2.6), red, V(0, 0, -0.02));
       add(g, tor(0.47, 0.05, 2.6, 8, 30), M(0x7d0d20), V(0, 0.46, -0.02), V(1, 1, 0.95), [PI/2, 0, PI+0.2]);
       rig.flutters.push({ o:g, a:0.04, sp:2.2, ax:'x' }); },
-    estrellas(){ const g = grp(torso, V(0, 0.64, -0.05)); add(g, cyl(0.47, 0.74, 0.95, 36, true, PI-1.25, 2.5), M(0x1b1f5e, { side:THREE.DoubleSide }), V(0, 0, -0.02));
+    estrellas(){ const g = grp(torso, V(0, 0.62, -0.1)); g.scale.set(1, 1, 1.12); add(g, cyl(0.47, 0.86, 0.95, 36, true, PI-1.3, 2.6), M(0x1b1f5e, { side:THREE.DoubleSide }), V(0, 0, -0.02));
       add(g, tor(0.47, 0.05, 2.6, 8, 30), M(0xffd34d), V(0, 0.46, -0.02), V(1, 1, 0.95), [PI/2, 0, PI+0.2]);
       const st = Bs({ color:0xfff6c2, toneMapped:false });
       for(const [a, y, s] of [[0.5, -0.25, 0.05], [-0.6, -0.1, 0.04], [0.1, -0.38, 0.06], [-0.25, 0.1, 0.035], [0.75, 0.05, 0.035], [-0.9, -0.35, 0.05]]){
-        const rr = 0.6 + (0.47-0.6)*(y+0.47)/0.95 + 0.14; const m = add(g, star5, st, V(Math.sin(PI+a)*rr, y, Math.cos(PI+a)*rr), V(s, s, s*0.3)); m.rotation.y = a; rig.floaters.push({ o:m, tw:true, sp:3+Math.random()*2, base:s }); }
+        const rr = 0.86 + (0.47-0.86)*(y+0.47)/0.95 + 0.02; const m = add(g, star5, st, V(Math.sin(PI+a)*rr, y, Math.cos(PI+a)*rr), V(s, s, s*0.3)); m.rotation.y = a; rig.floaters.push({ o:m, tw:true, sp:3+Math.random()*2, base:s }); }
       rig.flutters.push({ o:g, a:0.04, sp:2.2, ax:'x' }); },
-    hada(){ const g = grp(torso, V(0, 0.98, -0.6)); const a = Ph({ color:0xc9f2ff, roughness:0.1, clearcoat:1, transparent:true, opacity:0.62, depthWrite:false, side:THREE.DoubleSide, emissive:0x8fd3ff, emissiveIntensity:0.2 }),
+    hada(){ const g = grp(torso, V(0, 0.74, -0.74), null, 1.15); const a = Ph({ color:0xc9f2ff, roughness:0.1, clearcoat:1, transparent:true, opacity:0.62, depthWrite:false, side:THREE.DoubleSide, emissive:0x8fd3ff, emissiveIntensity:0.2 }),
       b = Ph({ color:0xffd9f2, roughness:0.1, clearcoat:1, transparent:true, opacity:0.62, depthWrite:false, side:THREE.DoubleSide, emissive:0xf3a6d6, emissiveIntensity:0.2 });
       for(const s of [1, -1]){ const w = grp(g, V(0.04*s, 0, 0), [0, -0.5*s, 0]); add(w, sph(0.3), a, V(0.26*s, 0.2, 0), V(1, 0.62, 0.05), [0, 0, 0.6*s]); add(w, sph(0.2), b, V(0.2*s, -0.14, 0), V(1, 0.6, 0.05), [0, 0, -0.5*s]);
         rig.flutters.push({ o:w, a:0.35, sp:9, ax:'y', base:-0.5*s }); } },
-    silla(){ const g = grp(torso, V(0, 1.1, -0.36), [-0.75, 0, 0]); const br = M(0x7a4a24), br2 = M(0x9a5f30);
+    silla(){ const g = grp(torso, V(0, 0.98, -0.56), [-0.95, 0, 0]); const br = M(0x7a4a24), br2 = M(0x9a5f30);
       add(g, gk('saddle', ()=>new THREE.SphereGeometry(1, 28, 10, 0, PI*2, 0, PI/2.2)), br, V(0, -0.03, 0), V(0.34, 0.14, 0.34));
       add(g, cap(0.04, 0.08), br2, V(0, 0.07, 0.22), null, [0.3, 0, 0]);
       add(g, cap(0.03, 0.06), br2, V(0, 0.04, -0.24), null, [-0.4, 0, 0]);
@@ -2481,6 +2486,33 @@ async function dragonCanvas(d, eq, o={}){
   d3RenderTo(g, w, h, o.cam||'full', cv.getContext('2d'));
   disposeDragon(g); return cv;
 }
+// ficha 3D de una pieza de la Tienda: se renderiza solo el accesorio, sacado del mismo modelo, encuadrado en su caja
+const ITEM_VIEW = { cabeza:[-0.35, 0.25], cara:[-0.12, 0.08], cuello:[-0.3, 0.2], espalda:[2.6, 0.3], cola:[1.57, 0.2], silla:[1.4, 0.55], lazocola:[1.2, 0.15] };
+async function itemCanvas(id, size=200){
+  await d3Init();
+  const it = itemById(id); if(!it) throw new Error('pieza');
+  const THREE = D3.THREE, d = byKey('rojo-daga') || DRAGONS[0];
+  const g = buildDragon3(d, { [it.slot]:id }), rig = g.userData.rig;
+  poseDragon(rig, { sad:0, hop:0, wing:0.2 }, 0.35); rig.mouth = ''; applyFace(rig, faceOf('happy'), 0);
+  const [yaw, pitch] = ITEM_VIEW[id] || ITEM_VIEW[it.slot] || [0, 0.2]; g.rotation.y = yaw; g.updateMatrixWorld(true);
+  if(rig.bubble) rig.bubble.visible = false;
+  const box = new THREE.Box3(); let n = 0;
+  g.traverse(o=>{ if(!o.isMesh) return; if(o.userData.acc){ o.layers.set(0); box.expandByObject(o); n++; } else o.layers.set(5); });
+  if(!n || box.isEmpty()){ disposeDragon(g); throw new Error('sin malla'); }
+  const c = box.getCenter(new THREE.Vector3()), sz = box.getSize(new THREE.Vector3()), r = Math.max(sz.x, sz.y, sz.z) * 0.62 + 0.02;
+  const cam = new THREE.PerspectiveCamera(24, 1, 0.05, 60), dist = r / Math.tan(12*Math.PI/180);
+  cam.position.set(c.x, c.y + dist*Math.sin(pitch), c.z + dist*Math.cos(pitch)); cam.lookAt(c); cam.updateProjectionMatrix();
+  const R = D3.renderer; if(size > D3.RW || size > D3.RH){ D3.RW = Math.max(size, D3.RW); D3.RH = Math.max(size, D3.RH); R.setSize(D3.RW, D3.RH, false); }
+  D3.scene.add(g); R.setViewport(0, 0, size, size); R.setScissor(0, 0, size, size); R.setScissorTest(true);
+  D3.effect.render(D3.scene, cam); R.setScissorTest(false); D3.scene.remove(g);
+  const cv = document.createElement('canvas'); cv.width = cv.height = size; cv.getContext('2d').drawImage(R.domElement, 0, D3.RH-size, size, size, 0, 0, size, size);
+  disposeDragon(g); return cv;
+}
+function itemThumb(id){
+  const key = 'item|'+id;
+  if(!D3.thumbs.has(key)) D3.thumbs.set(key, itemCanvas(id).then(c=>c.toDataURL('image/png')));
+  return D3.thumbs.get(key);
+}
 function dragonThumb(d, eq, o={}){
   const key = [d.key, eqSig(cleanEq(eq||{})), o.expr||'happy', o.size||160, o.cam||'bust'].join('|');
   if(!D3.thumbs.has(key)) D3.thumbs.set(key, dragonCanvas(d, eq, { size:o.size||160, cam:o.cam||'bust', expr:o.expr||'happy' }).then(c=>c.toDataURL('image/png')));
@@ -2603,7 +2635,7 @@ window.__skills = { SKILLS, use:useSkill, levelInfo, gainXP };
 window.__streak = { bumpStreak, syncStreak, sharedStreak };
 window.__flight = { FL, start:startFlight, flap, reward:flightReward };
 window.__app = { get state(){ return S; }, DRAGONS };
-window.__d3 = { D3, get main(){ return mainView && mainView.view; }, get views(){ return [...D3.views].map(v=>({ host:v.host.id||v.host.className, expr:v.curName, sig:v.sig, live:v.host.classList.contains('live'), act:v.act&&v.act.id })); }, dragonCanvas, dragonThumb, EXPR3 };
+window.__d3 = { itemCanvas, itemThumb, D3, get main(){ return mainView && mainView.view; }, get views(){ return [...D3.views].map(v=>({ host:v.host.id||v.host.className, expr:v.curName, sig:v.sig, live:v.host.classList.contains('live'), act:v.act&&v.act.id })); }, dragonCanvas, dragonThumb, EXPR3 };
 </script>
 </body>
 </html>

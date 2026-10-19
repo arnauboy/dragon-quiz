@@ -2056,15 +2056,17 @@ function buildDragon3(d, eq){
   const bodyMat = M(P.body), bellyMat = M(P.belly), hornMat = M(P.horn), tipMat = M(P.tip), wingMat = M(P.wing, { side:THREE.DoubleSide });
   rig.glow = [bodyMat, bellyMat, wingMat];
 
-  add(torso, sph(0.58), bodyMat, V(0, 0.66, -0.05), V(1, 0.97, 0.92));
-  add(torso, sph(0.48), bellyMat, V(0, 0.6, 0.27), V(0.78, 0.86, 0.55));
-  for(const [x, z, y] of [[0.29, 0.2, 0.16], [-0.29, 0.2, 0.16], [0.37, -0.28, 0.18], [-0.37, -0.28, 0.18]]){
-    add(bob, cap(0.14, 0.08), bodyMat, V(x, y, z));
-    for(const dx of [-0.065, 0, 0.065]) add(bob, sm(0.034), hornMat, V(x+dx, 0.05, z+0.125));
+  // cuerpo de figura de vinilo a cuatro patas, sentado: pecho alto, ancas redondas y patitas cortas (sin brazos)
+  add(torso, sph(0.58), bodyMat, V(0, 0.62, -0.12), V(0.92, 0.9, 1.08));
+  add(torso, sph(0.48), bellyMat, V(0, 0.66, 0.24), V(0.7, 0.86, 0.5));
+  for(const s of [1, -1]){
+    add(torso, sph(0.3), bodyMat, V(0.34*s, 0.36, -0.3), V(0.85, 1, 1.15));                       // ancas
+    add(bob, cap(0.15, 0.06), bodyMat, V(0.36*s, 0.13, -0.08), V(1, 0.85, 1.35), [PI/2, 0, 0]);   // pata trasera tumbada
+    add(bob, cap(0.12, 0.3), bodyMat, V(0.2*s, 0.27, 0.3));                                       // pata delantera corta y recta
+    for(const [x, z] of [[0.2*s, 0.3], [0.36*s, 0.1]]) for(const dx of [-0.06, 0, 0.06]) add(bob, sm(0.034), hornMat, V(x+dx, 0.04, z+0.12));
   }
   rig.arms = [];
-  for(const s of [1, -1]){ const a = add(torso, cap(0.085, 0.1), bodyMat, V(0.37*s, 0.76, 0.33), null, [-0.6, 0, 0.55*s]); rig.arms.push(a); }
-  for(const [y, z, h] of [[1.16, -0.38, 0.16], [0.95, -0.56, 0.14], [0.68, -0.64, 0.12]]) add(torso, cone(0.065, h), hornMat, V(0, y, z), null, [-0.9, 0, 0]);
+  for(const [y, z, h] of [[1.12, -0.42, 0.14], [0.92, -0.6, 0.13], [0.66, -0.7, 0.11], [0.42, -0.72, 0.1]]) add(torso, cone(0.06, h), hornMat, V(0, y, z), null, [-0.9, 0, 0]);
 
   // cabeza
   const head = new THREE.Group(); head.position.set(0, 1.52, 0.04); bob.add(head); rig.head = head;
@@ -2091,7 +2093,8 @@ function buildDragon3(d, eq){
   rig.setMouth = n=>{ if(rig.mouth===n) return; rig.mouth = n; for(const [k, g] of Object.entries(rig.mouths)) g.visible = k===n; };
   for(const s of [1, -1]){
     const dir = V(0.42*s, 0.85, -0.22).normalize();
-    const h = add(head, cone(0.075, 0.26), hornMat, onEll(hc, hr, dir).addScaledVector(dir, 0.06)); h.quaternion.setFromUnitVectors(UP, V(0.3*s, 1, -0.45).normalize());
+    const h = add(head, cone(0.065, 0.2), hornMat, onEll(hc, hr, dir).addScaledVector(dir, 0.04)); h.quaternion.setFromUnitVectors(UP, V(0.3*s, 1, -0.5).normalize());
+    for(const [k, dy] of [[0.7, 0.55], [0.45, 0.25]]){ const cd = V(0.55*s*k+0.18*s, dy, -0.6).normalize(); const c = add(head, cone(0.045, 0.12), hornMat, onEll(hc, hr, cd).addScaledVector(cd, 0.02)); c.quaternion.setFromUnitVectors(UP, cd); }
     const fd = V(0.95*s, 0.2, -0.2).normalize();
     const f = add(head, cone(0.09, 0.22), M(P.wing), onEll(hc, hr, fd).addScaledVector(fd, 0.02), V(1, 1, 0.45)); f.quaternion.setFromUnitVectors(UP, V(s, 0.35, -0.5).normalize());
   }
@@ -2135,14 +2138,18 @@ function buildDragon3(d, eq){
   }
   // alas
   rig.wings = [];
-  const wg = gk('wing', ()=>{ const ws = new THREE.Shape(); ws.moveTo(0, 0); ws.quadraticCurveTo(0.12, 0.34, 0.5, 0.52); ws.quadraticCurveTo(0.5, 0.36, 0.56, 0.26); ws.quadraticCurveTo(0.44, 0.22, 0.4, 0.1);
-    ws.quadraticCurveTo(0.28, 0.12, 0.22, -0.02); ws.quadraticCurveTo(0.1, 0.04, 0, 0);
+  const wg = gk('wing2', ()=>{ const ws = new THREE.Shape(); ws.moveTo(0, 0); ws.quadraticCurveTo(0.1, 0.36, 0.44, 0.6); ws.quadraticCurveTo(0.56, 0.62, 0.66, 0.56);
+    ws.quadraticCurveTo(0.6, 0.44, 0.7, 0.32); ws.quadraticCurveTo(0.58, 0.26, 0.6, 0.12); ws.quadraticCurveTo(0.48, 0.1, 0.44, -0.04);
+    ws.quadraticCurveTo(0.34, 0.04, 0.26, -0.08); ws.quadraticCurveTo(0.12, 0.02, 0, 0);
     const g = new THREE.ExtrudeGeometry(ws, { depth:0.03, bevelEnabled:true, bevelThickness:0.02, bevelSize:0.025, bevelSegments:3, curveSegments:10 }); g.translate(0, 0, -0.015); return g; });
   for(const s of [1, -1]){
-    const pivot = new THREE.Group(); pivot.position.set(0.22*s, 1.08, -0.4); pivot.rotation.y = s*-0.35; pivot.scale.x = s; torso.add(pivot);
+    const pivot = new THREE.Group(); pivot.position.set(0.24*s, 1.02, -0.42); pivot.rotation.y = s*-0.5; pivot.rotation.x = -0.12; pivot.scale.x = s; torso.add(pivot);
     const flap = new THREE.Group(); pivot.add(flap); rig.wings.push({ flap, s, pivot });
-    add(flap, wg, wingMat, V(0, 0, 0), V(1.35, 1.35, 1));
-    add(flap, cap(0.035, 0.42), bodyMat, V(0.32, 0.36, 0.03), V(1.2, 1.2, 1), [0, 0, -0.95]);
+    const WS = 1.95; add(flap, wg, wingMat, V(0, 0, 0), V(WS, WS, 1));
+    const bone = (ax, ay, bx, by, r)=>{ const dx = (bx-ax)*WS, dy = (by-ay)*WS, L = Math.hypot(dx, dy);
+      add(flap, cap(r, Math.max(0.01, L-2*r)), bodyMat, V(ax*WS+dx/2, ay*WS+dy/2, 0.04), null, [0, 0, Math.atan2(dy, dx)-Math.PI/2]); };
+    bone(0, 0, 0.44, 0.6, 0.04);                                   // borde de ataque hasta la muñeca
+    bone(0.44, 0.6, 0.66, 0.56, 0.024); bone(0.44, 0.6, 0.7, 0.32, 0.024); bone(0.44, 0.6, 0.6, 0.12, 0.022);   // dedos hasta las puntas
   }
   // cola con la punta de su raza
   const tailG = new THREE.Group(); tailG.position.set(0, 0.42, -0.42); bob.add(tailG); rig.tail = tailG;

@@ -324,6 +324,19 @@ footer{text-align:center;color:#6d6357;font-size:13px;margin-top:26px;font-style
 .friend .flame{padding:3px 6px;font-size:12px}
 .friend .who b{font-size:15.5px}
 .friend .who span{font-size:12px}
+
+.flight-wrap{position:relative;height:min(72vh,600px);margin:0 -10px;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 20px 50px rgba(0,0,0,.5);touch-action:none;user-select:none;-webkit-user-select:none}
+#flightCanvas{display:block;width:100%;height:100%;touch-action:none}
+.fhud{position:absolute;top:10px;left:12px;right:12px;display:flex;align-items:center;gap:12px;pointer-events:none}
+.fscore{font-family:'Cinzel',serif;font-weight:900;font-size:30px;color:#fff3c4;text-shadow:0 2px 6px rgba(0,0,0,.6);min-width:48px}
+.ftime{flex:1;height:8px;border-radius:9px;background:rgba(255,255,255,.15);overflow:hidden}.ftime i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#ffd34d,#ff8a3d)}
+.fover{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,6,16,.45);padding:16px}
+.fcard{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;text-align:center;max-width:340px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.fcard h3{margin:0 0 6px;color:var(--gold2);font-size:21px}.fcard p{margin:.4em 0;font-size:16px}
+.fbig{font-family:'Cinzel',serif;font-weight:900;font-size:56px;color:#fff3c4;line-height:1}
+.fbest{color:var(--gold)}.freward{color:#9bf0c8}.fpractice{color:#ffc27a}
+.fcard .btn{margin-top:10px}
+.card-preview{display:block;width:100%;max-height:62vh;object-fit:contain;border-radius:14px;margin:6px 0 4px;background:#0d0a12;box-shadow:0 10px 30px rgba(0,0,0,.5)}
 </style>
 </head>
 <body>
@@ -402,6 +415,12 @@ footer{text-align:center;color:#6d6357;font-size:13px;margin-top:26px;font-style
         <button class="btn ghost" id="petBtn">Acariciar</button>
         <button class="btn ghost" id="shareBtn">Compartir</button>
       </div>
+      <div style="height:10px"></div>
+      <div class="row">
+        <button class="btn ghost" id="flightBtn">🪽 Entrenar vuelo</button>
+        <button class="btn ghost" id="cardBtn">🖼️ Tarjeta</button>
+      </div>
+      <p class="note" id="flightNote"></p>
       <p class="note" id="feedNote"></p>
       <div class="small-links"><button id="aboutBtn">Ver su descripción</button><button id="resetBtn">Empezar de cero</button></div>
     </div>
@@ -419,6 +438,31 @@ footer{text-align:center;color:#6d6357;font-size:13px;margin-top:26px;font-style
       <button class="btn ghost" id="parkBtn" style="margin-top:12px">🌳 Ir al Parque de dragones</button>
     </div>
     <footer>Vuelve mañana. Cada día que le das de comer suma a tu racha.</footer>
+  </section>
+
+  <!-- FLIGHT -->
+  <section id="flight" class="hidden">
+    <h1 style="font-size:clamp(22px,6.5vw,30px);margin-bottom:10px">Entrenamiento de vuelo</h1>
+    <div class="flight-wrap" id="flightWrap">
+      <canvas id="flightCanvas" aria-label="Minijuego de vuelo"></canvas>
+      <div class="fhud"><span class="fscore" id="fScore">0</span><div class="ftime"><i id="fTime"></i></div></div>
+      <div class="fover hidden" id="fOver"></div>
+    </div>
+    <div class="small-links"><button id="flightBackBtn">Volver con mi dragón</button></div>
+  </section>
+
+  <!-- CARD -->
+  <section id="card" class="hidden">
+    <h1 style="font-size:clamp(22px,6.5vw,30px)">Tarjeta para compartir</h1>
+    <div class="panel fade">
+      <div class="tabs" id="cardFmt"><button class="tab on" data-f="story">Historia 9:16</button><button class="tab" data-f="square">Cuadrada</button></div>
+      <img id="cardImg" class="card-preview" alt="Tarjeta de tu dragón">
+      <p class="note" id="cardNote"></p>
+      <button class="btn wa" id="cardShareBtn">📤 Compartir imagen</button>
+      <div style="height:10px"></div>
+      <button class="btn ghost" id="cardDlBtn">⬇️ Descargar PNG</button>
+      <div class="small-links"><button id="cardBackBtn">Volver con mi dragón</button></div>
+    </div>
   </section>
 
   <!-- SHOP -->
@@ -610,7 +654,7 @@ const clamp = v => Math.max(0, Math.min(100, v));
 
 function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; } }
 let S = load();
-const SCHEMA = 4;   // v1 = versión original (sin campo v); v2 = diversión + amigos; v3 = monedas + tienda; v4 = XP + habilidades
+const SCHEMA = 5;   // v1 = original (sin campo v); v2 = diversión + amigos; v3 = monedas + tienda; v4 = XP + habilidades; v5 = vuelo + tarjeta
 const WELCOME_BONUS = 50;
 function levelFromXpEarly(xp){ let l=1, r=xp||0; while(r >= 50+30*(l-1)){ r-=50+30*(l-1); l++; } return l; }
 const effHappy = () => Math.min(S.happy, (S.fun ?? 100) + 10);   // aburrido = triste
@@ -638,7 +682,12 @@ function migrate(){
     S.levelSeen = levelFromXpEarly(S.xp);         // sin fiestas en bucle: ya conoce sus habilidades
     S.xpWelcome = S.levelSeen;
   }
-  // aquí irán futuras migraciones: if(v < 5){ ... }
+  if(v < 5){
+    if(typeof S.flightBest !== 'number') S.flightBest = 0;
+    if(S.flightDay === undefined) S.flightDay = null;      // día de la última recompensa de vuelo
+    if(typeof S.flightRuns !== 'number') S.flightRuns = 0;
+  }
+  // aquí irán futuras migraciones: if(v < 6){ ... }
   (S.friends||[]).forEach(f=>{ if(typeof f.streak !== 'number') f.streak = 0; if(f.streakDay === undefined) f.streakDay = null; });   // amigos antiguos: racha 0
   S.v = SCHEMA; S.migratedFrom = v; save();
 }
@@ -665,7 +714,7 @@ function decay(){
 
 /* ======================= UI HELPERS ======================= */
 const $ = id => document.getElementById(id);
-const screens = ['intro','quiz','result','care','park','shop'];
+const screens = ['intro','quiz','result','care','park','shop','flight','card'];
 function show(id){
   screens.forEach(s => $(s).classList.toggle('hidden', s!==id));
   window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
@@ -738,7 +787,7 @@ function bond(){
   const now = Date.now();
   S = { v:SCHEMA, bonded:true, id:newId(), key:d.key, name, hunger:55, happy:70, fun:80, lastUpdate:now, createdDay:today(),
         lastFedDay:null, streak:0, best:0, feeds:0, petDay:null, pets:0, friends:[], plays:{},
-        coins:0, inv:[], eq:{}, claimStreak:0, lastClaimDay:null, xp:0, levelSeen:1 };
+        coins:0, inv:[], eq:{}, claimStreak:0, lastClaimDay:null, xp:0, levelSeen:1, flightBest:0, flightDay:null, flightRuns:0 };
   save();
   const hadInvite = acceptPendingAfterBond();
   openCare(!hadInvite);
@@ -781,6 +830,7 @@ function render(){
   }
   viewerApi?.setMood?.(S.hunger, effHappy());
   renderFriends();
+  if($('flightNote')) $('flightNote').textContent = (S.flightDay===today() ? '🪽 Hoy ya cobraste el vuelo: lo demás es práctica.' : '🪽 Tu primer vuelo de hoy da XP y monedas.') + ` Récord: ${S.flightBest||0}`;
 }
 function openCare(first){
   decay(); show('care'); mountViewer('stageCareSlot', byKey(S.key)); render(); renderDaily(); renderLevel();
@@ -1097,6 +1147,258 @@ function equip(id, quiet){
   shop.api.happy(0.5); if(!quiet) toast(`${S.name} lleva ${it.name.toLowerCase()}`);
 }
 function unequip(slot){ const eq={...(S.eq||{})}; delete eq[slot]; S.eq=eq; save(); shop.preview=null; renderShop(); }
+
+/* ======================= DRAGÓN COMO IMAGEN (para canvas) ======================= */
+const _imgCache = {};
+function chibiImage(d, eq, happy){
+  const m = chibiMarkup(d, eq||{});
+  const vars = Object.fromEntries(m.vars.split(';').filter(Boolean).map(x=>x.split(':')));
+  let svg = m.html.trim().replace(/var\((--[mldw])\)/g, (_,v)=>vars[v]);
+  const style = `<style>.hn{fill:#f3e6c8}.hn2{stroke:#d8c69e}.dk,.nos{fill:${vars['--d']}}.vein{fill:none;stroke:${vars['--d']};stroke-width:2;stroke-linecap:round;opacity:.7}
+.belly{fill:none;stroke:${vars['--m']};stroke-width:2;opacity:.35;stroke-linecap:round}.blush{fill:#ff7aa8;opacity:.55}
+.smile,.frown,.happyeyes,.brows{fill:none;stroke:#1d1226;stroke-width:3.2;stroke-linecap:round}.fang{fill:#fff}
+.tear,.frown,.brows,.mouthopen,.shadow{opacity:0}.happyeyes{opacity:${happy?1:0}}.eyes{opacity:${happy?0:1}}
+.flight-wrap{position:relative;height:min(72vh,600px);margin:0 -10px;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 20px 50px rgba(0,0,0,.5);touch-action:none;user-select:none;-webkit-user-select:none}
+#flightCanvas{display:block;width:100%;height:100%;touch-action:none}
+.fhud{position:absolute;top:10px;left:12px;right:12px;display:flex;align-items:center;gap:12px;pointer-events:none}
+.fscore{font-family:'Cinzel',serif;font-weight:900;font-size:30px;color:#fff3c4;text-shadow:0 2px 6px rgba(0,0,0,.6);min-width:48px}
+.ftime{flex:1;height:8px;border-radius:9px;background:rgba(255,255,255,.15);overflow:hidden}.ftime i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#ffd34d,#ff8a3d)}
+.fover{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,6,16,.45);padding:16px}
+.fcard{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;text-align:center;max-width:340px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.fcard h3{margin:0 0 6px;color:var(--gold2);font-size:21px}.fcard p{margin:.4em 0;font-size:16px}
+.fbig{font-family:'Cinzel',serif;font-weight:900;font-size:56px;color:#fff3c4;line-height:1}
+.fbest{color:var(--gold)}.freward{color:#9bf0c8}.fpractice{color:#ffc27a}
+.fcard .btn{margin-top:10px}
+.card-preview{display:block;width:100%;max-height:62vh;object-fit:contain;border-radius:14px;margin:6px 0 4px;background:#0d0a12;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+</style>`;
+  svg = svg.replace(/<svg class="chibi"[^>]*>/, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="600" height="600">${style}`);
+  const key = d.key+'|'+eqSig(eq)+'|'+(happy?1:0);
+  if(_imgCache[key]) return _imgCache[key];
+  return _imgCache[key] = new Promise((res, rej)=>{ const img=new Image(); img.onload=()=>res(img); img.onerror=rej; img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg); });
+}
+
+/* ======================= ENTRENAMIENTO DE VUELO ======================= */
+const FLIGHT_SECS = 30;
+const flightReward = score => ({ coins: Math.max(2, Math.min(25, Math.round(score/8))), xp: Math.max(5, Math.min(50, Math.round(score/4))) });
+const FL = { running:false, over:false, raf:0 };
+function flightRewardAvailable(){ return S.flightDay !== today(); }
+async function openFlight(){
+  if(!S.bonded) return;
+  decay(); show('flight');
+  const cv = $('flightCanvas');
+  FL.sprite = await chibiImage(byKey(S.key), S.eq, false).catch(()=>null);
+  FL.spriteHappy = await chibiImage(byKey(S.key), S.eq, true).catch(()=>null);
+  fitFlight(); resetFlight(); drawFlight();
+  flightOverlay('start');
+}
+function fitFlight(){
+  const cv=$('flightCanvas'), r=cv.getBoundingClientRect(), dpr=Math.min(devicePixelRatio||1, 2);
+  cv.width = Math.round(r.width*dpr); cv.height = Math.round(r.height*dpr);
+  FL.W=cv.width; FL.H=cv.height; FL.ctx=cv.getContext('2d');
+}
+function resetFlight(){
+  const H=FL.H, W=FL.W;
+  Object.assign(FL, { t:0, y:H*0.42, vy:0, score:0, passes:0, gems:0, obs:[], arrows:[], parts:[], nextSpawn:0.9, nextArrow:9, slot:0,
+    over:false, running:false, flapT:0, shake:0, completed:false, bgX:0, stars: Array.from({length:40},()=>[Math.random()*W, Math.random()*H*0.6, Math.random()*1.5+0.5]) });
+  $('fScore').textContent='0'; $('fTime').style.width='100%';
+}
+function startFlight(){
+  if(FL.running) return;
+  resetFlight(); FL.running=true; FL.rewardRun = flightRewardAvailable();
+  if(FL.rewardRun){ S.flightDay = today(); save(); }          // se marca al empezar: abandonar no da otra oportunidad
+  S.flightRuns=(S.flightRuns||0)+1; save();
+  $('fOver').classList.add('hidden'); FL.last=performance.now(); flap();
+  cancelAnimationFrame(FL.raf); FL.raf=requestAnimationFrame(loopFlight);
+}
+function flap(){
+  if(FL.over) return;
+  if(!FL.running){ return; }
+  FL.vy = -FL.H*0.62; FL.flapT = 0.14;
+  for(let i=0;i<4;i++) FL.parts.push({x:FL.W*0.25-FL.H*0.05, y:FL.y+FL.H*0.03, vx:-FL.H*(0.2+Math.random()*0.3), vy:FL.H*(Math.random()*0.3-0.05), life:0.5, c:'rgba(255,255,255,.7)', r:FL.H*0.012});
+}
+const speedFactor = t => 1 + Math.min(1, t/FLIGHT_SECS)*0.8;
+function spawnSlot(){
+  const H=FL.H, W=FL.W, gap = H*(0.36 - 0.07*Math.min(1, FL.t/FLIGHT_SECS)), cy = H*(0.25+Math.random()*0.45);
+  FL.slot++;
+  if(FL.slot>3 && FL.slot%4===0){       // nubarrón de tormenta en vez de rocas
+    const top = Math.random()<0.5, y = top ? H*0.16 : H*0.7;
+    FL.obs.push({ kind:'cloud', x:W+H*0.2, y, blobs:[[0,0,H*0.09],[H*0.09,-H*0.02,H*0.075],[-H*0.08,H*0.02,H*0.07],[H*0.03,H*0.05,H*0.07]], passed:false });
+    if(Math.random()<0.7) FL.obs.push({ kind:'gem', x:W+H*0.2, y: top? H*0.55 : H*0.32, r:H*0.026 });
+  } else {
+    FL.obs.push({ kind:'crag', x:W+H*0.1, w:H*0.13, top:cy-gap/2, bot:cy+gap/2, passed:false, seed:Math.random() });
+    if(Math.random()<0.6) FL.obs.push({ kind:'gem', x:W+H*0.1+H*0.065, y:cy, r:H*0.026 });
+  }
+}
+function circleRect(cx,cy,r, x,y,w,h){ const nx=Math.max(x,Math.min(cx,x+w)), ny=Math.max(y,Math.min(cy,y+h)); return (cx-nx)**2+(cy-ny)**2 < r*r; }
+function loopFlight(now){
+  const dt = Math.min(0.05, (now-FL.last)/1000); FL.last=now;
+  if(FL.running && !FL.over) stepFlight(dt);
+  else { FL.parts.forEach(p=>{ p.x+=p.vx*dt; p.y+=p.vy*dt; p.life-=dt; }); FL.parts=FL.parts.filter(p=>p.life>0); FL.shake=Math.max(0,FL.shake-dt); }
+  drawFlight();
+  if(FL.running || FL.parts.length || FL.shake>0) FL.raf=requestAnimationFrame(loopFlight);
+}
+function stepFlight(dt){
+  const H=FL.H, W=FL.W, sf=speedFactor(FL.t), v=H*0.5*sf;
+  FL.t += dt; FL.bgX += v*dt;
+  FL.vy += H*2.3*dt; FL.vy = Math.min(FL.vy, H*1.4); FL.y += FL.vy*dt; FL.flapT=Math.max(0,FL.flapT-dt);
+  if(FL.y < H*0.04){ FL.y=H*0.04; FL.vy=Math.max(0,FL.vy); }
+  FL.nextSpawn -= dt*sf; if(FL.nextSpawn<=0){ spawnSlot(); FL.nextSpawn = 1.55; }
+  if(FL.t>FL.nextArrow){ FL.arrows.push({ x:W+H*0.1, y:H*(0.12+Math.random()*0.7), w:H*0.13, h:H*0.022 }); FL.nextArrow = FL.t + 2.6 + Math.random()*1.8 - Math.min(1.2, FL.t/25); }
+  const px=W*0.25, py=FL.y+H*0.02, r=H*0.052;
+  for(const o of FL.obs){
+    o.x -= v*dt;
+    if(o.kind==='crag'){
+      const hx=o.x+o.w*0.12, hw=o.w*0.76;
+      if(circleRect(px,py,r, hx,0,hw,o.top) || circleRect(px,py,r, hx,o.bot,hw,H)) return crashFlight();
+      if(!o.passed && o.x+o.w < px){ o.passed=true; FL.passes++; FL.score+=10; }
+    } else if(o.kind==='cloud'){
+      for(const [bx,by,br] of o.blobs){ if((px-(o.x+bx))**2+(py-(o.y+by))**2 < (r+br*0.8)**2) return crashFlight(); }
+      if(!o.passed && o.x+H*0.15 < px){ o.passed=true; FL.passes++; FL.score+=10; }
+    } else if(o.kind==='gem' && !o.got){
+      if((px-o.x)**2+(py-o.y)**2 < (r+o.r)**2){ o.got=true; FL.gems++; FL.score+=5;
+        for(let i=0;i<8;i++) FL.parts.push({x:o.x,y:o.y,vx:(Math.random()-.5)*H, vy:(Math.random()-.5)*H, life:0.5, c:'#ffe680', r:H*0.008}); }
+    }
+  }
+  for(const a of FL.arrows){ a.x -= v*1.9*dt; if(circleRect(px,py,r*0.9, a.x,a.y-a.h/2,a.w,a.h)) return crashFlight(); }
+  FL.obs = FL.obs.filter(o=>o.x>-H*0.4 && !(o.kind==='gem' && o.got)); FL.arrows = FL.arrows.filter(a=>a.x>-a.w);
+  FL.parts.forEach(p=>{ p.x+=p.vx*dt; p.y+=p.vy*dt; p.life-=dt; }); FL.parts=FL.parts.filter(p=>p.life>0);
+  if(FL.y > H*0.9) return crashFlight();
+  $('fScore').textContent = FL.score; $('fTime').style.width = Math.max(0, 100-FL.t/FLIGHT_SECS*100)+'%';
+  if(FL.t >= FLIGHT_SECS){ FL.completed=true; FL.score+=50; endFlight(); }
+}
+function crashFlight(){
+  FL.shake=0.4;
+  for(let i=0;i<16;i++) FL.parts.push({x:FL.W*0.25,y:FL.y,vx:(Math.random()-.5)*FL.H*1.4,vy:(Math.random()-.5)*FL.H*1.4,life:0.7,c:i%2?'#ffb347':'#fff',r:FL.H*0.01});
+  endFlight();
+}
+function endFlight(){
+  FL.over=true; FL.running=false;
+  const score=FL.score, prevBest=S.flightBest||0, record = score>prevBest;
+  if(record) S.flightBest=score;
+  S.flightLast=score; let rw=null;
+  if(FL.rewardRun){ rw=flightReward(score); S.coins=(S.coins||0)+rw.coins; S.flightRewardLast={day:today(), score, ...rw}; }
+  save(); renderCoins();
+  if(rw) gainXP(rw.xp);
+  FL.result={score, record, prevBest, rw, completed:FL.completed};
+  $('fScore').textContent = score;
+  setTimeout(()=>flightOverlay('end'), 650);
+}
+function flightOverlay(kind){
+  const o=$('fOver'); o.innerHTML=''; o.classList.remove('hidden');
+  const card=el('div','fcard');
+  if(kind==='start'){
+    card.appendChild(el('h3',null,'Entrenamiento de vuelo'));
+    card.appendChild(el('p',null,`Toca la pantalla (o pulsa espacio) para aletear. Esquiva rocas, nubarrones y flechas durante ${FLIGHT_SECS} segundos y recoge gemas.`));
+    card.appendChild(el('p','fbest',`Récord: ${S.flightBest||0}`));
+    const rw = flightRewardAvailable();
+    card.appendChild(el('p', rw?'freward':'fpractice', rw ? '🎁 Primera partida de hoy: gana XP y monedas según tu puntuación.' : '🎯 Modo práctica: la recompensa de hoy ya está cobrada. Vuelve mañana para otra.'));
+  } else {
+    const R=FL.result;
+    card.appendChild(el('h3',null, R.completed ? '¡Entrenamiento completado!' : '¡Choque!'));
+    card.appendChild(el('div','fbig', String(R.score)));
+    card.appendChild(el('p','fbest', R.record ? `🏆 ¡Nuevo récord! (antes ${R.prevBest})` : `Récord: ${S.flightBest||0}`));
+    card.appendChild(el('p', R.rw?'freward':'fpractice', R.rw ? `🎁 Recompensa de hoy: +${R.rw.coins} 🪙 y +${R.rw.xp} XP` : '🎯 Partida de práctica: sin recompensa hasta mañana.'));
+  }
+  const go=el('button','btn red', kind==='start' ? '¡A volar!' : (flightRewardAvailable()?'Volar otra vez':'Otra vez (práctica)')); go.id='flightGoBtn';
+  go.onclick=e=>{ e.stopPropagation(); startFlight(); };
+  card.appendChild(go); o.appendChild(card);
+}
+function drawFlight(){
+  const c=FL.ctx, W=FL.W, H=FL.H; if(!c) return;
+  c.save();
+  if(FL.shake>0) c.translate((Math.random()-.5)*H*0.03*FL.shake/0.4, (Math.random()-.5)*H*0.03*FL.shake/0.4);
+  const g=c.createLinearGradient(0,0,0,H); g.addColorStop(0,'#1b1036'); g.addColorStop(.55,'#5a2d5c'); g.addColorStop(1,'#e0784a'); c.fillStyle=g; c.fillRect(-20,-20,W+40,H+40);
+  c.fillStyle='#fff'; FL.stars.forEach(([x,y,s])=>{ c.globalAlpha=.6; c.fillRect(((x-FL.bgX*0.05)%W+W)%W, y, s*2, s*2); }); c.globalAlpha=1;
+  c.fillStyle='#ffd9a0'; c.globalAlpha=.85; c.beginPath(); c.arc(W*0.8, H*0.22, H*0.06, 0, 7); c.fill(); c.globalAlpha=1;
+  const mtn=(speed, base, amp, col, step)=>{ c.fillStyle=col; c.beginPath(); c.moveTo(0,H); const off=(FL.bgX*speed)%step;
+    for(let x=-step; x<=W+step; x+=step/2){ const i=Math.floor((x+FL.bgX*speed)/(step/2)); const peak=(i%2===0)? base-amp*(0.6+0.4*Math.abs(Math.sin(i*1.7))) : base; c.lineTo(x-off, peak); } c.lineTo(W,H); c.fill(); };
+  mtn(0.15, H*0.78, H*0.22, '#3a2147', H*0.5); mtn(0.35, H*0.86, H*0.16, '#2a1734', H*0.35);
+  c.fillStyle='#1a0f22'; c.fillRect(0,H*0.9,W,H*0.1);
+  for(const o of FL.obs){
+    if(o.kind==='crag'){ const rock=(y0,y1,down)=>{ c.fillStyle='#4a3a4e'; c.strokeStyle='#2a1f2e'; c.lineWidth=H*0.006; c.beginPath();
+        const n=6, w=o.w; c.moveTo(o.x, down?y0:y1);
+        for(let i=0;i<=n;i++){ const xx=o.x+w*i/n, j=Math.sin((o.seed*10+i)*2.3)*w*0.12; c.lineTo(xx, (down?y1:y0)+(i%2?j:-j)*(down?1:-1)); }
+        c.lineTo(o.x+w, down?y0:y1); c.closePath(); c.fill(); c.stroke();
+        c.fillStyle='rgba(255,255,255,.08)'; c.fillRect(o.x+w*0.15, Math.min(y0,y1), w*0.12, Math.abs(y1-y0)); };
+      rock(0,o.top,true); rock(o.bot,H*0.9,false);
+    } else if(o.kind==='cloud'){ c.fillStyle='#3d3550'; for(const [bx,by,br] of o.blobs){ c.beginPath(); c.arc(o.x+bx,o.y+by,br,0,7); c.fill(); }
+      c.strokeStyle='#ffe066'; c.lineWidth=H*0.006; c.beginPath(); c.moveTo(o.x,o.y+H*0.06); c.lineTo(o.x-H*0.02,o.y+H*0.1); c.lineTo(o.x+H*0.01,o.y+H*0.1); c.lineTo(o.x-H*0.01,o.y+H*0.14); c.stroke();
+    } else if(o.kind==='gem'){ c.save(); c.translate(o.x,o.y); c.rotate(FL.t*2); c.fillStyle='#7cf0ff'; c.strokeStyle='#fff'; c.lineWidth=H*0.004; c.beginPath(); c.moveTo(0,-o.r); c.lineTo(o.r*0.8,0); c.lineTo(0,o.r); c.lineTo(-o.r*0.8,0); c.closePath(); c.fill(); c.stroke(); c.restore(); }
+  }
+  for(const a of FL.arrows){ c.strokeStyle='#d9c9a8'; c.lineWidth=a.h*0.35; c.beginPath(); c.moveTo(a.x+a.w*0.15,a.y); c.lineTo(a.x+a.w,a.y); c.stroke();
+    c.fillStyle='#c9d3dc'; c.beginPath(); c.moveTo(a.x,a.y); c.lineTo(a.x+a.w*0.2,a.y-a.h); c.lineTo(a.x+a.w*0.2,a.y+a.h); c.fill();
+    c.fillStyle='#e2483d'; c.fillRect(a.x+a.w*0.85,a.y-a.h*0.8,a.w*0.15,a.h*1.6); }
+  FL.parts.forEach(p=>{ c.globalAlpha=Math.max(0,p.life*2); c.fillStyle=p.c; c.beginPath(); c.arc(p.x,p.y,p.r,0,7); c.fill(); }); c.globalAlpha=1;
+  const spr = (FL.over && FL.completed) ? FL.spriteHappy : FL.sprite, size=H*0.17, px=W*0.25;
+  if(spr){ c.save(); c.translate(px, FL.y); const rot = FL.running ? Math.max(-0.45, Math.min(0.7, FL.vy/(H*1.6))) : Math.sin(performance.now()/400)*0.06;
+    c.rotate(rot); const sq = FL.flapT>0 ? 0.9 : 1; c.scale(1/sq*0.98+0.02, sq); c.drawImage(spr, -size/2, -size*0.6, size, size); c.restore(); }
+  c.restore();
+}
+function closeFlight(){ if(FL.running){ crashFlight(); } cancelAnimationFrame(FL.raf); FL.running=false; openCare(); }
+
+/* ======================= TARJETA PARA COMPARTIR ======================= */
+let cardFmt='story', cardBlob=null;
+function bestShared(){ let best=null; (S.friends||[]).forEach(f=>{ const v=Math.max(f.bestStreak||0, sharedStreak(normFriend(f))); if(v>0 && (!best || v>best.v)) best={v, name:f.name}; }); return best; }
+function roundRect(c,x,y,w,h,r){ c.beginPath(); c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r); c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); }
+async function renderCard(fmt){
+  const d=byKey(S.key), W=1080, H= fmt==='story'?1920:1080, cv=document.createElement('canvas'); cv.width=W; cv.height=H; const c=cv.getContext('2d');
+  try{ await Promise.all([document.fonts.load('700 80px Cinzel'), document.fonts.load('400 40px "EB Garamond"'), document.fonts.load('italic 400 40px "EB Garamond"')]); }catch(e){}
+  const col=COLORS[d.c].hex;
+  c.fillStyle='#0d0a12'; c.fillRect(0,0,W,H);
+  let g=c.createRadialGradient(W/2,H*0.36,50,W/2,H*0.36,W*0.9); g.addColorStop(0,col+'aa'); g.addColorStop(.5,col+'22'); g.addColorStop(1,'#0d0a1200'); c.fillStyle=g; c.fillRect(0,0,W,H);
+  g=c.createRadialGradient(W,H,0,W,H,W); g.addColorStop(0,'rgba(60,30,90,.6)'); g.addColorStop(1,'rgba(60,30,90,0)'); c.fillStyle=g; c.fillRect(0,0,W,H);
+  for(let i=0;i<70;i++){ c.fillStyle=`rgba(255,${150+Math.random()*80|0},80,${Math.random()*0.6})`; c.beginPath(); c.arc(Math.random()*W, Math.random()*H, Math.random()*4+1, 0, 7); c.fill(); }
+  c.strokeStyle='rgba(201,162,92,.55)'; c.lineWidth=4; roundRect(c,36,36,W-72,H-72,40); c.stroke();
+  c.fillStyle='#c9a25c'; c.font='700 34px Cinzel'; c.textAlign='center'; c.fillText('❖  ¿QUÉ DRAGÓN TE ELEGIRÍA?  ❖', W/2, fmt==='story'?130:100);
+  const img = await chibiImage(d, S.eq, false); const ds = fmt==='story' ? 860 : 440, dy = fmt==='story' ? 170 : 110;
+  c.save(); c.shadowColor='rgba(0,0,0,.55)'; c.shadowBlur=40; c.shadowOffsetY=20; c.drawImage(img, (W-ds)/2, dy, ds, ds); c.restore();
+  let y = dy+ds+ (fmt==='story'?40:95);
+  const fit=(text, font, max)=>{ let s=parseInt(font.match(/(\d+)px/)[1]); do{ c.font=font.replace(/\d+px/, s+'px'); s-=4; } while(c.measureText(text).width>max && s>20); };
+  g=c.createLinearGradient(0,y-110,0,y); g.addColorStop(0,'#fff3c4'); g.addColorStop(1,'#c9a25c'); c.fillStyle=g;
+  fit(S.name, fmt==='story'?'900 120px Cinzel':'900 104px Cinzel', W-160); c.fillText(S.name, W/2, y); y += fmt==='story'?70:50;
+  c.fillStyle='#eae2d3'; c.font='italic 400 46px "EB Garamond"'; c.fillText(d.title, W/2, y);
+  y += fmt==='story'?60:30;
+  const L=levelInfo(S.xp).lvl, bs=bestShared();
+  const stats=[['NIVEL', String(L), '⭐'], ['RACHA', `${S.streak||0} ${S.streak===1?'día':'días'}`, '🔥'], ['RACHA CON AMIGOS', bs?`${bs.v} · ${bs.name}`:'—', '💞'], ['RÉCORD DE VUELO', String(S.flightBest||0), '🪽']];
+  const cols = fmt==='story'?2:4, tw = fmt==='story' ? (W-200)/2 : (W-160-3*20)/4, th = fmt==='story'?190:150;
+  stats.forEach(([lab,val,ic],i)=>{ const cx = fmt==='story' ? 80+(i%2)*(tw+40) : 80+i*(tw+20), cy = fmt==='story' ? y+Math.floor(i/2)*(th+30) : y;
+    c.fillStyle='rgba(255,255,255,.06)'; roundRect(c,cx,cy,tw,th,28); c.fill(); c.strokeStyle='rgba(201,162,92,.45)'; c.lineWidth=3; c.stroke();
+    c.fillStyle='#fff'; c.font=(fmt==='story'?'54px':'40px')+' serif'; c.fillText(ic, cx+tw/2, cy+(fmt==='story'?66:52));
+    c.fillStyle='#f0d79a'; fit(val, (fmt==='story'?'700 54px':'700 40px')+' Cinzel', tw-30); c.fillText(val, cx+tw/2, cy+(fmt==='story'?128:100));
+    c.fillStyle='#a99c88'; c.font=(fmt==='story'?'600 26px':'600 19px')+' "EB Garamond"'; c.fillText(lab, cx+tw/2, cy+(fmt==='story'?166:132)); c.fillStyle='#eae2d3'; });
+  const by = fmt==='story' ? H-250 : 895;
+  c.fillStyle='#8e1c24'; roundRect(c,120,by,W-240,fmt==='story'?120:80,fmt==='story'?60:40); c.fill();
+  c.fillStyle='#fff3e6'; c.font=(fmt==='story'?'700 44px':'700 36px')+' Cinzel'; c.fillText('Descubre tu dragón y juega conmigo', W/2, by+(fmt==='story'?75:53));
+  c.fillStyle='#c9a25c'; c.font=(fmt==='story'?'500 34px':'500 30px')+' "EB Garamond"'; c.fillText(baseUrl().replace(/^https?:\/\//,'').replace(/\/$/,''), W/2, fmt==='story'? by+180 : 1016);
+  return new Promise(res=>cv.toBlob(b=>res({blob:b, url:URL.createObjectURL(b), w:W, h:H}), 'image/png'));
+}
+async function openCard(){
+  if(!S.bonded) return; show('card'); await drawCardPreview();
+}
+async function drawCardPreview(){
+  document.querySelectorAll('#cardFmt .tab').forEach(t=>t.classList.toggle('on', t.dataset.f===cardFmt));
+  $('cardNote').textContent='Creando tu tarjeta…';
+  const r = await renderCard(cardFmt); cardBlob=r.blob;
+  if($('cardImg').dataset.url) URL.revokeObjectURL($('cardImg').dataset.url);
+  $('cardImg').src=r.url; $('cardImg').dataset.url=r.url; $('cardImg').dataset.size=`${r.w}x${r.h}`;
+  $('cardNote').textContent = `Imagen ${r.w}×${r.h} lista. En el móvil, “Compartir” la manda a WhatsApp, Instagram o donde quieras.`;
+  window.__card = { w:r.w, h:r.h, bytes:r.blob.size };
+}
+const cardFileName = () => `dragon-${(S.name||'dragon').toLowerCase().replace(/[^a-z0-9áéíóúñü]+/gi,'-')}.png`;
+function downloadCard(){
+  if(!cardBlob) return; const a=document.createElement('a'); a.href=URL.createObjectURL(cardBlob); a.download=cardFileName(); document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+async function shareCard(){
+  if(!cardBlob) return;
+  const file = new File([cardBlob], cardFileName(), {type:'image/png'});
+  const text = `🐉 ${S.name} te reta. Descubre qué dragón te elige y hazte amigo del mío: ${myInviteLink()}`;
+  try{
+    if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], text, title:'Mi dragón'}); window.__cardShared='native'; return; }
+  }catch(e){ if(e.name==='AbortError') return; }
+  downloadCard();
+  try{ await navigator.clipboard.writeText(myInviteLink()); toast('Imagen descargada y enlace de amistad copiado 📋'); window.__cardShared='fallback-copied'; }
+  catch(e){ toast('Imagen descargada. Copia tu enlace desde “Copiar mi enlace de amistad”.'); window.__cardShared='fallback'; }
+}
 
 /* ======================= RACHA COMPARTIDA ======================= */
 const STREAK_MILESTONES = { 3:{coins:15, xp:30}, 7:{coins:40, xp:60}, 14:{coins:80, xp:120}, 30:{coins:200, xp:250} };
@@ -1720,6 +2022,16 @@ $('petBtn').onclick = pet;
 $('shareBtn').onclick = share;
 $('aboutBtn').onclick = ()=>showResult(byKey(S.key), true);
 $('shopBtn').onclick = openShop;
+$('flightBtn').onclick = openFlight;
+$('cardBtn').onclick = openCard;
+$('flightBackBtn').onclick = closeFlight;
+$('cardBackBtn').onclick = ()=>openCare();
+$('cardShareBtn').onclick = shareCard;
+$('cardDlBtn').onclick = downloadCard;
+document.querySelectorAll('#cardFmt .tab').forEach(t=>t.onclick=()=>{ cardFmt=t.dataset.f; drawCardPreview(); });
+$('flightCanvas').addEventListener('pointerdown', e=>{ e.preventDefault(); if(FL.running) flap(); });
+document.addEventListener('keydown', e=>{ if($('flight').classList.contains('hidden')) return; if(e.code==='Space'||e.code==='ArrowUp'){ e.preventDefault(); if(FL.running) flap(); else if(!$('fOver').classList.contains('hidden')) startFlight(); } });
+window.addEventListener('resize', ()=>{ if(!$('flight').classList.contains('hidden') && !FL.running){ fitFlight(); drawFlight(); } });
 $('shopBackBtn').onclick = ()=>openCare();
 $('claimBtn').onclick = claimDaily;
 $('inviteBtn').onclick = ()=>openWhatsApp(inviteText());
@@ -1742,6 +2054,7 @@ window.__park = { play:playDate, get state(){ return park; } };
 window.__shop = { ITEMS };
 window.__skills = { SKILLS, use:useSkill, levelInfo, gainXP };
 window.__streak = { bumpStreak, syncStreak, sharedStreak };
+window.__flight = { FL, start:startFlight, flap, reward:flightReward };
 window.__app = { get state(){ return S; }, DRAGONS };
 </script>
 </body>

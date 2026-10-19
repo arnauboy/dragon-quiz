@@ -2590,21 +2590,13 @@ function buildDragon3(d, eq){
   // cabeza
   const head = new THREE.Group(); head.position.set(0, 1.7, 0.1); bob.add(head); rig.head = head;
   const hc = V(0, 0, 0), hr = V(0.66, 0.57, 0.58); rig.hr = hr;
-  // cráneo de dragón: algo plano por arriba, en cuña hacia un hocico que sobresale, mandíbula marcada y cejas gruesas
-  add(head, sph(1), bodyMat, V(0, 0.05, -0.02), V(0.64, 0.52, 0.56));
-  add(head, sph(1), bodyMat, V(0, -0.02, 0.36), V(0.2, 0.17, 0.34), [-0.32, 0, 0]);          // puente de la nariz
-  add(head, sph(1), bodyMat, V(0, -0.17, 0.56), V(0.32, 0.2, 0.3));                          // hocico
-  add(head, sph(1), bodyMat, V(0, -0.33, 0.44), V(0.3, 0.12, 0.3), [0.12, 0, 0]);            // mandíbula
+  add(head, sph(1), bodyMat, hc, hr);
+  add(head, sph(0.26), bodyMat, V(0, -0.21, 0.42), V(1.02, 0.72, 0.95));                    // hocico corto
   const ink = M(0x3a2030, { noOutline:true });
-  for(const s of [1, -1]){
-    add(head, sm(0.05), bodyMat, V(0.1*s, -0.07, 0.8), V(1, 0.75, 0.8));                      // aletas de la nariz
-    add(head, sm(0.024), ink, V(0.105*s, -0.08, 0.84), V(1.3, 0.75, 0.6));                    // fosas
-    const jl = add(head, cap(0.011, 0.34), ink, V(0.235*s, -0.255, 0.56)); jl.quaternion.setFromUnitVectors(UP, V(0.35*s, 0.12, 1).normalize());   // línea de la boca
-  }
+  for(const s of [1, -1]) add(head, sm(0.026), ink, V(0.075*s, -0.13, 0.632), V(1.2, 0.8, 1));
   const fangMat = M(0xffffff, { noOutline:true }), tongueMat = M(0xff7b98, { noOutline:true });
   rig.mouths = {};
-  const mouthG = new THREE.Group(); mouthG.position.set(0, -0.04, 0.17); head.add(mouthG);   // boca en la punta del hocico
-  const mk = n=>{ const g = new THREE.Group(); g.visible = false; mouthG.add(g); rig.mouths[n] = g; return g; };
+  const mk = n=>{ const g = new THREE.Group(); g.visible = false; head.add(g); rig.mouths[n] = g; return g; };
   const arcM = (g, r, len, y, z, rx, rz, x=0)=>add(g, tor(r, 0.013, len, 8, 20), ink, V(x, y, z), null, [rx, 0, rz]);
   const fangs = (g, y)=>{ for(const sx of [1, -1]) add(g, cone(0.018, 0.045, 8), fangMat, V(0.045*sx, y, 0.662), null, [PI-0.1, 0, 0]); };
   arcM(mk('smile'), 0.055, PI, -0.21, 0.655, -0.35, PI);
@@ -2622,8 +2614,7 @@ function buildDragon3(d, eq){
   const spike = (dir, r, h, lean=0.35)=>{ const d0 = dir.clone().normalize(); const c = add(head, cone(r, h, 12), hornMat, onEll(hc, hr, d0).addScaledVector(d0, h*0.32));
     c.quaternion.setFromUnitVectors(UP, d0.clone().add(V(0, 0, -lean)).normalize()); return c; };
   for(const s of [1, -1]){
-    spike(V(0.4*s, 0.84, -0.3), 0.095, 0.5, 0.85);                                               // cuernos principales, barridos hacia atrás
-    spike(V(0.78*s, -0.55, -0.1), 0.045, 0.16, 0.6);                                           // espina de la mandíbula
+    spike(V(0.36*s, 0.86, -0.3), 0.09, 0.4, 0.45);                                              // cuernos principales
     for(const [x, y, z, r, h] of [[0.62, 0.62, -0.42, 0.07, 0.3], [0.86, 0.3, -0.38, 0.065, 0.27], [0.94, -0.02, -0.3, 0.06, 0.24], [0.86, -0.3, -0.2, 0.05, 0.18], [0.36, 0.56, -0.74, 0.065, 0.26]])
       spike(V(x*s, y, z), r, h, 0.3);                                                            // corona de pinchos alrededor de la cabeza
     if(!hat) spike(V(0.16*s, 0.95, -0.12), 0.055, 0.22, 0.4);
@@ -2660,8 +2651,6 @@ function buildDragon3(d, eq){
     const arc = add(eye, tor(0.08, 0.021, PI, 10, 24), ink, V(0, -0.02, 0.035), V(1.15, 1, 1)); arc.visible = false;
     const tear = add(eye, sm(0.04), tearMat, V(0.11*s, -0.17, 0.035), V(0.9, 1.35, 0.7)); tear.visible = false;
     rig.eyes.push({ s, eye, ball, iris, pupil, heart, hiG, uT, lT, upper, lower, arc, tear });
-    const brow = new THREE.Group(); brow.position.copy(eye.position).add(V(0.025*s, 0.175, 0.0)); face(brow, V(0.3*s, 0.6, 0.75)); head.add(brow);   // ceja gruesa sobre el ojo
-    add(brow, sph(1), bodyMat, V(0, 0, 0), V(0.22, 0.07, 0.12), [0, 0, -0.1*s]);
   }
   rig.blushes = [];
   for(const s of [1, -1]){

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<!-- Dragón 2: estilo cartoon A -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>¿Qué dragón te elegiría? · Test del Valle</title>
@@ -2751,8 +2752,19 @@ function buildDragon3(d, eq){
   const pre = new Set(); root.traverse(o=>pre.add(o));
   addAccessories3(rig, cleanEq(eq||{}), { THREE, V, M, Ph, Bs, sph, sm, cap, cone, tor, cyl, add, onEll, face, gk, P, head, hc, hr, bob, torso, tip, eyeAt });
   root.traverse(o=>{ if(!pre.has(o)) o.userData.acc = true; });   // piezas de accesorio (para las fichas de la Tienda)
+  toonify3(root, rig);   // estilo cartoon A: cel 2 tonos + contorno negro, colores planos
   root.userData.rig = rig;
   return root;
+}
+function toonify3(root, rig){ const THREE = D3.THREE;
+  if(!D3.G2){ const a = new Uint8Array([120,120,120,255, 255,255,255,255]); const t = new THREE.DataTexture(a, 2, 1); t.minFilter = t.magFilter = THREE.NearestFilter; t.needsUpdate = true; D3.G2 = t; }
+  const eyeObj = new Set(); (rig.eyes||[]).forEach(e=>[e.eye, e.s, e.ball].forEach(o=>o && o.traverse && o.traverse(x=>eyeObj.add(x))));
+  const cache = new Map();
+  root.traverse(n=>{ const m = n.material; if(!m || !m.isMeshPhysicalMaterial || eyeObj.has(n) || n.userData.noToon) return;
+    if(!cache.has(m)){ const t = new THREE.MeshToonMaterial({ color:m.color.clone(), gradientMap:D3.G2, side:m.side, transparent:m.transparent, opacity:m.opacity, depthWrite:m.depthWrite, emissive:m.emissive ? m.emissive.clone() : 0, emissiveIntensity:m.emissiveIntensity ?? 1 });
+      t.userData.outlineParameters = m.transparent && m.opacity < 0.9 ? { visible:false } : { visible:true, thickness:0.006, color:[0,0,0] };
+      rig.mats.push(t); cache.set(m, t); }
+    n.material = cache.get(m); });
 }
 
 /* ---------- accesorios 3D (cabeza, cara, cuello, espalda y cola) ---------- */
@@ -2926,7 +2938,7 @@ function skillPose(rig, id, u, t, st){
 /* ---------- render compartido ---------- */
 function frameCam(cam, aspect, kind){
   const bust = kind==='bust', side = kind==='side', fc = kind==='face';
-  const tgt = fc ? [0.02, 1.76, 0.14] : bust ? [0, 1.62, 0] : [0, 1.52, 0], dist = fc ? 2.9 : bust ? 4.8 : 7.4, Hh = fc ? 1.3 : bust ? 2.2 : (side ? 2.9 : 3.75), Ww = fc ? 1.3 : bust ? 2.1 : 4.2;   // cabe el ala entera al aletear
+  const tgt = fc ? [0.02, 1.76, 0.14] : bust ? [0, 1.62, 0] : [0, 1.52, 0], dist = fc ? 2.9 : bust ? 4.8 : 7.4, Hh = fc ? 1.3 : bust ? 2.2 : (side ? 2.9 : 3.75), Ww = fc ? 1.3 : bust ? 2.1 : 4.45;   // cabe el ala entera al aletear
   const half = Math.max(Math.atan(Hh/2/dist), Math.atan(Math.tan(Math.atan(Ww/2/dist))/aspect));
   cam.fov = half*360/Math.PI; cam.aspect = aspect;
   cam.position.set(tgt[0]+dist*0.1, tgt[1]+dist*(bust ? 0.06 : 0.09), dist); cam.lookAt(tgt[0], tgt[1], tgt[2]); cam.updateProjectionMatrix();

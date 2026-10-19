@@ -98,6 +98,64 @@ input[type=text]{width:100%;font:inherit;font-size:20px;padding:13px 14px;border
 input[type=text]:focus{border-color:var(--gold)}
 label.lbl{display:block;text-align:center;color:var(--muted);margin:16px 0 8px}
 /* care */
+.lvlpill{display:inline-flex;align-items:center;gap:7px;margin-top:6px;font:inherit;font-family:'Cinzel',serif;font-size:12.5px;color:var(--gold2);background:rgba(201,162,92,.12);border:1px solid var(--line);border-radius:99px;padding:3px 10px 3px 9px;cursor:pointer}
+.lvlpill b{font-size:14px}
+.lvlpill .pbar{display:block;width:54px;height:5px;border-radius:9px;background:rgba(255,255,255,.1);overflow:hidden}
+.lvlpill .pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#c9a25c,#ffe58a);transition:width .6s}
+.lvlpill .xptxt{font-family:'EB Garamond',serif;font-size:12.5px;color:var(--muted)}
+.taphint{position:absolute;top:10px;left:10px;z-index:4;font-size:12.5px;color:var(--muted);background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:99px;padding:3px 9px;pointer-events:none;animation:tapPulse 2.4s ease-in-out infinite}
+@keyframes tapPulse{0%,100%{opacity:.55}50%{opacity:1}}
+#stageCareSlot{cursor:pointer}
+.sheet-back{position:fixed;inset:0;z-index:60;background:rgba(5,3,10,.45);display:flex;align-items:flex-end;justify-content:center}
+.sheet{width:min(560px,100%);background:linear-gradient(180deg,#1d1526,#140f1b);border:1px solid var(--line);border-bottom:none;border-radius:20px 20px 0 0;padding:6px 14px calc(12px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,.5);animation:sheetUp .22s ease-out}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+.sheet .grip{width:40px;height:4px;border-radius:9px;background:rgba(255,255,255,.2);margin:4px auto 8px}
+.sheet-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.sheet-head b{font-family:'Cinzel',serif;color:var(--gold2);font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sheet-head span{font-size:13px;color:var(--muted);white-space:nowrap}
+.sheet-note{margin:4px 0 8px;font-size:13px;color:var(--muted);line-height:1.3}
+.sheet-note:empty{display:none}
+.sheet-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.stile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:66px;padding:6px 3px;font:inherit;color:var(--text);background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:13px;cursor:pointer;line-height:1.1}
+.stile .si{font-size:24px}
+.stile .sn{font-size:12px;text-align:center}
+.stile:active{transform:scale(.96)}
+.stile.pet{background:rgba(142,28,36,.28);border-color:rgba(212,71,62,.6)}
+.stile.locked{opacity:.42;filter:grayscale(1);cursor:default}
+.stile.locked .sn{color:var(--muted)}
+.stile:disabled{cursor:default}
+.sheet-foot{display:flex;justify-content:space-between;margin-top:9px}
+.sheet-foot button{background:none;border:none;color:var(--gold);font:inherit;font-size:14.5px;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:6px 2px}
+.qday{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;margin:2px 0 12px;padding:9px 14px;font:inherit;color:var(--text);background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:12px;cursor:pointer;text-align:left}
+.qday span{font-family:'Cinzel',serif;font-size:14.5px;color:var(--gold2)}
+.qday small{font-size:13.5px;color:var(--muted);white-space:nowrap}
+.qday:not(.done){border-color:rgba(201,162,92,.6);box-shadow:0 0 12px rgba(201,162,92,.15) inset}
+.modal-card.trivia{text-align:left;max-height:calc(100vh - 36px);max-height:calc(100dvh - 36px);overflow:auto}
+.trivia .tq-top{font-family:'Cinzel',serif;font-size:12.5px;letter-spacing:.06em;color:var(--gold);text-align:center;margin-bottom:6px}
+.modal-card.trivia h3.tq-q{font-family:'EB Garamond',serif;font-weight:600;font-size:20px;letter-spacing:0;text-transform:none;font-variant:normal;line-height:1.3;margin:4px 0 12px;text-align:center;color:var(--text)}
+.trivia .tq-warn{color:#ffcf8a;font-size:15px;text-align:center}
+.tq-opts{display:flex;flex-direction:column;gap:7px}
+.tq-opt{font:inherit;font-size:16px;text-align:left;color:var(--text);background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:11px;padding:10px 12px;cursor:pointer}
+.tq-opt.ok{background:rgba(60,160,90,.28);border-color:#59c27c}
+.tq-opt.bad{background:rgba(160,40,40,.3);border-color:#d4473e}
+.tq-opt:disabled{cursor:default;opacity:1}
+.tq-res{display:none;margin:12px 0 4px;padding:10px 12px;border-radius:12px;border:1px solid var(--line)}
+.tq-res.show{display:block}.tq-res.good{background:rgba(60,160,90,.12)}.tq-res.wrong{background:rgba(160,40,40,.12)}
+.tq-res b{font-family:'Cinzel',serif;color:var(--gold2)}.tq-res p{margin:.4em 0 0}
+.trivia .btn{margin-top:10px}
+.bk-code{font-family:ui-monospace,Menlo,monospace;font-size:13px;word-break:break-all;background:rgba(0,0,0,.35);border:1px dashed var(--gold);border-radius:10px;padding:10px;margin:8px 0;color:var(--gold2);user-select:all}
+.bk-sub{margin-top:16px!important;font-size:18px!important}
+.bk-input{font-family:ui-monospace,Menlo,monospace!important;font-size:14px!important;margin:6px 0}
+.frank{display:block;margin:2px auto 10px;background:none;border:1px solid var(--line);border-radius:99px;color:var(--gold2);font:inherit;font-size:14px;padding:4px 12px;cursor:pointer}
+.rank-list{display:flex;flex-direction:column;gap:6px;margin:8px 0 10px;max-height:55vh;overflow:auto;text-align:left}
+.rank-row{display:flex;align-items:center;gap:8px;padding:5px 10px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.035)}
+.rank-row.me{background:rgba(201,162,92,.18);border-color:var(--gold);box-shadow:0 0 0 1px rgba(201,162,92,.35) inset}
+.rank-row.unk{opacity:.7}
+.rank-row .rpos{width:30px;text-align:center;font-family:'Cinzel',serif;color:var(--gold2);font-size:16px}
+.rank-row .chibi-wrap.mini{width:40px;height:40px;flex:none}.rank-row .chibi-wrap.mini .chibi{max-height:40px}
+.rank-row .rname{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'Cinzel',serif;font-size:14.5px}
+.rank-row .rbest{font-family:'Cinzel',serif;font-weight:700;color:var(--gold2);font-size:17px}
+.modal-card .skills-all{display:flex;flex-direction:column;gap:7px;max-height:60vh;overflow:auto;margin:6px 0 12px;text-align:left}
 .care-head{text-align:center}
 .care-head h2{margin:0;font-size:clamp(26px,8vw,36px);color:var(--gold2)}
 .care-head .kind{color:var(--muted);font-style:italic;font-size:16px}
@@ -118,7 +176,7 @@ label.lbl{display:block;text-align:center;color:var(--muted);margin:16px 0 8px}
   padding:12px 18px;border-radius:12px;opacity:0;transition:.35s;z-index:50;pointer-events:none;max-width:90vw;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.6)}
 .toast.show{opacity:1;transform:translateX(-50%)}
 footer{text-align:center;color:#6d6357;font-size:13px;margin-top:26px;font-style:italic}
-.small-links{display:flex;justify-content:center;gap:18px;margin-top:14px}
+.small-links{display:flex;justify-content:center;gap:6px 18px;margin-top:14px;flex-wrap:wrap}
 .small-links button{background:none;border:none;color:var(--muted);font:inherit;font-size:15px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 
 .layer{position:absolute;inset:0}
@@ -356,6 +414,7 @@ footer{text-align:center;color:#6d6357;font-size:13px;margin-top:26px;font-style
       <p>Diez preguntas. Ninguna respuesta correcta. Solo la verdad sobre quién eres cuando nadie te ve.</p>
       <p>Al final, un dragón te habrá elegido. Ponle nombre y vuelve <b>cada día</b> a darle de comer: los dragones no perdonan el olvido.</p>
       <button class="btn red" id="startBtn">Entrar al valle</button>
+      <div class="small-links"><button id="introRestoreBtn">¿Ya tenías dragón? Recupéralo con tu código</button></div>
     </div>
     <footer>Un juego hecho por fans, con textos y dibujos originales. Inspirado en la saga del Empíreo de Rebecca Yarros.</footer>
   </section>
@@ -394,10 +453,10 @@ footer{text-align:center;color:#6d6357;font-size:13px;margin-top:26px;font-style
       <div class="care-head">
         <h2 id="cName"></h2>
         <div class="kind" id="cKind"></div>
+        <button class="lvlpill" id="lvlPill" aria-label="Nivel y habilidades"><span>⭐ Nv <b id="lvlNum">1</b></span><i class="pbar"><i id="xpBar"></i></i><span class="xptxt" id="xpTxt"></span></button>
       </div>
-      <div class="stage" id="stageCareSlot"></div>
+      <div class="stage" id="stageCareSlot"><div class="taphint" id="tapHint">👆 Tócalo</div></div>
       <div class="mood" id="cMood"></div>
-      <div class="levelrow"><span class="lvl">Nivel <b id="lvlNum">1</b></span><div class="bar xp"><i id="xpBar"></i></div><span class="xptxt" id="xpTxt"></span></div>
       <div class="meters">
         <div class="meter"><div class="top"><b>🍖 Saciedad</b><span id="hungerTxt"></span></div><div class="bar"><i id="hungerBar"></i></div></div>
         <div class="meter"><div class="top"><b>💜 Felicidad</b><span id="happyTxt"></span></div><div class="bar"><i id="happyBar"></i></div></div>
@@ -409,10 +468,11 @@ footer{text-align:center;color:#6d6357;font-size:13px;margin-top:26px;font-style
         <div class="stat"><div class="n" id="sDays">1</div><div class="l">Días juntos</div></div>
       </div>
       <div class="daily" id="dailyBox"><button class="btn gold" id="claimBtn">🎁 Recoger monedas</button><p class="note" id="dailyTxt"></p></div>
+      <button class="qday" id="quizBtn"><span>❓ Pregunta del día</span><small id="quizState"></small></button>
       <button class="btn red" id="feedBtn">Darle de comer</button>
       <div style="height:10px"></div>
       <div class="row">
-        <button class="btn ghost" id="petBtn">Acariciar</button>
+        <button class="btn ghost" id="menuBtn">✨ Mimos y más</button>
         <button class="btn ghost" id="shareBtn">Compartir</button>
       </div>
       <div style="height:10px"></div>
@@ -422,18 +482,13 @@ footer{text-align:center;color:#6d6357;font-size:13px;margin-top:26px;font-style
       </div>
       <p class="note" id="flightNote"></p>
       <p class="note" id="feedNote"></p>
-      <div class="small-links"><button id="aboutBtn">Ver su descripción</button><button id="resetBtn">Empezar de cero</button></div>
-    </div>
-    <div class="panel fade friends-panel" id="skillsPanel">
-      <h3 class="sec-title">Habilidades</h3>
-      <p class="sec-sub">Gana XP recogiendo monedas (+20), dándole de comer (+15), con mimos (+5) y jugando en el parque (+25). Cada nivel desbloquea algo nuevo.</p>
-      <div id="skillsList" class="friends"></div>
+      <div class="small-links"><button id="aboutBtn">Ver su descripción</button><button id="backupBtn">☁️ Copia de seguridad</button><button id="resetBtn">Empezar de cero</button></div>
     </div>
     <div class="panel fade friends-panel">
       <h3 class="sec-title">Dragones amigos</h3>
       <p class="sec-sub">La diversión solo se llena jugando con amigos en el parque. Un juego por amigo y día.</p>
       <button class="btn wa" id="inviteBtn"><span>💬</span> Invitar por WhatsApp</button>
-      <div class="small-links" style="margin-top:8px"><button id="copyInviteBtn">Copiar mi enlace de amistad</button></div>
+      <div class="small-links" style="margin-top:8px"><button id="copyInviteBtn">Copiar mi enlace de amistad</button><button id="rankBtn">🏆 Ranking de vuelo</button></div>
       <div id="friendsList" class="friends"></div>
       <button class="btn ghost" id="parkBtn" style="margin-top:12px">🌳 Ir al Parque de dragones</button>
     </div>
@@ -525,12 +580,19 @@ footer{text-align:center;color:#6d6357;font-size:13px;margin-top:26px;font-style
     <div id="layer3d" class="layer hidden"></div>
     <div id="layer2d" class="layer hidden"></div>
     <div class="viewtoggle" id="viewToggle" role="group" aria-label="Cómo ver a tu dragón"><button data-m="3d">3D</button><button data-m="2d">Dibujo</button></div>
-    <div class="hint" id="hint">Arrastra para girarlo</div>
+    <div class="hint" id="hint">Arrastra para girarlo · toca para su menú</div>
   </div></div>
 </main>
 <div class="toast" id="toast"></div>
 <div class="modal hidden" id="modal"><div class="panel modal-card fade" id="modalCard"></div></div>
 <div class="invite-banner hidden" id="inviteBanner"></div>
+<div class="sheet-back hidden" id="sheet"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="grip"></div>
+  <div class="sheet-head"><b id="sheetTitle"></b><span id="sheetLvl"></span></div>
+  <p class="sheet-note" id="sheetNote"></p>
+  <div class="sheet-grid" id="sheetGrid"></div>
+  <div class="sheet-foot"><button id="sheetAllBtn">Ver todas</button><button id="sheetCloseBtn">Cerrar</button></div>
+</div></div>
 
 <script type="module">
 /* ======================= DATA ======================= */
@@ -654,7 +716,7 @@ const clamp = v => Math.max(0, Math.min(100, v));
 
 function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; } }
 let S = load();
-const SCHEMA = 5;   // v1 = original (sin campo v); v2 = diversión + amigos; v3 = monedas + tienda; v4 = XP + habilidades; v5 = vuelo + tarjeta
+const SCHEMA = 8;   // v1 = original (sin campo v); v2 = diversión + amigos; v3 = monedas + tienda; v4 = XP + habilidades; v5 = vuelo + tarjeta; v6 = récord de vuelo de amigos; v7 = pregunta del día; v8 = nube (secreto de copia)
 const WELCOME_BONUS = 50;
 function levelFromXpEarly(xp){ let l=1, r=xp||0; while(r >= 50+30*(l-1)){ r-=50+30*(l-1); l++; } return l; }
 const effHappy = () => Math.min(S.happy, (S.fun ?? 100) + 10);   // aburrido = triste
@@ -687,12 +749,26 @@ function migrate(){
     if(S.flightDay === undefined) S.flightDay = null;      // día de la última recompensa de vuelo
     if(typeof S.flightRuns !== 'number') S.flightRuns = 0;
   }
-  // aquí irán futuras migraciones: if(v < 6){ ... }
+  if(v < 6){
+    (S.friends||[]).forEach(f=>{ if(typeof f.flightBest !== 'number') f.flightBest = null; });   // desconocido ('—') hasta su próximo enlace
+  }
+  if(v < 7){
+    if(S.quizDay === undefined) S.quizDay = null;          // día de la última respuesta
+    if(S.quizLast === undefined) S.quizLast = null;        // {day, i, pick, ok}
+    if(typeof S.quizRight !== 'number') S.quizRight = 0;
+    if(typeof S.quizCount !== 'number') S.quizCount = 0;
+  }
+  if(v < 8){
+    if(!/^[a-z0-9]{24,64}$/.test(S.cloudSecret||'')) S.cloudSecret = rid(32);   // secreto de la copia privada (nunca se comparte en enlaces)
+  }
+  // aquí irán futuras migraciones: if(v < 9){ ... }
   (S.friends||[]).forEach(f=>{ if(typeof f.streak !== 'number') f.streak = 0; if(f.streakDay === undefined) f.streakDay = null; });   // amigos antiguos: racha 0
   S.v = SCHEMA; S.migratedFrom = v; save();
 }
 migrate();
-function save(){ localStorage.setItem(KEY, JSON.stringify(S)); }
+function save(){ localStorage.setItem(KEY, JSON.stringify(S)); scheduleCloud(); }
+// id aleatorio e imposible de adivinar (hex), apto para enlaces y para la nube
+function rid(n){ let h=''; try{ h = crypto.randomUUID().replace(/-/g,''); }catch(e){} while(h.length < n){ h += Array.from(crypto.getRandomValues(new Uint8Array(16)), b=>b.toString(16).padStart(2,'0')).join(''); } return h.slice(0,n); }
 
 function decay(){
   if(!S.bonded) return;
@@ -787,8 +863,9 @@ function bond(){
   const now = Date.now();
   S = { v:SCHEMA, bonded:true, id:newId(), key:d.key, name, hunger:55, happy:70, fun:80, lastUpdate:now, createdDay:today(),
         lastFedDay:null, streak:0, best:0, feeds:0, petDay:null, pets:0, friends:[], plays:{},
-        coins:0, inv:[], eq:{}, claimStreak:0, lastClaimDay:null, xp:0, levelSeen:1, flightBest:0, flightDay:null, flightRuns:0 };
-  save();
+        coins:0, inv:[], eq:{}, claimStreak:0, lastClaimDay:null, xp:0, levelSeen:1, flightBest:0, flightDay:null, flightRuns:0,
+        quizDay:null, quizLast:null, quizRight:0, quizCount:0, cloudSecret:rid(32) };
+  save(); CLOUD.started=false; cloudStart();
   const hadInvite = acceptPendingAfterBond();
   openCare(!hadInvite);
 }
@@ -833,7 +910,7 @@ function render(){
   if($('flightNote')) $('flightNote').textContent = (S.flightDay===today() ? '🪽 Hoy ya cobraste el vuelo: lo demás es práctica.' : '🪽 Tu primer vuelo de hoy da XP y monedas.') + ` Récord: ${S.flightBest||0}`;
 }
 function openCare(first){
-  decay(); show('care'); mountViewer('stageCareSlot', byKey(S.key)); render(); renderDaily(); renderLevel();
+  decay(); show('care'); mountViewer('stageCareSlot', byKey(S.key)); render(); renderDaily(); renderLevel(); renderTriviaBtn();
   if(S.xpWelcome){ const l=S.xpWelcome; delete S.xpWelcome; save(); setTimeout(()=>toast(`⭐ ¡Novedad! ${S.name} es nivel ${l} y conoce ${unlockedSkills(l).length} ${unlockedSkills(l).length===1?'habilidad':'habilidades'}`), S.welcomePending?3200:600); }
   if(S.welcomePending){ const n=S.welcomePending; delete S.welcomePending; save(); setTimeout(()=>{ toast(`🎁 Regalo de bienvenida: ${n} monedas para la Tienda`); coinBurst($('dailyBox')); }, 500); }
   if(first) setTimeout(()=>toast(`${S.name} te ha elegido. Vuelve cada día a alimentarle.`),400);
@@ -915,27 +992,70 @@ function renderLevel(){
   const L = levelInfo(S.xp);
   $('lvlNum').textContent = L.lvl;
   $('xpBar').style.width = (L.into/L.need*100)+'%';
-  $('xpTxt').textContent = `${L.into} / ${L.need} XP`;
-  renderSkills();
+  $('xpTxt').textContent = `${L.into}/${L.need}`;
+  if(sheetOpen()) renderSheet();
 }
-function renderSkills(){
-  const box=$('skillsList'); if(!box) return; box.innerHTML='';
-  const lvl = levelInfo(S.xp).lvl, d=byKey(S.key);
+/* --- menú de mimos y habilidades (hoja inferior) --- */
+const petsLeft = () => S.petDay===today() ? Math.max(0, 3-(S.pets||0)) : 3;
+let sheetAt=0;
+const sheetOpen = () => !$('sheet').classList.contains('hidden');
+function renderSheet(){
+  const lvl = levelInfo(S.xp).lvl, d=byKey(S.key), L=levelInfo(S.xp), grid=$('sheetGrid');
+  $('sheetTitle').textContent = `${S.name}`;
+  $('sheetLvl').textContent = `Nivel ${lvl} · ${L.into}/${L.need} XP`;
+  $('sheetNote').textContent = V.mode==='3d' ? 'Las habilidades se ven en modo Dibujo: al elegir una, cambia a Dibujo un momento y luego vuelve al 3D.' : '';
+  grid.innerHTML='';
+  const left = petsLeft();
+  const pt = el('button','stile pet'); pt.id='sheetPet'; pt.dataset.id='mimos';
+  pt.append(el('span','si','💜'), el('span','sn', left ? `Mimos (${left}/3)` : 'Mimos: mañana'));
+  pt.onclick = ()=>{ closeSheet(); pet(); };
+  grid.appendChild(pt);
   SKILLS.forEach(sk=>{
     const open = sk.lvl<=lvl, [ic,nm]=skillLabel(sk,d);
-    const row = el('div','skill'+(open?'':' locked')); row.dataset.id=sk.id;
-    row.appendChild(el('div','sicon', open?ic:'🔒'));
-    const who=el('div','who'); who.appendChild(el('b',null,nm)); who.appendChild(el('span',null, open?sk.desc:`Se desbloquea en el nivel ${sk.lvl}`)); row.appendChild(who);
-    const b=el('button',null, open?'Usar':`Nv. ${sk.lvl}`); b.disabled=!open; b.onclick=()=>useSkill(sk.id); row.appendChild(b);
-    box.appendChild(row);
+    const b = el('button','stile'+(open?'':' locked')); b.dataset.id=sk.id;
+    b.append(el('span','si', open?ic:'🔒'), el('span','sn', open?nm:`Nv. ${sk.lvl}`));
+    b.title = open ? `${nm}: ${sk.desc}` : `${nm} · se desbloquea en el nivel ${sk.lvl}`;
+    b.setAttribute('aria-label', b.title);
+    if(open) b.onclick = ()=>{ closeSheet(); useSkill(sk.id); }; else b.setAttribute('aria-disabled','true');
+    grid.appendChild(b);
   });
 }
-let skillBusy=false;
-function useSkill(id){
+function openSheet(){
+  if(!S.bonded || !$('modal').classList.contains('hidden')) return;
+  renderSheet(); sheetAt=performance.now(); $('sheet').classList.remove('hidden'); $('tapHint')?.classList.add('hidden');
+  try{ localStorage.setItem('valle-dragon-tapped','1'); }catch(e){}
+}
+function closeSheet(){ $('sheet').classList.add('hidden'); }
+function showAllSkills(){
+  closeSheet();
+  const lvl = levelInfo(S.xp).lvl, d=byKey(S.key);
+  modal(c=>{
+    c.appendChild(el('h3', null, 'Habilidades'));
+    c.appendChild(el('p','kind', 'Gana XP recogiendo monedas (+20), dándole de comer (+15), con mimos (+5), jugando en el parque (+25) y en tu primer vuelo del día. Cada nivel desbloquea algo nuevo.'));
+    const box = el('div','skills-all'); box.id='skillsList';
+    SKILLS.forEach(sk=>{
+      const open = sk.lvl<=lvl, [ic,nm]=skillLabel(sk,d);
+      const row = el('div','skill'+(open?'':' locked')); row.dataset.id=sk.id;
+      row.appendChild(el('div','sicon', open?ic:'🔒'));
+      const who=el('div','who'); who.appendChild(el('b',null,nm)); who.appendChild(el('span',null, open?sk.desc:`Se desbloquea en el nivel ${sk.lvl}`)); row.appendChild(who);
+      const b=el('button',null, open?'Usar':`Nv. ${sk.lvl}`); b.disabled=!open; b.onclick=()=>{ closeModal(); useSkill(sk.id); }; row.appendChild(b);
+      box.appendChild(row);
+    });
+    c.appendChild(box);
+    const ok=el('button','btn ghost','Cerrar'); ok.onclick=closeModal; c.appendChild(ok);
+  });
+}
+let skillBusy=false, tempDibujo=null;
+async function useSkill(id){
   const sk = SKILLS.find(s=>s.id===id); if(!sk || sk.lvl>levelInfo(S.xp).lvl || skillBusy) return;
-  if(V.mode!=='2d'){ viewerApi.happy(1); toast('Las habilidades se ven en modo Dibujo ✏️ (toca "Dibujo" arriba a la derecha)'); return; }
-  $('stageCareSlot').scrollIntoView({behavior:'smooth', block:'center'});
   skillBusy=true; setTimeout(()=>skillBusy=false, 2300);
+  $('stageCareSlot').scrollIntoView({behavior:'smooth', block:'center'});
+  if(V.mode!=='2d'){                                   // en 3D: cambia a Dibujo un momento (sin guardar la preferencia)
+    await setMode('2d', false); toast('✏️ Modo Dibujo un momento para ver la habilidad');
+    clearTimeout(tempDibujo);
+    tempDibujo = setTimeout(()=>{ tempDibujo=null; if(V.mode==='2d' && localStorage.getItem(VIEW_KEY)!=='2d' && can3D()) setMode('3d', false); }, 3200);
+    await new Promise(r=>setTimeout(r,120));
+  }
   V.api['2d']?.skill(id, byKey(S.key));
 }
 function showStreakMilestone(f, R){
@@ -1298,6 +1418,7 @@ function flightOverlay(kind){
     card.appendChild(el('div','fbig', String(R.score)));
     card.appendChild(el('p','fbest', R.record ? `🏆 ¡Nuevo récord! (antes ${R.prevBest})` : `Récord: ${S.flightBest||0}`));
     card.appendChild(el('p', R.rw?'freward':'fpractice', R.rw ? `🎁 Recompensa de hoy: +${R.rw.coins} 🪙 y +${R.rw.xp} XP` : '🎯 Partida de práctica: sin recompensa hasta mañana.'));
+    const rk=el('button','frank', `🏆 Ranking de vuelo: ${myRankText()}`); rk.id='flightRankBtn'; rk.onclick=e=>{ e.stopPropagation(); showFlightRanking(); }; card.appendChild(rk);
   }
   const go=el('button','btn red', kind==='start' ? '¡A volar!' : (flightRewardAvailable()?'Volar otra vez':'Otra vez (práctica)')); go.id='flightGoBtn';
   go.onclick=e=>{ e.stopPropagation(); startFlight(); };
@@ -1400,6 +1521,306 @@ async function shareCard(){
   catch(e){ toast('Imagen descargada. Copia tu enlace desde “Copiar mi enlace de amistad”.'); window.__cardShared='fallback'; }
 }
 
+/* ======================= PREGUNTA DEL DÍA ======================= */
+// t: 0 = sin spoilers, 1 = final de Alas de sangre, 2 = Alas de hierro, 3 = Alas de ónix. a = índice de la respuesta correcta.
+const TRIVIA = [
+ {q:'¿Para qué cuadrante de Basgiath se había preparado Violet durante toda su vida?', o:['Curanderos','Escribas','Infantería','Jinetes'], a:1, x:'Violet se crio entre libros para ser escriba, como su padre; fue su madre quien la mandó a los jinetes.', t:0},
+ {q:'¿Quién obliga a Violet a presentarse al Cuadrante de Jinetes?', o:['Su hermana Mira','El rey Tauri','Su madre, la general Sorrengail','Dain Aetos'], a:2, x:'La general Lilith Sorrengail, que dirige Basgiath, decide que su hija menor será jinete.', t:0},
+ {q:'¿Cómo se llama la escuela militar donde transcurre Alas de sangre?', o:['Colegio de Guerra Basgiath','Academia de Aretia','Fortaleza de Montserrat','Escuela de Athebyne'], a:0, x:'Todo empieza en el Colegio de Guerra Basgiath, con sus cuadrantes de jinetes, escribas, curanderos e infantería.', t:0},
+ {q:'¿En qué reino viven Violet y los jinetes de dragón?', o:['Poromiel','Krovla','Tyrrendor','Navarre'], a:3, x:'Navarre es el reino de los jinetes; Poromiel, al otro lado de la frontera, es la tierra de los jinetes de grifo.', t:0},
+ {q:'¿Qué hay que cruzar el Día de Reclutamiento para entrar en el Cuadrante de Jinetes?', o:['Un río helado','El parapeto, un puente de piedra estrechísimo y muy alto','Un laberinto bajo tierra','Un campo de dragones dormidos'], a:1, x:'El parapeto es un puente de piedra de apenas un palmo de ancho, a gran altura; muchos aspirantes caen.', t:0},
+ {q:'¿Cómo se llama la pista de obstáculos tallada en la roca que los cadetes deben superar antes de la Trilla?', o:['El Guantelete','La Escalera','El Desfiladero','La Torre'], a:0, x:'El Guantelete pone a prueba equilibrio, fuerza y resistencia; Violet lo supera con mucho ingenio.', t:0},
+ {q:'¿Qué es la Trilla?', o:['Un baile de gala','Un examen de historia','El día en que los dragones eligen a sus jinetes','Un torneo de esgrima'], a:2, x:'En la Trilla los cadetes recorren el valle y son los dragones quienes deciden con quién vincularse.', t:0},
+ {q:'¿En qué ala del Cuadrante de Jinetes termina Violet?', o:['Ala Uno','Ala Dos','Ala Tres','Ala Cuatro'], a:3, x:'Acaba en el Ala Cuatro, que da título original al libro: Fourth Wing.', t:0},
+ {q:'¿Quién es el líder del ala de Violet en su primer año?', o:['Dain Aetos','Xaden Riorson','Garrick Tavis','Bodhi Durran'], a:1, x:'Xaden Riorson, cadete de tercer año, dirige el Ala Cuatro.', t:0},
+ {q:'¿Quién es el amigo de la infancia de Violet y su líder de pelotón al llegar?', o:['Liam Mairi','Ridoc Gamlyn','Dain Aetos','Sawyer Henrick'], a:2, x:'Dain Aetos, hijo del coronel Aetos, la conoce desde niña e intenta protegerla (a su manera).', t:0},
+ {q:'¿Quién se convierte en la mejor amiga de Violet en el cuadrante?', o:['Rhiannon Matthias','Imogen Cardulo','Jesinia Neilwart','Amber Mavis'], a:0, x:'Se conocen el primer día y Rhiannon se convierte en su apoyo más fiel.', t:0},
+ {q:'¿Qué hermana de Violet, ya jinete, la ayuda a prepararse el Día de Reclutamiento?', o:['Brennan','Mira','Aurelie','Sloane'], a:1, x:'Mira, la hermana mayor, le da consejos de supervivencia y equipo especial (Brennan es su hermano).', t:0},
+ {q:'¿Qué protección especial lleva Violet cosida en la ropa gracias a Mira?', o:['Una cota de malla élfica','Escamas de dragón','Un amuleto de runas','Placas de acero de Poromiel'], a:1, x:'Mira le da una armadura hecha con escamas de dragón para que sobreviva a los primeros golpes.', t:0},
+ {q:'¿Cómo compensa Violet su falta de fuerza en sus primeros retos de combate?', o:['Soborna a los profesores','Envenena discretamente a sus rivales','Se niega a pelear','Usa su sello desde el primer día'], a:1, x:'Investiga quién será su rival y le echa algo en la comida para que llegue debilitado al combate.', t:0},
+ {q:'¿Qué cadete intenta tirar a Violet en el parapeto y jura matarla?', o:['Oren Seifert','Jack Barlowe','Tynan','Luca'], a:1, x:'Jack Barlowe la persigue en el parapeto y desde ese día la convierte en su objetivo.', t:0},
+ {q:'¿Cómo es Andarna cuando Violet la ve por primera vez?', o:['Negra y enorme','Roja con cola de espada','Pequeña, dorada y con cola de plumas','Verde y dormida'], a:2, x:'Andarna es una dragona dorada, joven y pequeña, con cola de plumas. Por eso Jack la ve "débil".', t:0},
+ {q:'¿De qué color es Tairn, el gran dragón de Violet?', o:['Negro','Azul','Marrón','Naranja'], a:0, x:'Tairn es un dragón negro descomunal y veterano, temido por todo el cuadrante.', t:0},
+ {q:'¿Qué hace que el vínculo de Violet tras la Trilla no tenga precedentes?', o:['Su dragón no puede volar','Se vincula con dos dragones a la vez','Su dragón es un grifo','Es la jinete más joven de la historia'], a:1, x:'Tairn y Andarna la eligen a la vez: es la primera jinete con dos dragones, y los dragones tienen que reunirse para aceptarlo.', t:0},
+ {q:'¿Cómo se llama la dragona de Xaden?', o:['Teine','Feirge','Sgaeyl','Aimsir'], a:2, x:'Sgaeyl, una dragona azul. Además es la pareja de Tairn, lo que une a Violet y Xaden.', t:0},
+ {q:'¿Qué poder (sello) tiene Xaden?', o:['Controlar el hielo','Manejar las sombras','Leer mentes','Curar heridas'], a:1, x:'Xaden domina las sombras: las usa para atar, esconder y proteger.', t:0},
+ {q:'¿Qué sello manifiesta Violet a través de Tairn?', o:['Relámpagos','Fuego','Viento','Invisibilidad'], a:0, x:'Violet canaliza relámpagos, uno de los sellos más raros y peligrosos.', t:0},
+ {q:'¿Qué don extraordinario usa Andarna para salvar a Violet?', o:['Volverse invisible','Detener el tiempo','Hablar con grifos','Curar huesos'], a:1, x:'Andarna puede parar el tiempo unos instantes; así Violet escapa de un ataque nocturno.', t:0},
+ {q:'¿Qué puede hacer Dain con su sello?', o:['Ver el futuro','Leer los recuerdos de alguien al tocarlo','Atravesar paredes','Mover metales'], a:1, x:'Dain tiene retrocognición: tocando a alguien puede ver sus recuerdos.', t:0},
+ {q:'¿Cómo se llama el dragón de Dain?', o:['Cath','Deigh','Sliseag','Claidh'], a:0, x:'Dain está vinculado a Cath, un dragón rojo.', t:0},
+ {q:'¿Qué sello manifiesta Rhiannon?', o:['Atraer objetos a distancia','Controlar el agua','Hablar con los muertos','Volar sin dragón'], a:0, x:'Rhiannon puede "recuperar" objetos y traerlos hasta ella desde lejos.', t:0},
+ {q:'¿Qué elemento controla Ridoc, el bromista del pelotón?', o:['El fuego','La tierra','El hielo','El rayo'], a:2, x:'Ridoc maneja el hielo, aunque su mejor arma suelen ser los chistes.', t:0},
+ {q:'¿Qué sello manifiesta Sawyer?', o:['Metalurgia','Telepatía','Ilusiones','Sanación'], a:0, x:'Sawyer, que repetía primer año, puede trabajar y manipular el metal.', t:0},
+ {q:'¿A quién encarga Xaden que proteja a Violet tras el ataque nocturno?', o:['Imogen','Garrick','Liam Mairi','Bodhi'], a:2, x:'Liam, criado junto a Xaden, se convierte en su sombra y acaba siendo un gran amigo.', t:0},
+ {q:'¿Cómo se llaman las marcas que llevan los hijos de los líderes rebeldes?', o:['Tatuajes de vuelo','Reliquias de la rebelión','Sellos de sangre','Cicatrices de Codagh'], a:1, x:'Son las reliquias de la rebelión: las dejó el dragón Codagh en los hijos de los rebeldes ejecutados.', t:0},
+ {q:'¿Quién era Fen Riorson?', o:['El rey de Navarre','El padre de Xaden y líder de la rebelión','Un profesor de Basgiath','El dragón de Melgren'], a:1, x:'Fen Riorson encabezó la rebelión de Tyrrendor y fue ejecutado; su hijo Xaden carga con ese pasado.', t:0},
+ {q:'¿Qué cadete de alto rango estaba detrás del ataque nocturno contra Violet?', o:['Amber Mavis','Imogen Cardulo','Jesinia Neilwart','Quinn'], a:0, x:'Amber Mavis, líder de ala, dejó entrar a los atacantes. Los dragones la juzgaron culpable.', t:0},
+ {q:'¿Qué era el padre de Violet, Asher Sorrengail?', o:['Jinete de dragón','Curandero','Escriba','Soldado de infantería'], a:2, x:'Asher era escriba en Basgiath; de él heredó Violet su amor por los libros y la historia.', t:0},
+ {q:'¿Qué puede ver el general Melgren con su sello?', o:['El resultado de las batallas','El pasado de las personas','A través de las paredes','El clima de mañana'], a:0, x:'Melgren prevé cómo acabará una batalla… salvo cuando hay tres o más marcados juntos.', t:0},
+ {q:'¿Qué sello tiene la general Lilith Sorrengail?', o:['Sombras','Tormentas','Fuego','Ilusiones'], a:1, x:'La madre de Violet controla las tormentas. Su dragón se llama Aimsir.', t:0},
+ {q:'¿Con quién está en guerra Navarre al principio de la historia?', o:['Con Poromiel y sus jinetes de grifo','Con los elfos del norte','Con los dragones salvajes','Con Tyrrendor'], a:0, x:'Navarre se enfrenta a Poromiel, cuyos guerreros vuelan a lomos de grifos.', t:0},
+ {q:'¿Cómo llama Xaden a Violet de forma cariñosa (y algo provocadora)?', o:['Tormenta','Chispa','Violencia','Pequeña'], a:2, x:'La llama "Violencia", un apodo que acaba haciendo suyo.', t:0},
+ {q:'¿Qué escriba imparte el Informe de Batalla junto a la capitana Devera?', o:['Markham','Carr','Kaori','Panchek'], a:0, x:'Markham, alto cargo de los escribas, analiza los ataques con los cadetes junto a Devera.', t:0},
+ {q:'¿Qué profesor enseña a los cadetes sobre las razas de dragones?', o:['Kaori','Carr','Emetterio','Varrish'], a:0, x:'En las clases de Kaori aprenden colores, colas y temperamentos de los dragones.', t:0},
+ {q:'¿Con qué profesor entrena Violet sus relámpagos en las montañas?', o:['Kaori','Devera','Carr','Markham'], a:2, x:'El profesor Carr se encarga de los sellos y la lleva a practicar lejos de la ciudadela.', t:0},
+ {q:'¿Quién es Jesinia Neilwart?', o:['Una jinete de grifo','Una escriba amiga de Violet','La dragona de Imogen','La hermana de Liam'], a:1, x:'Jesinia es escriba en los Archivos y una aliada clave para Violet.', t:0},
+ {q:'¿En qué pelotón del Ala Cuatro está Violet?', o:['Primer Pelotón','Segundo Pelotón','Tercer Pelotón','Cuarto Pelotón'], a:1, x:'Violet, Rhiannon, Ridoc, Sawyer y Liam son del Segundo Pelotón.', t:0},
+ {q:'¿Qué "objeto útil para el enemigo" roba el pelotón de Violet en la última prueba de la batalla de pelotones?', o:['Un huevo de dragón','Un mapa del despacho de la general Sorrengail','La espada de Melgren','Un libro prohibido'], a:1, x:'Con la idea de Violet y los sellos de todos, se llevan un mapa estratégico del despacho de su madre.', t:0},
+ {q:'¿Qué une a Tairn y Sgaeyl?', o:['Son hermanos','Son pareja','Son enemigos','Tienen el mismo jinete'], a:1, x:'Tairn y Sgaeyl son pareja, y por eso sus jinetes no pueden alejarse mucho sin sufrir.', t:0},
+ {q:'¿Cómo se libra Violet de Jack cuando él la reta en la estera?', o:['Con un relámpago','Aprovechando que es alérgico a algo','Pidiendo ayuda a Xaden','Rindiéndose a tiempo'], a:1, x:'Sabe a qué es alérgico Jack y lo usa contra él. Cerebro por encima de músculo.', t:0},
+ {q:'¿Quién es Bodhi Durran?', o:['El primo de Xaden','El hermano de Dain','El profesor de vuelo','Un jinete de grifo'], a:0, x:'Bodhi es primo de Xaden y uno de sus apoyos más cercanos.', t:0},
+ // --- final de Alas de sangre
+ {q:'¿A qué puesto fronterizo envían a Xaden y a su grupo durante los Juegos de Guerra?', o:['Montserrat','Samara','Athebyne','Chakir'], a:2, x:'Los mandan a Athebyne, fuera de las protecciones mágicas. Allí descubren que era una trampa.', t:1},
+ {q:'¿Qué criaturas, que casi todos creían un mito, aparecen al final de Alas de sangre?', o:['Venin y guivernos','Fénix','Gigantes','Krakens'], a:0, x:'Los venin, magos que absorben poder de la tierra, existen de verdad, y con ellos los guivernos.', t:1},
+ {q:'¿Qué pueblo atacan los venin en la gran batalla del final del primer libro?', o:['Resson','Aretia','Basgiath','Lewellen'], a:0, x:'En Resson los cadetes deciden luchar para defender a los civiles.', t:1},
+ {q:'¿En qué ciudad, que todos creían destruida, despierta Violet al final del primer libro?', o:['Aretia','Samara','Calldyr','Draithus'], a:0, x:'Aretia, la ciudad natal de Xaden, es en secreto el corazón de la rebelión.', t:1},
+ {q:'¿Quién aparece vivo al final de Alas de sangre, para sorpresa de Violet?', o:['Su padre','Su hermano Brennan','Liam','Fen Riorson'], a:1, x:'Brennan, al que creía muerto, está vivo y es uno de los líderes de la rebelión.', t:1},
+ {q:'¿Qué sello tiene Brennan Sorrengail?', o:['Reparar (sanar) lo roto','Leer recuerdos','Sombras','Tormentas'], a:0, x:'Brennan es reparador: puede recomponer huesos, heridas… y hasta piedras.', t:1},
+ {q:'¿Quién tendió la trampa que llevó al grupo de Xaden a Athebyne?', o:['La general Sorrengail','El coronel Aetos','Markham','Melgren'], a:1, x:'El coronel Aetos, padre de Dain, supo de las salidas gracias al sello de Dain y los envió allí.', t:1},
+ // --- Alas de hierro
+ {q:'¿Quién es el vicecomandante que se obsesiona con Violet en Alas de hierro?', o:['Varrish','Panchek','Carr','Emetterio'], a:0, x:'El mayor Varrish, cuyo sello detecta las debilidades de las personas, la vigila y la tortura.', t:2},
+ {q:'¿Con qué nombre falso se esconde el príncipe Cam, hijo del rey Tauri, en Basgiath?', o:['Aaric Graycastle','Ridoc Gamlyn','Quinn Hollis','Halden Tauri'], a:0, x:'El tercer hijo del rey se alista como Aaric Graycastle para buscar respuestas sobre los venin.', t:2},
+ {q:'¿Qué le ocurre a Andarna durante buena parte de Alas de hierro?', o:['Se escapa a Poromiel','Cae en un largo sueño de crecimiento','Pierde las alas','Elige otra jinete'], a:1, x:'Entra en un "sueño sin sueños" necesario para crecer y tarda mucho en despertar.', t:2},
+ {q:'¿Quién es Sloane Mairi?', o:['La hermana de Liam','La prima de Rhiannon','La dragona de Mira','Una escriba'], a:0, x:'Sloane es la hermana de Liam; al principio culpa a Violet de su muerte.', t:2},
+ {q:'¿Qué sello manifiesta Sloane?', o:['Absorber (sifonar) magia','Detener el tiempo','Controlar el agua','Teletransporte'], a:0, x:'Sloane puede drenar magia, un poder decisivo al final del libro.', t:2},
+ {q:'¿Qué segundo sello oculta Xaden?', o:['Sentir las intenciones de los demás','Volar sin dragón','Leer el futuro','Hablar con los muertos'], a:0, x:'Es un inntinnsic: percibe intenciones, un sello prohibido en Navarre.', t:2},
+ {q:'¿Quién es Cat (Catriona) en Alas de hierro?', o:['Una jinete de grifo y expareja de Xaden','La hermana de Dain','Una profesora de Basgiath','La dragona de Sloane'], a:0, x:'Cat es jinete de grifo, sobrina del vizconde Tecarus y antigua prometida de Xaden.', t:2},
+ {q:'¿Los diarios de quiénes busca Violet para aprender a levantar protecciones?', o:['De los Primeros Seis','De su madre','De Fen Riorson','Del rey Tauri'], a:0, x:'Busca los escritos de Lyra y Warrick, miembros de los Primeros Seis que crearon las protecciones.', t:2},
+ {q:'¿Cuántas guaridas de dragones hacen falta de verdad para activar una piedra de protección?', o:['Cinco','Seis','Siete','Diez'], a:2, x:'Hacen falta siete, y Andarna pertenece a esa séptima guarida desconocida.', t:2},
+ {q:'¿Quién destruye la piedra de protección de Basgiath al final de Alas de hierro?', o:['Jack Barlowe, convertido en venin','Varrish','Dain','Un guiverno'], a:0, x:'Jack, al que creían muerto, vuelve como venin y sacrifica a su dragón para derribar las protecciones.', t:2},
+ {q:'¿Quién traiciona a Violet dándole un suero que bloquea su vínculo con Tairn?', o:['Nolon','Rhiannon','Markham','Brennan'], a:0, x:'Nolon, el reparador, la engaña con ese suero antes de que Varrish la capture.', t:2},
+ {q:'¿Qué transformación sufre Xaden al final de Alas de hierro?', o:['Pierde a Sgaeyl','Se convierte en venin','Se queda ciego','Se convierte en grifo'], a:1, x:'Para salvar a Violet saca poder directamente de la tierra, y eso lo convierte en venin.', t:2},
+ // --- Alas de ónix
+ {q:'¿Qué buscan Violet y Xaden en las islas al sur del continente en Alas de ónix?', o:['Más dragones de la especie de Andarna, los irids','Un tesoro pirata','La tumba de Fen','A los Primeros Seis vivos'], a:0, x:'Buscan a los irids, la especie de Andarna, además de aliados y una cura para Xaden.', t:3},
+ {q:'¿Cómo se llama la poderosa venin de pelo plateado que maneja las tormentas?', o:['Theophanie','Aurelie','Maren','Lynx'], a:0, x:'Theophanie es una de las grandes enemigas de Alas de ónix.', t:3},
+ {q:'¿A quién captura Theophanie, provocando la gran batalla final de Alas de ónix?', o:['A Mira','A Rhiannon','A Dain','A Brennan'], a:0, x:'Se lleva a Mira, la hermana de Violet.', t:3},
+ {q:'¿Qué título tiene Xaden en Alas de ónix?', o:['Duque de Tyrrendor','Rey de Navarre','General de Basgiath','Vizconde de Krovla'], a:0, x:'Como heredero de su familia, Xaden es el duque de Tyrrendor.', t:3},
+ {q:'¿Cómo reciben los irids a Andarna cuando por fin los encuentran?', o:['La coronan reina','La rechazan por lo que Navarre ha hecho de ella','La ignoran por completo','La atacan'], a:1, x:'Les decepciona cuánto la ha marcado la cultura guerrera de Navarre.', t:3},
+ {q:'¿Con qué sorpresa termina Alas de ónix?', o:['Violet parece haberse casado con Xaden','Tairn muere','Violet pierde su sello','Basgiath se rinde'], a:0, x:'Violet despierta confundida y descubre que, al parecer, se acaba de casar con Xaden.', t:3},
+];
+const TRIVIA_EPOCH = '2026-10-19';                    // día 0: misma pregunta para todo el mundo según la fecha
+const TRIVIA_REWARD = { coins:15, xp:20 };
+const TRIVIA_TAG = ['', '⚠️ Spoiler del final de Alas de sangre', '⚠️ Spoilers de Alas de hierro', '⚠️ Spoilers de Alas de ónix'];
+const TRIVIA_BOOK = ['Alas de sangre','Alas de sangre','Alas de hierro','Alas de ónix'];
+function triviaOrder(i){ const Q=TRIVIA[i], p=(i*3+1)%4, rest=[0,1,2,3].filter(k=>k!==Q.a); if(i%2) rest.reverse(); rest.splice(p,0,Q.a); return rest; }   // orden fijo; la buena va rotando de sitio
+function triviaIndex(day){ const n=TRIVIA.length; const k=daysBetween(TRIVIA_EPOCH, day||today()); return ((k % n) + n) % n; }
+const triviaDone = () => S.quizDay === today();
+function renderTriviaBtn(){
+  const b=$('quizBtn'); if(!b || !S.bonded) return;
+  const L=S.quizLast;
+  b.classList.toggle('done', triviaDone());
+  $('quizState').textContent = !triviaDone() ? `+${TRIVIA_REWARD.coins} 🪙 si aciertas` : (L && L.ok ? '✅ ¡Acertada!' : '❌ Mañana, otra');
+}
+function openTrivia(){
+  if(!S.bonded) return;
+  const i = triviaIndex(), Q = TRIVIA[i], done = triviaDone() && S.quizLast && S.quizLast.day===today();
+  modal(c=>{
+    c.classList.add('trivia');
+    c.appendChild(el('div','tq-top', `❓ Pregunta del día · ${TRIVIA_BOOK[Q.t]}`));
+    const body = el('div'); c.appendChild(body);
+    const showQ = () => {
+      body.innerHTML='';
+      body.appendChild(el('h3','tq-q', Q.q));
+      const opts = el('div','tq-opts'); body.appendChild(opts);
+      const res = el('div','tq-res'); res.id='quizRes';
+      triviaOrder(i).forEach(k=>{ const ob=el('button','tq-opt', Q.o[k]); ob.dataset.k=k; opts.appendChild(ob);
+        ob.onclick=()=>answerTrivia(i, k, opts, res); });
+      body.appendChild(res);
+      if(done) paintTrivia(Q, S.quizLast.pick, opts, res, null);
+    };
+    if(Q.t>0 && !done){
+      body.appendChild(el('p','tq-warn', `${TRIVIA_TAG[Q.t]}. Si aún no lo has leído, puedes dejarla para otro día: solo cuenta cuando respondes.`));
+      const sb=el('button','btn gold','Ver la pregunta'); sb.id='quizRevealBtn'; sb.onclick=showQ; body.appendChild(sb);
+    } else showQ();
+    const close=el('button','btn ghost','Cerrar'); close.id='quizCloseBtn'; close.onclick=()=>{ c.classList.remove('trivia'); closeModal(); }; c.appendChild(close);
+  });
+}
+function paintTrivia(Q, pick, opts, res, rw){
+  opts.querySelectorAll('.tq-opt').forEach(b=>{ const k=+b.dataset.k; b.disabled=true; if(k===Q.a) b.classList.add('ok'); else if(k===pick) b.classList.add('bad'); });
+  res.innerHTML='';
+  const ok = pick===Q.a;
+  res.appendChild(el('b', null, ok ? (rw ? `¡Correcto! +${rw.coins} 🪙 y +${rw.xp} XP` : '¡Correcto!') : `Era: ${Q.o[Q.a]}`));
+  res.appendChild(el('p', null, Q.x));
+  res.appendChild(el('p','kind', 'Mañana, otra pregunta. Todo el mundo tiene la misma cada día.'));
+  res.className = 'tq-res show ' + (ok?'good':'wrong');
+}
+function answerTrivia(i, pick, opts, res){
+  if(triviaDone()) return;                                 // un intento al día
+  const Q=TRIVIA[i], ok = pick===Q.a;
+  S.quizDay = today(); S.quizCount = (S.quizCount||0)+1; if(ok) S.quizRight = (S.quizRight||0)+1;
+  S.quizLast = { day:today(), i, pick, ok };
+  let rw=null;
+  if(ok){ rw={...TRIVIA_REWARD}; S.coins=(S.coins||0)+rw.coins; }
+  save(); renderCoins(); renderTriviaBtn();
+  paintTrivia(Q, pick, opts, res, rw);
+  if(ok){ gainXP(rw.xp); celebrate(['📜','✨','🪙']); }
+}
+
+/* ======================= NUBE (Firebase Firestore, sin Auth) ======================= */
+// Modelo: players/{id} perfil público · backups/{id}_{secreto} copia privada completa · streaks/{idA}_{idB} racha compartida.
+// La partida local siempre manda: al arrancar se sube lo local; de la nube solo se leen los amigos y las rachas.
+const FB_VER = '12.19.0';
+const FB_CFG = { apiKey:'AIzaSyCLyadTCuzQyKek_vOkk9_3CS9kL7k0Y5Y', authDomain:'dragon-quiz-arnau.firebaseapp.com', projectId:'dragon-quiz-arnau',
+  storageBucket:'dragon-quiz-arnau.firebasestorage.app', messagingSenderId:'913604526257', appId:'1:913604526257:web:041fb242280b0097ed2290' };
+var CLOUD = { db:null, fs:null, loading:null, unsubs:{}, streaks:{}, last:{p:'', b:''}, timer:null, lastBackup:0, ok:0, err:null, started:false };
+const CLOUD_AT_KEY = 'valle-dragon-cloud-at';
+const pairId = (a,b) => a<b ? `${a}_${b}` : `${b}_${a}`;
+function cloudLoad(){
+  if(new URLSearchParams(location.search).has('nocloud')) return Promise.resolve(false);   // modo sin nube (pruebas)
+  if(CLOUD.loading) return CLOUD.loading;
+  CLOUD.loading = (async()=>{
+    try{
+      const [app, fs] = await Promise.all([
+        import(`https://www.gstatic.com/firebasejs/${FB_VER}/firebase-app.js`),
+        import(`https://www.gstatic.com/firebasejs/${FB_VER}/firebase-firestore.js`) ]);
+      const a = app.initializeApp(FB_CFG);
+      CLOUD.db = fs.getFirestore(a); CLOUD.fs = fs; return true;
+    }catch(e){ console.warn('Nube no disponible, sigo solo en este móvil', e); CLOUD.err = String(e && e.message || e); CLOUD.loading = null; return false; }
+  })();
+  return CLOUD.loading;
+}
+function ensureCloudIds(){
+  if(!S.bonded) return false; let ch=false;
+  if(!/^[a-z0-9]{4,32}$/.test(S.id||'')){ S.id = rid(20); ch=true; }
+  if(!/^[a-z0-9]{24,64}$/.test(S.cloudSecret||'')){ S.cloudSecret = rid(32); ch=true; }
+  if(ch) localStorage.setItem(KEY, JSON.stringify(S));
+  return ch;
+}
+function publicProfile(){
+  const d = byKey(S.key), eq = cleanEq(S.eq||{}), equipped = {};
+  Object.entries(eq).forEach(([k,v])=>{ if(typeof v==='string') equipped[k]=v.slice(0,20); });
+  return { name:String(S.name||'Dragón').slice(0,18), key:S.key, breed:d.title.slice(0,60), color:d.c, tail:d.t,
+    level:Math.max(1, Math.min(200, levelInfo(S.xp).lvl)), xp:Math.max(0, Math.min(10000000, Math.floor(S.xp||0))),
+    accessories:(S.inv||[]).filter(x=>typeof x==='string').slice(0,40), equipped,
+    flightBest:Math.max(0, Math.min(1000000, S.flightBest|0)), streak:Math.max(0, S.streak|0), bestStreak:Math.max(0, S.best|0), v:SCHEMA };
+}
+const withTimeout = (p, ms) => Promise.race([p, new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')), ms))]);
+async function cloudPush(force){
+  if(!CLOUD.db || !S.bonded) return false;
+  ensureCloudIds();
+  const { doc, setDoc, serverTimestamp } = CLOUD.fs;
+  const prof = publicProfile(), pj = JSON.stringify(prof), bj = JSON.stringify(S);
+  const tasks = [];
+  if(force || pj !== CLOUD.last.p) tasks.push(setDoc(doc(CLOUD.db,'players',S.id), { ...prof, updatedAt:serverTimestamp() }).then(()=>{ CLOUD.last.p = pj; }));
+  const backupDue = force || (bj !== CLOUD.last.b && Date.now()-CLOUD.lastBackup > 60000);
+  if(backupDue && bj.length <= 40000){ CLOUD.lastBackup = Date.now();
+    tasks.push(setDoc(doc(CLOUD.db,'backups',`${S.id}_${S.cloudSecret}`), { id:S.id, data:bj, v:SCHEMA, updatedAt:serverTimestamp() }).then(()=>{ CLOUD.last.b = bj; })); }
+  else if(bj !== CLOUD.last.b) scheduleCloud(61000);
+  try{ await withTimeout(Promise.all(tasks), 12000); if(tasks.length){ CLOUD.ok = Date.now(); localStorage.setItem(CLOUD_AT_KEY, String(CLOUD.ok)); } CLOUD.err=null; return true; }
+  catch(e){ console.warn('No se pudo subir a la nube', e); CLOUD.err = String(e && e.message || e); return false; }
+}
+function scheduleCloud(ms){
+  if(!CLOUD || !CLOUD.db) return;
+  clearTimeout(CLOUD.timer); CLOUD.timer = setTimeout(()=>{ cloudPush(false); subscribeFriends(); }, ms||4000);
+}
+async function cloudStart(){
+  if(!S.bonded || CLOUD.started) return; CLOUD.started = true;
+  if(!(await cloudLoad())){ CLOUD.started = false; return; }
+  ensureCloudIds();
+  await cloudPush(true);                                  // primero sube lo local: nunca se pierde progreso
+  subscribeFriends();
+}
+function subscribeFriends(){
+  if(!CLOUD.db || !S.bonded) return;
+  const { doc, onSnapshot } = CLOUD.fs, fr = (S.friends||[]).slice(0,40), ids = new Set(fr.map(f=>f.id));
+  for(const k of Object.keys(CLOUD.unsubs)){ if(!ids.has(k.slice(2))){ CLOUD.unsubs[k](); delete CLOUD.unsubs[k]; } }
+  fr.forEach(f=>{
+    if(!/^[a-z0-9]{4,32}$/.test(f.id) || f.id===S.id) return;
+    if(!CLOUD.unsubs['p:'+f.id]) CLOUD.unsubs['p:'+f.id] = onSnapshot(doc(CLOUD.db,'players',f.id), s=>applyFriendDoc(f.id, s.exists()?s.data():null), e=>console.warn('amigo', f.id, e.code));
+    if(!CLOUD.unsubs['s:'+f.id]) CLOUD.unsubs['s:'+f.id] = onSnapshot(doc(CLOUD.db,'streaks',pairId(S.id,f.id)), s=>applyStreakDoc(f.id, s.exists()?s.data():null), e=>console.warn('racha', f.id, e.code));
+  });
+}
+function refreshFriendViews(){
+  renderFriends();
+  if(!$('park').classList.contains('hidden') && !park.playing){ renderPark(); }
+}
+function applyFriendDoc(id, d){
+  const f = (S.friends||[]).find(x=>x.id===id); if(!f || !d) return;
+  const before = JSON.stringify(f);
+  if(typeof d.name==='string' && d.name.trim()) f.name = d.name.trim().slice(0,18);
+  if(typeof d.key==='string' && byKey(d.key)) f.key = d.key;
+  if(d.equipped && typeof d.equipped==='object'){ const eq={}; Object.values(d.equipped).forEach(v=>{ const it=itemById(v); if(it) eq[it.slot]=it.id; }); f.eq = eq; }
+  if(Number.isInteger(d.level)) f.lvl = Math.max(1, Math.min(99, d.level));
+  if(Number.isInteger(d.flightBest) && d.flightBest>=0) f.flightBest = Math.max(typeof f.flightBest==='number' ? f.flightBest : 0, Math.min(1000000, d.flightBest));
+  f.cloud = true;
+  if(JSON.stringify(f) !== before){ save(); refreshFriendViews(); }
+}
+function mergeStreak(a, b){
+  let w;
+  if(!b || !b.day) w = a; else if(!a.day) w = b; else if(a.day > b.day) w = a; else if(b.day > a.day) w = b; else w = (a.count >= b.count ? a : b);
+  return { count:w.count, day:w.day, best:Math.max(a.best||0, (b&&b.best)||0, w.count) };
+}
+function applyStreakDoc(id, d){
+  const f = (S.friends||[]).find(x=>x.id===id); if(!f) return;
+  const cloud = (d && Number.isInteger(d.count) && /^\d{4}-\d{2}-\d{2}$/.test(d.lastDay||'')) ? { count:Math.min(3650, Math.max(0,d.count)), day:d.lastDay, best:Math.min(3650, d.best|0) } : null;
+  CLOUD.streaks[id] = cloud;
+  normFriend(f);
+  const local = { count:f.streak, day:f.streakDay, best:f.bestStreak||0 }, m = mergeStreak(local, cloud);
+  if(m.count!==local.count || m.day!==local.day || m.best!==local.best){
+    f.streak = m.count; f.streakDay = m.day; f.bestStreak = m.best; normFriend(f); save(); refreshFriendViews();
+  }
+  cloudStreakPush(f);
+}
+function cloudStreakPush(f){
+  if(!CLOUD.db || !f || !f.streakDay) return;
+  const c = CLOUD.streaks[f.id], local = { count:f.streak|0, day:f.streakDay, best:Math.max(f.bestStreak|0, f.streak|0) };
+  const m = mergeStreak(local, c);
+  if(c && c.count===m.count && c.day===m.day && c.best>=m.best) return;   // la nube ya está al día
+  if(!c && !local.count && !local.best) return;
+  const { doc, setDoc, serverTimestamp } = CLOUD.fs, pid = pairId(S.id, f.id);
+  CLOUD.streaks[f.id] = { ...m };
+  setDoc(doc(CLOUD.db,'streaks',pid), { ids:pid.split('_'), count:m.count, best:Math.max(m.best, c?c.best:0), lastDay:m.day, updatedAt:serverTimestamp() })
+    .catch(e=>console.warn('racha no subida', e.code));
+}
+// --- copia de seguridad / restaurar con código ---
+const backupCode = () => `DRG-${S.id}-${S.cloudSecret}`;
+function parseBackupCode(txt){ const m = String(txt||'').trim().toLowerCase().replace(/\s+/g,'').match(/^drg-([a-z0-9]{4,32})-([a-z0-9]{24,64})$/); return m ? { id:m[1], secret:m[2] } : null; }
+function cloudAgo(){ const t = +localStorage.getItem(CLOUD_AT_KEY) || CLOUD.ok; if(!t) return null; const m = Math.round((Date.now()-t)/60000); return m<1 ? 'hace un momento' : m<60 ? `hace ${m} min` : m<1440 ? `hace ${Math.round(m/60)} h` : `hace ${Math.round(m/1440)} días`; }
+async function openBackup(){
+  modal(c=>{
+    c.appendChild(el('h3', null, '☁️ Copia de seguridad'));
+    if(S.bonded){
+      ensureCloudIds();
+      c.appendChild(el('p', null, `Con este código puedes recuperar a ${S.name} en otro móvil. Guárdalo en privado: quien lo tenga puede recuperar tu dragón.`));
+      const code = el('div','bk-code', backupCode()); code.id='backupCode'; c.appendChild(code);
+      const st = el('p','kind', 'Guardando en la nube…'); st.id='backupStatus'; c.appendChild(st);
+      const cp = el('button','btn gold','Copiar código'); cp.id='backupCopyBtn';
+      cp.onclick = async()=>{ try{ await navigator.clipboard.writeText(backupCode()); toast('Código copiado. Guárdalo en un sitio seguro 🔐'); }catch(e){ prompt('Copia tu código:', backupCode()); } };
+      c.appendChild(cp);
+      (async()=>{ const ok = (await cloudLoad()) && (await cloudPush(true)); if(!st.isConnected) return;
+        st.textContent = ok ? `✅ Copia guardada en la nube ${cloudAgo()||''}.` : `⚠️ Ahora no hay conexión con la nube. ${cloudAgo() ? 'Última copia: '+cloudAgo()+'.' : 'Tu dragón sigue guardado en este móvil.'}`; })();
+    }
+    c.appendChild(el('h3','bk-sub', 'Recuperar un dragón'));
+    c.appendChild(el('p','kind', S.bonded ? 'Pega un código para traer otro dragón a este móvil (sustituye al actual).' : 'Pega el código de tu copia para traer tu dragón a este móvil.'));
+    const inp = el('input'); inp.type='text'; inp.id='restoreInput'; inp.placeholder='DRG-…'; inp.autocomplete='off'; inp.spellcheck=false; inp.className='bk-input'; c.appendChild(inp);
+    const msg = el('p','kind',''); msg.id='restoreMsg'; c.appendChild(msg);
+    const rb = el('button','btn red','Recuperar'); rb.id='restoreBtn'; rb.onclick=()=>restoreFromCode(inp.value, msg, rb); c.appendChild(rb);
+    const cl = el('button','btn ghost','Cerrar'); cl.onclick=closeModal; c.appendChild(cl);
+  });
+}
+async function restoreFromCode(txt, msg, btn){
+  const p = parseBackupCode(txt);
+  if(!p){ msg.textContent='Ese código no parece válido. Empieza por DRG-.'; return; }
+  if(S.bonded && p.id===S.id && p.secret===S.cloudSecret){ msg.textContent='Ese es el código de este mismo dragón 🙂'; return; }
+  btn.disabled = true; msg.textContent = 'Buscando tu dragón en la nube…';
+  try{
+    if(!(await cloudLoad())) throw new Error('offline');
+    const { doc, getDoc } = CLOUD.fs;
+    const snap = await withTimeout(getDoc(doc(CLOUD.db,'backups',`${p.id}_${p.secret}`)), 12000);
+    if(!snap.exists()){ msg.textContent='No encuentro ninguna copia con ese código.'; btn.disabled=false; return; }
+    let data = null; try{ data = JSON.parse(snap.data().data); }catch(e){}
+    if(!data || !data.bonded || !byKey(data.key) || typeof data.name!=='string'){ msg.textContent='La copia está dañada, no puedo usarla.'; btn.disabled=false; return; }
+    const lvl = levelFromXpEarly(data.xp||0), nm = data.name.slice(0,18);
+    msg.textContent = '';
+    const ok = confirm(S.bonded ? `¿Recuperar a ${nm} (nivel ${lvl})? ${S.name} se sustituirá en este móvil.` : `¿Recuperar a ${nm} (nivel ${lvl})?`);
+    if(!ok){ btn.disabled=false; return; }
+    data.id = p.id; data.cloudSecret = p.secret; data.restoredAt = Date.now();
+    localStorage.setItem(KEY, JSON.stringify(data)); localStorage.removeItem(CLOUD_AT_KEY);
+    window.__restored = nm;
+    location.hash=''; location.reload();
+  }catch(e){ msg.textContent = 'No hay conexión con la nube ahora mismo. Prueba en un rato.'; btn.disabled=false; }
+}
+
 /* ======================= RACHA COMPARTIDA ======================= */
 const STREAK_MILESTONES = { 3:{coins:15, xp:30}, 7:{coins:40, xp:60}, 14:{coins:80, xp:120}, 30:{coins:200, xp:250} };
 const recentDay = d => d===today() || d===yesterday();
@@ -1407,6 +1828,7 @@ function normFriend(f){
   if(typeof f.streak !== 'number' || !(f.streak>=0)) f.streak = 0;
   if(typeof f.bestStreak !== 'number') f.bestStreak = f.streak;
   if(f.streakDay === undefined) f.streakDay = null;
+  if(typeof f.flightBest !== 'number' || !(f.flightBest>=0)) f.flightBest = null;
   if(f.streak>0 && !recentDay(f.streakDay)){ f.lostStreak = f.streak; f.streak = 0; }   // se rompe si falta un día
   return f;
 }
@@ -1435,10 +1857,10 @@ function syncStreak(f, theirs, theirDay){
 
 /* ======================= AMIGOS E INVITACIONES ======================= */
 const INV_KEY = 'valle-dragon-invite';
-const newId = () => (Math.random().toString(36).slice(2,8) + Date.now().toString(36).slice(-4));
+const newId = () => rid(20);
 const baseUrl = () => location.origin + location.pathname;
 function myInviteLink(friend){ const q = new URLSearchParams({ amigo:'1', i:S.id, n:S.name, k:S.key });
-  if(friend){ normFriend(friend); q.set('to', friend.id); q.set('s', String(sharedStreak(friend))); if(friend.streakDay) q.set('sd', friend.streakDay); } const a=Object.values(cleanEq(S.eq)); if(a.length) q.set('a', a.join('.')); q.set('l', String(levelInfo(S.xp).lvl)); return baseUrl() + '#' + q.toString(); }
+  if(friend){ normFriend(friend); q.set('to', friend.id); q.set('s', String(sharedStreak(friend))); if(friend.streakDay) q.set('sd', friend.streakDay); } const a=Object.values(cleanEq(S.eq)); if(a.length) q.set('a', a.join('.')); q.set('l', String(levelInfo(S.xp).lvl)); q.set('f', String(Math.max(0, S.flightBest|0))); return baseUrl() + '#' + q.toString(); }
 function parseInvite(hash){
   if(!hash || hash.length<2) return null;
   const q = new URLSearchParams(hash.replace(/^#/,''));
@@ -1448,7 +1870,8 @@ function parseInvite(hash){
   const eq={}; (q.get('a')||'').split('.').forEach(id=>{ const it=itemById(id); if(it) eq[it.slot]=it.id; });
   const lvl = Math.max(1, Math.min(99, parseInt(q.get('l'))||1));
   const to=(q.get('to')||'').toLowerCase(), st=Math.max(0, Math.min(3650, parseInt(q.get('s'))||0)), sd=/^\d{4}-\d{2}-\d{2}$/.test(q.get('sd')||'') ? q.get('sd') : null;
-  return { id:i, name:n, key:k, eq, lvl, to, streak:st, streakDay:sd };
+  const fb = /^\d{1,6}$/.test(q.get('f')||'') ? parseInt(q.get('f'),10) : null;   // récord de vuelo (null = enlace antiguo)
+  return { id:i, name:n, key:k, eq, lvl, to, streak:st, streakDay:sd, flightBest:fb };
 }
 function openWhatsApp(text){
   const url = 'https://wa.me/?text=' + encodeURIComponent(text);
@@ -1472,12 +1895,13 @@ function addFriend(inv){
   S.friends ||= [];
   const ex = S.friends.find(f=>f.id===inv.id);
   if(ex){ ex.name=inv.name; ex.key=inv.key; ex.eq=inv.eq||{}; ex.lvl=inv.lvl||1; normFriend(ex);
+    if(typeof inv.flightBest === 'number') ex.flightBest = Math.max(ex.flightBest ?? 0, inv.flightBest);   // un récord solo sube
     if(inv.to && inv.to===S.id && syncStreak(ex, inv.streak, inv.streakDay)) inv.synced = ex.streak;
     save(); return false; }
-  S.friends.push({ id:inv.id, name:inv.name, key:inv.key, eq:inv.eq||{}, lvl:inv.lvl||1, since:today(), streak:0, streakDay:null, bestStreak:0 }); save(); return true;
+  S.friends.push({ id:inv.id, name:inv.name, key:inv.key, eq:inv.eq||{}, lvl:inv.lvl||1, since:today(), streak:0, streakDay:null, bestStreak:0, flightBest: typeof inv.flightBest==='number' ? inv.flightBest : null }); save(); return true;
 }
 function closeModal(){ $('modal').classList.add('hidden'); $('modalCard').innerHTML=''; }
-function modal(build){ const c=$('modalCard'); c.innerHTML=''; c.classList.remove('fade'); void c.offsetWidth; c.classList.add('fade'); build(c); $('modal').classList.remove('hidden'); }
+function modal(build){ const c=$('modalCard'); c.innerHTML=''; c.classList.remove('trivia','lvlup'); c.classList.remove('fade'); void c.offsetWidth; c.classList.add('fade'); build(c); $('modal').classList.remove('hidden'); }
 function el(tag, cls, text){ const e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
 function showInviteCard(inv){
   modal(c=>{
@@ -1529,6 +1953,32 @@ function acceptPendingAfterBond(){
   addFriend(pending); renderFriends(); setTimeout(()=>showFriendsNow(pending), 700); return true;
 }
 const playedToday = f => (S.plays||{})[f.id] === today();
+/* --- ranking de vuelo entre amigos --- */
+function flightRanking(){
+  const all = [{ id:S.id, name:S.name, key:S.key, eq:S.eq||{}, best:S.flightBest||0, me:true },
+               ...(S.friends||[]).map(f=>({ id:f.id, name:f.name, key:f.key, eq:f.eq||{}, best: typeof f.flightBest==='number' ? f.flightBest : null, me:false }))];
+  all.sort((a,b)=> (b.best??-1)-(a.best??-1) || (b.me-a.me) || a.name.localeCompare(b.name));
+  let pos=0; all.forEach(r=>{ r.pos = r.best===null ? null : ++pos; });
+  return all;
+}
+function myRankText(){ const r=flightRanking(), me=r.find(x=>x.me); return `${me.pos}º de ${r.length}`; }
+function showFlightRanking(){
+  modal(c=>{
+    c.appendChild(el('h3', null, '🏆 Ranking de vuelo'));
+    const list = el('div','rank-list'); list.id='rankList';
+    flightRanking().forEach(r=>{
+      const d=byKey(r.key); const row=el('div','rank-row'+(r.me?' me':'')+(r.best===null?' unk':''));
+      row.appendChild(el('span','rpos', r.pos ? (['🥇','🥈','🥉'][r.pos-1] || r.pos+'º') : '·'));
+      if(d) row.appendChild(miniChibi(d, r.eq));
+      row.appendChild(el('b','rname', r.me ? `${r.name} (tú)` : r.name));
+      row.appendChild(el('span','rbest', r.best===null ? '—' : String(r.best)));
+      list.appendChild(row);
+    });
+    c.appendChild(list);
+    c.appendChild(el('p','kind', (S.friends||[]).length ? (CLOUD.db ? 'Récords sincronizados en la nube ☁️. ' : 'Sin conexión: se usan los récords que llegaron en sus enlaces. ') + '«—» = aún no sabemos su récord.' : 'Invita a amigos para competir: su récord llega con su enlace.'));
+    const ok=el('button','btn ghost','Cerrar'); ok.id='rankCloseBtn'; ok.onclick=closeModal; c.appendChild(ok);
+  });
+}
 function renderFriends(){
   const box=$('friendsList'); if(!box) return; box.innerHTML='';
   const fs = S.friends||[];
@@ -1636,7 +2086,7 @@ function playDate(forceGame){
   setTimeout(()=>{
     clearInterval(fx); anims.forEach(a=>a.cancel()); $('ball').classList.add('hidden'); homePositions();
     S.plays ||= {}; S.plays[f.id]=today(); S.playCount=(S.playCount||0)+1;
-    const R = bumpStreak(f);
+    const R = bumpStreak(f); cloudStreakPush(f);
     S.fun = 100; S.happy = clamp(S.happy+10); S.lastUpdate=Date.now(); S.coins=(S.coins||0)+5+R.coins; save(); renderCoins();
     park.playing=false; park.me.setMood(S.hunger, effHappy()); renderPark(); renderFriends();
     $('sceneMsg').textContent = `¡Qué tarde más buena! Diversión al 100 %`;
@@ -2018,7 +2468,20 @@ $('startBtn').onclick = startQuiz;
 $('bondBtn').onclick = bond;
 $('nameInput').addEventListener('keydown', e=>{ if(e.key==='Enter') bond(); });
 $('feedBtn').onclick = feed;
-$('petBtn').onclick = pet;
+$('menuBtn').onclick = openSheet;
+$('lvlPill').onclick = showAllSkills;
+$('sheetAllBtn').onclick = showAllSkills;
+$('sheetCloseBtn').onclick = closeSheet;
+$('sheet').addEventListener('click', e=>{ if(e.target.id==='sheet' && performance.now()-sheetAt>350) closeSheet(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && sheetOpen()) closeSheet(); });
+if(localStorage.getItem('valle-dragon-tapped')) $('tapHint').classList.add('hidden');
+// tocar al dragón (sin arrastrar) abre el menú; arrastrar en 3D sigue girándolo
+(()=>{ const slot=$('stageCareSlot'); let t0=null, tapOk=false;
+  slot.addEventListener('pointerdown', e=>{ if(e.target.closest('#viewToggle')) { t0=null; return; } t0={x:e.clientX,y:e.clientY,t:performance.now(),id:e.pointerId}; }, true);
+  slot.addEventListener('pointerup', e=>{ if(!t0 || e.pointerId!==t0.id) return; const moved=Math.hypot(e.clientX-t0.x, e.clientY-t0.y), dt=performance.now()-t0.t; t0=null;
+    if(moved<10 && dt<600 && !$('care').classList.contains('hidden')) openSheet(); }, true);
+  slot.addEventListener('pointercancel', ()=>{ t0=null; tapOk=false; }, true);
+})();
 $('shareBtn').onclick = share;
 $('aboutBtn').onclick = ()=>showResult(byKey(S.key), true);
 $('shopBtn').onclick = openShop;
@@ -2030,12 +2493,17 @@ $('cardShareBtn').onclick = shareCard;
 $('cardDlBtn').onclick = downloadCard;
 document.querySelectorAll('#cardFmt .tab').forEach(t=>t.onclick=()=>{ cardFmt=t.dataset.f; drawCardPreview(); });
 $('flightCanvas').addEventListener('pointerdown', e=>{ e.preventDefault(); if(FL.running) flap(); });
-document.addEventListener('keydown', e=>{ if($('flight').classList.contains('hidden')) return; if(e.code==='Space'||e.code==='ArrowUp'){ e.preventDefault(); if(FL.running) flap(); else if(!$('fOver').classList.contains('hidden')) startFlight(); } });
+document.addEventListener('keydown', e=>{ if($('flight').classList.contains('hidden') || !$('modal').classList.contains('hidden')) return; if(e.code==='Space'||e.code==='ArrowUp'){ e.preventDefault(); if(FL.running) flap(); else if(!$('fOver').classList.contains('hidden')) startFlight(); } });
 window.addEventListener('resize', ()=>{ if(!$('flight').classList.contains('hidden') && !FL.running){ fitFlight(); drawFlight(); } });
 $('shopBackBtn').onclick = ()=>openCare();
 $('claimBtn').onclick = claimDaily;
 $('inviteBtn').onclick = ()=>openWhatsApp(inviteText());
 $('copyInviteBtn').onclick = copyInvite;
+$('rankBtn').onclick = showFlightRanking;
+$('quizBtn').onclick = openTrivia;
+$('backupBtn').onclick = openBackup;
+$('introRestoreBtn').onclick = openBackup;
+window.__quiz = { TRIVIA, index:triviaIndex, order:()=>triviaOrder(triviaIndex()), orderOf:triviaOrder };
 $('parkBtn').onclick = ()=>openPark();
 $('parkBackBtn').onclick = ()=>{ if(!park.playing) openCare(); };
 $('playBtn').onclick = ()=>playDate();
@@ -2048,6 +2516,10 @@ if(S.bonded && byKey(S.key)) openCare();
 else if(S.pendingKey && byKey(S.pendingKey)) showResult(byKey(S.pendingKey), false);
 else show('intro');
 handleIncomingInvite();
+if(S.bonded) cloudStart();
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden' && CLOUD.db && S.bonded) cloudPush(false); });
+window.addEventListener('online', ()=>{ if(S.bonded){ if(!CLOUD.db){ CLOUD.started=false; cloudStart(); } else cloudPush(true); } });
+window.__cloud = { CLOUD, push:cloudPush, start:cloudStart, code:()=>backupCode(), pairId };
 // refresca medidores cada minuto
 setInterval(()=>{ if(S.bonded && !$('care').classList.contains('hidden')){ decay(); render(); } }, 60000);
 window.__park = { play:playDate, get state(){ return park; } };

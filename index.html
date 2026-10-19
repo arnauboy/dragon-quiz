@@ -627,7 +627,7 @@ const clamp = v => Math.max(0, Math.min(100, v));
 
 function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; } }
 let S = load();
-const SCHEMA = 8;   // v1 = original (sin campo v); v2 = diversión + amigos; v3 = monedas + tienda; v4 = XP + habilidades; v5 = vuelo + tarjeta; v6 = récord de vuelo de amigos; v7 = pregunta del día; v8 = nube (secreto de copia)
+const SCHEMA = 9;   // v9 = récord de vuelo protegido (máximo de todo lo guardado); v1 = original (sin campo v); v2 = diversión + amigos; v3 = monedas + tienda; v4 = XP + habilidades; v5 = vuelo + tarjeta; v6 = récord de vuelo de amigos; v7 = pregunta del día; v8 = nube (secreto de copia)
 const WELCOME_BONUS = 50;
 function levelFromXpEarly(xp){ let l=1, r=xp||0; while(r >= 50+30*(l-1)){ r-=50+30*(l-1); l++; } return l; }
 const effHappy = () => Math.min(S.happy, (S.fun ?? 100) + 10);   // aburrido = triste
@@ -672,12 +672,18 @@ function migrate(){
   if(v < 8){
     if(!/^[a-z0-9]{24,64}$/.test(S.cloudSecret||'')) S.cloudSecret = rid(32);   // secreto de la copia privada (nunca se comparte en enlaces)
   }
-  // aquí irán futuras migraciones: if(v < 9){ ... }
+  if(v < 9){
+    S.flightBest = bestFlightOf(S);                         // el récord de vuelo nunca baja: el mayor de todo lo guardado
+  }
+  // aquí irán futuras migraciones: if(v < 10){ ... }
   (S.friends||[]).forEach(f=>{ if(typeof f.streak !== 'number') f.streak = 0; if(f.streakDay === undefined) f.streakDay = null; });   // amigos antiguos: racha 0
   S.v = SCHEMA; S.migratedFrom = v; save();
 }
 migrate();
-function save(){ localStorage.setItem(KEY, JSON.stringify(S)); scheduleCloud(); }
+function save(){ if(S && S.bonded) S.flightBest = bestFlightOf(S); localStorage.setItem(KEY, JSON.stringify(S)); scheduleCloud(); }
+// mayor récord de vuelo conocido en una partida guardada (récord, última partida y la recompensa cobrada)
+function bestFlightOf(o){ const n = x => (Number.isFinite(+x) && +x>0) ? Math.min(1000000, Math.floor(+x)) : 0;
+  return Math.max(n(o && o.flightBest), n(o && o.flightLast), n(o && o.flightRewardLast && o.flightRewardLast.score)); }
 // id aleatorio e imposible de adivinar (hex), apto para enlaces y para la nube
 function rid(n){ let h=''; try{ h = crypto.randomUUID().replace(/-/g,''); }catch(e){} while(h.length < n){ h += Array.from(crypto.getRandomValues(new Uint8Array(16)), b=>b.toString(16).padStart(2,'0')).join(''); } return h.slice(0,n); }
 
@@ -1536,10 +1542,23 @@ function scheduleCloud(ms){
   if(!CLOUD || !CLOUD.db) return;
   clearTimeout(CLOUD.timer); CLOUD.timer = setTimeout(()=>{ cloudPush(false); subscribeFriends(); }, ms||4000);
 }
+async function cloudAdoptOwn(){
+  try{
+    const { doc, getDoc } = CLOUD.fs;
+    const snap = await withTimeout(getDoc(doc(CLOUD.db,'players',S.id)), 8000);
+    const d = snap.exists() ? snap.data() : null; if(!d) return;
+    let ch = false;
+    if(Number.isInteger(d.flightBest) && d.flightBest > (S.flightBest|0)){ S.flightBest = Math.min(1000000, d.flightBest); ch = true; }
+    if(Number.isInteger(d.bestStreak) && d.bestStreak > (S.best|0)){ S.best = Math.min(36500, d.bestStreak); ch = true; }
+    window.__cloudOwn = { flightBest:d.flightBest, adopted:ch };
+    if(ch){ localStorage.setItem(KEY, JSON.stringify(S)); try{ render(); }catch(e){} }
+  }catch(e){ console.warn('No pude leer mi perfil en la nube', e && e.code || e); }
+}
 async function cloudStart(){
   if(!S.bonded || CLOUD.started) return; CLOUD.started = true;
   if(!(await cloudLoad())){ CLOUD.started = false; return; }
   ensureCloudIds();
+  await cloudAdoptOwn();                                  // si la nube tiene un récord mayor (otro móvil, copia), se queda el mayor
   await cloudPush(true);                                  // primero sube lo local: nunca se pierde progreso
   subscribeFriends();
 }

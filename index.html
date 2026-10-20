@@ -1672,18 +1672,101 @@ async function openFlight(){
   fitFlight(); resetFlight(); drawFlight();
   flightOverlay('start');
 }
-// sprites del dragón 3D de perfil: tres posiciones de alas + caras de victoria y de choque
+// ===== Sprite de perfil de Diseñador (dragon-review/vuelo_sprite.js) =====
+// Dragón chibi de perfil (mira a la derecha). viewBox 0 0 192 144 (=96x72 a 2x).
+const SIDE_PAL={rojo:['#b3202a','#dd9089','#74151b','#9e1c25'],verde:['#2f8a52','#a1c09b','#1f5a35','#297948'],azul:['#2a5fc0','#9fadcc','#1b3e7d','#2554a9'],marron:['#8a5a32','#caaa8c','#5a3a20','#794f2c'],naranja:['#e0782a','#f1b889','#924e1b','#c56a25'],negro:['#3a3448','#857a7e','#26222f','#332e3f']};
+// wing: 'up','mid','down'; expr: normal, effort, scared, dizzy
+function sideDragon(color='rojo', wing='mid', expr='normal', opts={}){
+  const [m,l,d,w]=SIDE_PAL[color]||SIDE_PAL.rojo;
+  const W={up:'M78 70 C70 34 50 14 30 12 C38 22 36 30 30 36 C42 36 46 44 42 52 C54 50 64 58 70 72Z',
+           mid:'M78 70 C60 56 34 50 14 56 C24 62 24 68 18 74 C30 72 36 78 34 86 C48 80 62 80 74 82Z',
+           down:'M78 72 C66 86 50 104 34 118 C46 116 50 108 54 104 C56 112 62 114 70 110 C68 100 74 92 82 84Z'}[wing];
+  const V={up:'M76 68 C66 40 50 24 32 14 M74 70 C64 50 52 40 40 36',mid:'M76 70 C58 60 38 56 16 56 M76 76 C60 72 46 72 34 74',down:'M78 74 C66 88 52 104 36 116 M80 80 C72 92 64 100 56 104'}[wing];
+  const eyes={
+    normal:`<ellipse cx="146" cy="58" rx="9" ry="11" fill="#1d1226"/><ellipse cx="147" cy="62" rx="6" ry="6" fill="${d}" opacity=".9"/><circle cx="143" cy="53" r="3.6" fill="#fff"/><circle cx="150" cy="64" r="1.8" fill="#fff"/>`,
+    effort:`<path d="M137 58 L147 54 L137 50" fill="none" stroke="#1d1226" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" transform="translate(4 4)"/>`,
+    scared:`<ellipse cx="146" cy="57" rx="10" ry="13" fill="#fff" stroke="#1d1226" stroke-width="2.5"/><circle cx="148" cy="58" r="4" fill="#1d1226"/><circle cx="149" cy="56" r="1.3" fill="#fff"/>`,
+    dizzy:`<path d="M146 58 m-7 0 a7 7 0 1 1 7 7 a4.5 4.5 0 1 1 -4 -5 a2 2 0 1 1 2 2" fill="none" stroke="#1d1226" stroke-width="2.6" stroke-linecap="round"/>`}[expr];
+  const mouth={normal:'<path d="M160 82 q6 5 12 -1" fill="none" stroke="#1d1226" stroke-width="2.6" stroke-linecap="round"/>',
+    effort:'<path d="M159 80 q7 2 13 -2 q-5 8 -13 2Z" fill="#1d1226"/><path d="M162 80 l2 3 l2 -3z" fill="#fff"/>',
+    scared:'<ellipse cx="166" cy="84" rx="4" ry="5" fill="#1d1226"/>',
+    dizzy:'<path d="M158 84 q3 -3 6 0 q3 3 6 0 q3 -3 6 0" fill="none" stroke="#1d1226" stroke-width="2.4" stroke-linecap="round"/>'}[expr];
+  const extra = expr==='scared'?'<path d="M128 30 q-4 7 0 10 q4 -3 0 -10z" fill="#8fd3ff"/>':
+                expr==='dizzy'?'<g fill="#FFC94D"><path d="M130 22 l2 5 5 0 -4 3 1.5 5 -4.5 -3 -4.5 3 1.5 -5 -4 -3 5 0z"/><path d="M160 16 l1.5 4 4 0 -3 2.3 1 4 -3.5 -2.4 -3.5 2.4 1 -4 -3 -2.3 4 0z"/></g>':'';
+  const sq = opts.squash||[1,1];
+  return `<svg viewBox="0 0 192 144" width="${opts.w||192}" height="${opts.h||144}" style="--m:${m}">
+  <g transform="translate(96 76) scale(${sq[0]} ${sq[1]}) translate(-96 -76)">
+  ${wing==='down'?'':`<path d="${W}" fill="${w}" transform="translate(-8 -4) rotate(-6 78 70)" opacity=".75"/>`}
+  <!-- cola-timón -->
+  <path d="M70 92 C50 100 30 98 16 84" fill="none" stroke="${m}" stroke-width="13" stroke-linecap="round"/>
+  <path d="M52 99 l-2 -8 6 4z M36 96 l-4 -7 7 2z" fill="${d}"/>
+  <path d="M16 84 L2 74 L12 88 L0 96 L18 92Z" fill="#f3e6c8"/>
+  <!-- cuerpo -->
+  <ellipse cx="88" cy="84" rx="30" ry="24" fill="${m}"/>
+  <ellipse cx="94" cy="92" rx="18" ry="13" fill="${l}"/>
+  <path d="M84 88 q10 4 20 0 M86 96 q8 3 16 0" fill="none" stroke="${m}" stroke-width="2" opacity=".35" stroke-linecap="round"/>
+  <!-- patas recogidas -->
+  <ellipse cx="80" cy="106" rx="9" ry="6" fill="${m}" transform="rotate(-20 80 106)"/>
+  <ellipse cx="102" cy="105" rx="7" ry="5" fill="${d}" opacity=".55" transform="rotate(-25 102 105)"/>
+  <ellipse cx="108" cy="96" rx="5" ry="7" fill="${m}" transform="rotate(40 108 96)"/>
+  <!-- cabeza ~48% de la altura -->
+  <path d="M120 34 C112 18 112 10 116 4 C122 14 128 22 132 28Z" fill="#f3e6c8"/>
+  <path d="M104 52 L92 46 L102 62Z M122 30 L128 20 L134 30Z" fill="${d}"/>
+  <ellipse cx="140" cy="62" rx="38" ry="33" fill="${m}"/>
+  <ellipse cx="128" cy="44" rx="12" ry="6" fill="#fff" opacity=".12" transform="rotate(-18 128 44)"/>
+  <ellipse cx="164" cy="80" rx="16" ry="12" fill="${l}"/>
+  <ellipse cx="175" cy="74" rx="2.2" ry="1.6" fill="${d}"/>
+  ${eyes}${mouth}
+  <ellipse cx="146" cy="80" rx="7" ry="4.2" fill="#ff7aa8" opacity=".45"/>
+  ${extra}
+  <!-- ala cercana -->
+  <path d="${W}" fill="${w}"/>
+  <path d="${V}" fill="none" stroke="${d}" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+  </g></svg>`;
+}
+// accesorios del dibujo frontal (viewBox 200x200) llevados a los anclajes de perfil (viewBox 192x144)
+const SIDE_ANCH = { cabeza:{to:[126,28], from:[100,42]}, cuello:{to:[112,84], from:[100,124]}, espalda:{to:[80,66], from:[100,130]} };
+function sideAcc(eq){
+  const out={ back:'', front:'' };
+  for(const [slot,id] of Object.entries(cleanEq(eq||{}))){ const a=SIDE_ANCH[slot], it=itemById(id); if(!a || !it || !it.svg) continue;
+    const g=`<g transform="translate(${a.to}) scale(0.55) rotate(-10) translate(${-a.from[0]} ${-a.from[1]})">${it.svg}</g>`;
+    if(slot==='espalda') out.back+=g; else out.front+=g; }
+  return out;
+}
+function sideMarkup(d, eq, wing, expr){
+  const A=sideAcc(eq);
+  let s=sideDragon(d.c, wing, expr, { w:384, h:288 }).replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
+  s=s.replace('<!-- cola-timón -->', A.back+'<!-- cola-timón -->').replace('<!-- ala cercana -->', A.front+'<!-- ala cercana -->');
+  return s.replace(/(<svg[^>]*>)/, `$1<style>${CHIBI_CSS}</style>`);
+}
 async function flightSprites(d, eq){
-  const sig = d.key+'|'+eqSig(cleanEq(eq||{}));
-  if(FL.spriteSig===sig && FL.sprite) return;
+  const sig = d.key+'|'+eqSig(cleanEq(eq||{}))+'|side2';
+  if(FL.spriteSig===sig && FL.side) return;
+  FL.side=null;
   try{
-    const o = { size:320, cam:'side', yaw:1.05, pitch:0.12 };
-    FL.frames = []; for(const w of [0.62, 0.15, -0.32]) FL.frames.push(await dragonCanvas(d, eq, {...o, wing:w, expr:'happy'}));
-    FL.spriteHappy = await dragonCanvas(d, eq, {...o, wing:0.4, expr:'laugh'});
-    FL.spriteCrash = await dragonCanvas(d, eq, {...o, wing:-0.1, expr:'surprised'});
-    FL.sprite = FL.frames[1];
-  }catch(e){ FL.frames = null; FL.sprite = FL.spriteHappy = FL.spriteCrash = await chibiImage(d, eq, false).catch(()=>null); }
+    const side={};
+    for(const e of ['normal','effort','scared','dizzy']) for(const w of ['up','mid','down']){
+      const im=await loadImg(svgURL(sideMarkup(d, eq, w, e))); const cv=document.createElement('canvas'); cv.width=384; cv.height=288;
+      cv.getContext('2d').drawImage(im,0,0,384,288); side[e+'-'+w]=cv; }
+    FL.side=side; FL.sprite=side['normal-mid'];
+  }catch(e){ FL.side=null; FL.frames=null; FL.sprite = FL.spriteHappy = FL.spriteCrash = await chibiImage(d, eq, false).catch(()=>null); }
   FL.spriteSig = sig;
+}
+// elige fotograma: planeo 4 fotogramas a 8 fps; al tocar un ciclo a 20 fps (empieza en «abajo») y cara de esfuerzo 120 ms;
+// al chocar susto 0,5 s y luego mareo. Solo dibujo: no cambia físicas ni puntuación.
+const SIDE_CYCLE=['up','mid','down','mid'];
+function sideFrame(now){
+  const S2=FL.side; if(!S2) return null;
+  if(FL.flapT > (FL._lastFlapT||0)) FL.tapAt=now;  FL._lastFlapT=FL.flapT;
+  if(FL.over){ if(!FL.overAt) FL.overAt=now;
+    if(FL.completed) return S2['normal-'+SIDE_CYCLE[Math.floor(now/125)%4]];
+    return S2[(now-FL.overAt<500?'scared':'dizzy')+'-mid']; }
+  FL.overAt=0;
+  if(!FL.running) return S2['normal-'+SIDE_CYCLE[Math.floor(now/125)%4]];
+  const since=now-(FL.tapAt||-1e9);
+  if(since<200){ const w=['down','mid','up','mid'][Math.floor(since/50)]; return S2[(since<120?'effort':'normal')+'-'+w]; }
+  if(FL.vy > FL.H*0.5) return S2['normal-up'];                       // cae rápido: alas abiertas
+  return S2['normal-'+SIDE_CYCLE[Math.floor(now/125)%4]];
 }
 function fitFlight(){
   const cv=$('flightCanvas'), r=cv.getBoundingClientRect(), dpr=Math.min(devicePixelRatio||1, 2);
@@ -1824,12 +1907,13 @@ function drawFlight(){
     c.fillStyle='#c9d3dc'; c.beginPath(); c.moveTo(a.x,a.y); c.lineTo(a.x+a.w*0.2,a.y-a.h); c.lineTo(a.x+a.w*0.2,a.y+a.h); c.fill();
     c.fillStyle='#e2483d'; c.fillRect(a.x+a.w*0.85,a.y-a.h*0.8,a.w*0.15,a.h*1.6); }
   FL.parts.forEach(p=>{ c.globalAlpha=Math.max(0,p.life*2); c.fillStyle=p.c; c.beginPath(); c.arc(p.x,p.y,p.r,0,7); c.fill(); }); c.globalAlpha=1;
-  let spr = FL.sprite;
-  if(FL.over) spr = FL.completed ? FL.spriteHappy : FL.spriteCrash;
-  else if(FL.frames){ const n = performance.now(); spr = FL.frames[ FL.flapT>0.07 ? 0 : FL.flapT>0 ? 2 : [1,1,1,0,1,2][Math.floor(n/130)%6] ]; }
-  const size=H*0.19, px=W*0.25;
-  if(spr){ c.save(); c.translate(px, FL.y); const rot = FL.running ? Math.max(-0.45, Math.min(0.7, FL.vy/(H*1.6))) : Math.sin(performance.now()/400)*0.06;
-    c.rotate(rot); const sq = FL.flapT>0 ? 0.9 : 1; c.scale(1/sq*0.98+0.02, sq); c.drawImage(spr, -size/2, -size*0.6, size, size); c.restore(); }
+  const nowS=performance.now(), side=sideFrame(nowS), px=W*0.25;
+  if(side){ const sw=H*0.13, sh=sw*0.75; c.save(); c.translate(px, FL.y+H*0.02);
+    const rot = FL.running ? Math.max(-0.45, Math.min(0.7, FL.vy/(H*1.6))) : Math.sin(nowS/400)*0.06; c.rotate(rot);
+    const since=nowS-(FL.tapAt||-1e9); if(FL.running && since<80) c.scale(1.06, 0.94);
+    c.shadowColor='rgba(43,13,4,.25)'; c.shadowOffsetY=H*0.0025;
+    c.drawImage(side, -sw*0.5, -sh*0.55, sw, sh); c.restore(); }
+  else if(FL.sprite){ const size=H*0.19; c.save(); c.translate(px, FL.y); c.drawImage(FL.sprite, -size/2, -size*0.6, size, size); c.restore(); }
   c.restore();
 }
 function stopFlight(){ if(FL.running){ crashFlight(); } cancelAnimationFrame(FL.raf); FL.running=false; }

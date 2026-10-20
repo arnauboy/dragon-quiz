@@ -703,6 +703,22 @@ h1,h2,h3,.cinzel{font-family:var(--epic);letter-spacing:.04em}
 @keyframes skGold{0%,100%{filter:drop-shadow(0 8px 18px rgba(0,0,0,.45))}35%,75%{filter:drop-shadow(0 0 26px #ffd34d) drop-shadow(0 0 10px #fff3c4) brightness(1.12)}}
 #layerView>.dv,#layerView>.d3fx{top:60px;bottom:6px;left:34px;right:34px;width:auto;height:auto}
 @media (prefers-reduced-motion: reduce){.dv .chibi *{animation-duration:6s!important}}
+.frace{position:absolute;top:44px;left:64px;right:12px;height:22px;pointer-events:none;display:flex;align-items:center;gap:8px;font:800 12px Nunito,sans-serif;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.frace .rbar{position:relative;flex:1;height:8px;border-radius:6px;background:rgba(255,255,255,.22)}
+.frace .rbar i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:linear-gradient(90deg,#FFC94D,#FF7A59)}
+.frace .rme{position:absolute;top:-6px;font-size:15px}.frace .rgo{position:absolute;right:-6px;top:-7px;font-size:15px}
+.frace .rtxt{min-width:58px;text-align:right}.frace .rriv{opacity:.85;font-size:11px}
+.fbeat{position:absolute;left:50%;top:36%;transform:translate(-50%,-50%) rotate(-3deg);background:linear-gradient(#FFD86B,#FFC94D);color:#2B0D04;border-radius:16px;padding:12px 18px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.35);animation:fbeat 1.5s ease both;pointer-events:none;z-index:5}
+.fbeat b{display:block;font:900 20px Nunito,sans-serif}.fbeat small{font:700 13px Nunito,sans-serif}
+@keyframes fbeat{0%{opacity:0;transform:translate(-50%,-50%) scale(.6) rotate(-3deg)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.06) rotate(-3deg)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-60%) scale(1) rotate(-3deg)}}
+.reto-list{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.reto-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--text);text-align:left;font:inherit;cursor:pointer}
+.reto-row.on{border-color:#FFC94D;box-shadow:0 0 0 2px rgba(255,201,77,.35)}.reto-row.off{opacity:.45;cursor:default}
+.reto-row .chibi-wrap{width:42px;height:42px;flex:none}.reto-t{flex:1;display:flex;flex-direction:column}.reto-t small{opacity:.75}
+.reto-note{text-align:center;opacity:.7;font-size:13px}.reto-empty{margin:14px 0}
+.reto-end .reto-ic{font-size:40px}.reto-vs{display:flex;align-items:center;justify-content:space-around;margin:8px 0}
+.reto-s{display:flex;flex-direction:column;align-items:center}.reto-n{font:900 38px Nunito,sans-serif}.reto-s.gold .reto-n{color:#FFC94D}.reto-x{opacity:.6}
+.reto-end .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
 </style>
 </head>
 <body>
@@ -798,6 +814,10 @@ h1,h2,h3,.cinzel{font-family:var(--epic);letter-spacing:.04em}
       <div class="pc-h"><span class="pc-ic">🪽</span><div><b>Entrenar vuelo</b><small id="playFlightTxt"></small></div></div>
       <button class="btn" id="flightBtn">¡A volar!</button>
     </div>
+    <div class="pcard">
+      <div class="pc-h"><span class="pc-ic">👻</span><div><b>Reto entre amigos</b><small>Vuela contra el fantasma de un amigo</small></div></div>
+      <button class="btn" id="retoBtn">Elegir rival</button>
+    </div>
     <div class="pcard rankcard">
       <div class="pc-h"><span class="pc-ic">🏆</span><div><b>Ranking de vuelo</b><small id="playRankPos"></small></div></div>
       <div id="playRank"></div>
@@ -844,6 +864,7 @@ h1,h2,h3,.cinzel{font-family:var(--epic);letter-spacing:.04em}
       <button class="fx-close" id="flightBackBtn" aria-label="Salir del vuelo">✕</button>
       <canvas id="flightCanvas" aria-label="Minijuego de vuelo"></canvas>
       <div class="fhud"><span class="fscore" id="fScore">0</span><div class="ftime"><i id="fTime"></i></div></div>
+      <div class="frace hidden" id="fRace"><div class="rbar"><i></i><span class="rme">🐉</span><span class="rgo">👻</span></div><span class="rtxt"></span><span class="rriv"></span></div>
       <div class="fover hidden" id="fOver"></div>
     </div>
   </section>
@@ -1768,6 +1789,129 @@ function sideFrame(now){
   if(FL.vy > FL.H*0.5) return S2['normal-up'];                       // cae rápido: alas abiertas
   return S2['normal-'+SIDE_CYCLE[Math.floor(now/125)%4]];
 }
+/* ======================= RETO ENTRE AMIGOS (fantasma) ======================= */
+// Datos nuevos, todos opcionales y aditivos: S.flightTrail {v,score,seed,trail}, S.chDay/S.chPaid (retos pagados hoy),
+// S.challenges (últimos 20 resultados) y f.mutual en cada amigo. Nunca tocan flightBest (que sigue siendo el máximo local/nube).
+const TRAIL_V = 1, TRAIL_DT = 0.1, CH_WIN = 20, CH_LOSE = 5, CH_MAX_DAY = 5, GHOST_SIM_KEY = 'valle-ghost-sim';
+function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const encodeTrail = arr => arr.map(v=>Math.max(0,Math.min(1295,v|0)).toString(36).padStart(2,'0')).join('');
+function decodeTrail(s){ if(typeof s!=='string' || s.length<8 || s.length%2 || s.length>2400 || !/^[0-9a-z]+$/.test(s)) return null;
+  const out=[]; for(let i=0;i<s.length;i+=2) out.push(parseInt(s.slice(i,i+2),36)/1000); return out.every(v=>v>=0 && v<=1.2) ? out : null; }
+function validGhost(g){ if(!g || g.v!==TRAIL_V || !Number.isInteger(g.score) || g.score<0) return null;
+  const trail=decodeTrail(g.trail); if(!trail) return null; return { score:g.score, seed: Number.isInteger(g.seed) ? g.seed>>>0 : null, trail }; }
+const mutualFriends = () => (S.friends||[]).filter(f=>f && f.mutual===true && f.id!==S.id);
+// fantasma de un amigo: en la nube ghosts/{id}; en ?nocloud, simulado en localStorage (solo para la preview y las pruebas)
+async function fetchGhost(f){
+  try{
+    if(NOCLOUD){ const all=JSON.parse(localStorage.getItem(GHOST_SIM_KEY)||'{}'); return validGhost(all[f.id]); }
+    if(!CLOUD.db) return null;
+    const { doc, getDoc } = CLOUD.fs; const snap = await withTimeout(getDoc(doc(CLOUD.db,'ghosts',f.id)), 8000);
+    return snap.exists() ? validGhost(snap.data()) : null;
+  }catch(e){ console.warn('fantasma', f.id, e && e.code || e); return null; }
+}
+// sube mi fantasma solo si es mejor que el que hay (transacción; nunca baja). Nada en ?nocloud.
+async function pushGhost(){
+  const g=S.flightTrail; if(NOCLOUD || !CLOUD.db || !g || !ID_RE.test(S.id||'')) return;
+  try{ const { doc, runTransaction, serverTimestamp } = CLOUD.fs; const ref=doc(CLOUD.db,'ghosts',S.id);
+    await withTimeout(runTransaction(CLOUD.db, async tx=>{ const cur=await tx.get(ref);
+      if(cur.exists() && Number.isInteger(cur.data().score) && cur.data().score >= g.score) return;
+      tx.set(ref, { v:TRAIL_V, score:g.score, seed:g.seed>>>0, trail:g.trail, color:byKey(S.key).c, updatedAt:serverTimestamp() }); }), 12000);
+  }catch(e){ console.warn('No se pudo subir el fantasma', e && e.code || e); }
+}
+async function ghostSprites(f){
+  const d=byKey(f.key)||DRAGONS[0], out={};
+  for(const k of ['normal-up','normal-mid','normal-down','scared-mid']){ const [e,w]=k.split('-');
+    const im=await loadImg(svgURL(sideMarkup(d, f.eq||{}, w, e))); const cv=document.createElement('canvas'); cv.width=384; cv.height=288; cv.getContext('2d').drawImage(im,0,0,384,288); out[k]=cv; }
+  return out;
+}
+function openChallenge(){
+  modal(c=>{
+    c.classList.add('reto');
+    c.appendChild(el('h3',null,'Reto 👻')); c.appendChild(el('p','kind','Vuela contra el fantasma de un amigo'));
+    const list = mutualFriends();
+    if(!list.length){
+      c.appendChild(el('p','reto-empty','🤝 Añade amigos: el reto es solo con amistades mutuas (os habéis añadido los dos).'));
+      const b=el('button','btn','👥 Ir a Amigos'); b.id='retoFriendsBtn'; b.onclick=()=>{ closeModal(); openFriends(); }; c.appendChild(b); return;
+    }
+    if(!NOCLOUD && !CLOUD.db){ c.appendChild(el('p','reto-empty','📡 Sin conexión no se puede cargar el fantasma de tus amigos.'));
+      const b=el('button','btn','🪽 Vuelo normal'); b.onclick=()=>{ closeModal(); openFlight(); }; c.appendChild(b); return; }
+    let sel=null; const go=el('button','btn red','Elige un rival'); go.id='retoGoBtn'; go.disabled=true;
+    const ul=el('div','reto-list');
+    list.sort((a,b)=>(b.flightBest??-1)-(a.flightBest??-1)).forEach(f=>{
+      const has = typeof f.flightBest==='number' && f.flightBest>0, d=byKey(f.key)||DRAGONS[0];
+      const row=el('button','reto-row'+(has?'':' off')); row.dataset.id=f.id;
+      row.appendChild(miniChibi(d, f.eq||{}));
+      const t=el('div','reto-t'); t.appendChild(el('b',null,f.name)); t.appendChild(el('small',null, has ? `Nv ${f.lvl||1} · 🏆 ${f.flightBest}` : `Nv ${f.lvl||1} · 💤 sin récord`)); row.appendChild(t);
+      row.appendChild(el('span','reto-ck', has?'👻':''));
+      if(has) row.onclick=()=>{ sel=f; ul.querySelectorAll('.reto-row').forEach(r=>r.classList.toggle('on', r===row)); go.disabled=false; go.textContent=`Volar contra ${f.name} ✈️`; };
+      ul.appendChild(row);
+    });
+    c.appendChild(ul); c.appendChild(el('p','reto-note','🤝 Solo amigos mutuos'));
+    go.onclick=()=>{ if(sel){ closeModal(); startChallenge(sel); } }; c.appendChild(go);
+  });
+}
+async function startChallenge(f){
+  const ghost = await fetchGhost(f);                    // se fija al empezar: si el amigo mejora mientras juegas, no cambia
+  const rival = { id:f.id, name:f.name, key:f.key, best: Math.max(f.flightBest|0, ghost ? ghost.score : 0), ghost };
+  if(ghost) rival.spr = await ghostSprites(f).catch(()=>null);
+  FL.challenge = rival;
+  await openFlight();
+}
+function exitChallenge(){ FL.challenge=null; }
+// llamado en cada paso de la partida
+function stepChallenge(dt){
+  const R=FL.challenge; if(!R) return;
+  if(!FL.beat && FL.score > R.best){ FL.beat=true; FL.beatAt=performance.now(); showBeat(R);
+    for(let i=0;i<40;i++) FL.parts.push({x:Math.random()*FL.W, y:-10, vx:(Math.random()-.5)*FL.H*0.3, vy:FL.H*(0.25+Math.random()*0.4), life:1.6, c:['#ffd23f','#ff7a59','#7cd3ff','#6fe0a0','#ff7aa8'][i%5], r:FL.H*0.006});
+    try{ navigator.vibrate && navigator.vibrate([30,40,60]); }catch(e){} }
+  if(FL.beat) FL.ghostDx -= FL.v*0.35*dt;                // el fantasma se queda atrás
+  renderRace();
+}
+function renderRace(){
+  const R=FL.challenge, b=$('fRace'); if(!b) return;
+  if(!R){ b.classList.add('hidden'); return; } b.classList.remove('hidden');
+  const p = R.best>0 ? Math.min(1, FL.score/R.best) : 1, diff = FL.score - R.best;
+  b.querySelector('i').style.width = (p*100)+'%'; b.querySelector('.rme').style.left = `calc(${p*100}% - 9px)`;
+  b.querySelector('.rtxt').textContent = diff>0 ? `+${diff}` : `faltan ${-diff+1}`;
+  b.querySelector('.rriv').textContent = `${R.name} ${R.best}`;
+}
+function showBeat(R){
+  const w=$('flightWrap'), d=el('div','fbeat'); d.innerHTML=''; d.appendChild(el('b',null,`🏆 ¡Superaste a ${R.name}!`)); d.appendChild(el('small',null,`${R.best} → ${FL.score} y subiendo`));
+  w.appendChild(d); setTimeout(()=>d.remove(), 1500);
+}
+function drawGhost(c){
+  const R=FL.challenge; if(!R || !R.ghost || !R.spr) return;
+  const H=FL.H, W=FL.W, tr=R.ghost.trail, i=FL.t/TRAIL_DT, n=tr.length-1;
+  const ended = i>=n, k=Math.min(i,n), y0=tr[Math.floor(k)], y1=tr[Math.min(n,Math.floor(k)+1)], y=(y0+(y1-y0)*(k-Math.floor(k)))*H;
+  let a=0.4; if(ended){ FL.ghostEnd ??= FL.t; a = 0.4*Math.max(0, 1-(FL.t-FL.ghostEnd)/0.6); } if(a<=0) return;
+  const now=performance.now(), spr = FL.beat ? R.spr['scared-mid'] : ended ? R.spr['normal-mid'] : R.spr['normal-'+['up','mid','down','mid'][Math.floor(now/125)%4]];
+  const sw=FL.sw, sh=sw*0.75, x=W*FV.X + sw*0.25 + (FL.ghostDx||0);
+  c.save(); c.globalAlpha=a; c.filter='grayscale(.55) brightness(1.35)'; c.shadowColor='rgba(255,255,255,.9)'; c.shadowBlur=H*0.012;
+  c.translate(x, y); c.drawImage(spr, -sw*0.5, -sh*0.55, sw, sh); c.restore();
+  c.save(); c.globalAlpha=Math.min(1,a*2.2); c.font=`800 ${Math.round(H*0.017)}px Nunito, sans-serif`; c.textAlign='center';
+  const txt=`👻 ${R.name} · ${R.best}`, tw=c.measureText(txt).width+H*0.02, ty=y-sh*0.62;
+  c.fillStyle='rgba(255,255,255,.85)'; roundRect(c, x-tw/2, ty-H*0.017, tw, H*0.024, H*0.012); c.fill(); c.fillStyle='#2b0d04'; c.fillText(txt, x, ty); c.restore();
+}
+function challengeOverlay(){
+  const R=FL.challenge, me=FL.result.score, win = me > R.best, tie = me===R.best;
+  S.chDay !== today() && (S.chDay = today(), S.chPaid = 0);
+  let coins=0; if(!FL.chPaid && (S.chPaid|0) < CH_MAX_DAY){ coins = win ? CH_WIN : CH_LOSE; S.chPaid=(S.chPaid|0)+1; S.coins=(S.coins||0)+coins; }
+  if(!FL.chPaid){ FL.chPaid=true; FL.chCoins=coins; S.challenges=[{rival:R.id, me, rv:R.best, win, at:Date.now()}, ...(S.challenges||[])].slice(0,20); save(); renderCoins(); }
+  coins = FL.chCoins;
+  const o=$('fOver'); o.innerHTML=''; o.classList.remove('hidden');
+  const card=el('div','fcard reto-end'+(win?' win':''));
+  card.appendChild(el('div','reto-ic', win?'🏆':'😤')); card.appendChild(el('h3',null, win?'¡Ganaste!':'¡Casi!'));
+  const vs=el('div','reto-vs');
+  const side=(lbl,n,cls)=>{ const s=el('div','reto-s '+cls); s.appendChild(el('div','reto-n',String(n))); s.appendChild(el('small',null,lbl)); return s; };
+  vs.appendChild(side('Tú', me, win?'gold':'')); vs.appendChild(el('span','reto-x','vs')); vs.appendChild(side(R.name, R.best, win?'':'gold')); card.appendChild(vs);
+  const pay = coins ? ` · +${coins} 🪙` : ' · (hoy ya cobraste 5 retos)';
+  card.appendChild(el('p','fbest', win ? (FL.result.record ? `🆕 Nuevo récord${pay}` : `Has ganado${pay}`) : (tie ? `¡Empate! Hay que superarlo${pay}` : `A ${R.best-me+1} de ${R.name}${pay}`)));
+  const b1=el('button','btn red', win?`📣 Avisar a ${R.name}`:'🔁 Otra vez'); b1.id='retoMainBtn';
+  b1.onclick=e=>{ e.stopPropagation(); if(win){ toast(NOCLOUD?`📣 Aviso a ${R.name} (simulado en la preview)`:`📣 ${R.name} verá que le has ganado`); } else { FL.chPaid=false; startFlight(); } };
+  const b2=el('button','btn ghost', win?'🔁 Revancha':'👥 Otro rival'); b2.id='retoAltBtn';
+  b2.onclick=e=>{ e.stopPropagation(); if(win){ FL.chPaid=false; startFlight(); } else { closeFlight(); openChallenge(); } };
+  card.appendChild(b1); card.appendChild(b2); o.appendChild(card);
+}
 function fitFlight(){
   const cv=$('flightCanvas'), r=cv.getBoundingClientRect(), dpr=Math.min(devicePixelRatio||1, 2);
   cv.width = Math.round(r.width*dpr); cv.height = Math.round(r.height*dpr);
@@ -1783,9 +1927,11 @@ const flSpeed = n => Math.min(FV.SPEED_MAX, FV.SPEED0 + FV.SPEED_N*n)*fk();
 function resetFlight(){
   const H=FL.H, W=FL.W;
   Object.assign(FL, { t:0, y:H*0.42, vy:0, rot:0, score:0, passes:0, gems:0, obs:[], arrows:[], parts:[], slot:0, lastCy:H*0.45, nextArrow:null,
-    touchT:0, tapQ:null, tapAt:0, over:false, running:false, flapT:0, shake:0, completed:false, bgX:0, minReact:Infinity,
+    touchT:0, tapQ:null, trail:[], beat:false, ghostDx:0, ghostEnd:null, chPaid:false, tapAt:0, over:false, running:false, flapT:0, shake:0, completed:false, bgX:0, minReact:Infinity,
     stars: Array.from({length:40},()=>[Math.random()*W, Math.random()*H*0.6, Math.random()*1.5+0.5]) });
-  $('fScore').textContent='0'; $('fTime').style.width='100%';
+  FL.seed = (FL.challenge && FL.challenge.ghost && FL.challenge.ghost.seed!=null) ? FL.challenge.ghost.seed : (Math.random()*4294967296)>>>0;
+  FL.rng = mulberry32(FL.seed);
+  $('fScore').textContent='0'; $('fTime').style.width='100%'; renderRace();
 }
 function startFlight(){
   if(FL.running) return;
@@ -1810,18 +1956,18 @@ function spawnSlot(){
   const H=FL.H, W=FL.W, K=fk(), n=FL.passes; FL.slot++;
   const easy = FL.slot<=FV.EASY, groundY=H*0.9;
   if(!easy && n>=FV.CLOUD_FROM && FL.slot%4===0){       // nubarrón de tormenta en vez de rocas
-    const top = Math.random()<0.5, y = top ? H*0.16 : H*0.7;
+    const top = FL.rng()<0.5, y = top ? H*0.16 : H*0.7;
     FL.obs.push({ kind:'cloud', x:W+H*0.2, y, w:H*0.35, blobs:[[0,0,H*0.09],[H*0.09,-H*0.02,H*0.075],[-H*0.08,H*0.02,H*0.07],[H*0.03,H*0.05,H*0.07]], passed:false });
-    if(Math.random()<0.7) FL.obs.push({ kind:'gem', x:W+H*0.2, y: top? H*0.55 : H*0.32, r:H*0.026 });
+    if(FL.rng()<0.7) FL.obs.push({ kind:'gem', x:W+H*0.2, y: top? H*0.55 : H*0.32, r:H*0.026 });
     FL.lastCy = top ? H*0.55 : H*0.32; return;
   }
   const gap = (easy ? FV.EASY_GAP : Math.max(FV.GAP_MIN, FV.GAP0-FV.GAP_N*n))*K;
   const lo = 90*K+gap/2, hi = groundY-60*K-gap/2, dmax = Math.min(FV.DCY_MAX, FV.DCY0+FV.DCY_N*n)*K;
-  let cy = easy ? (lo+hi)/2 : FL.lastCy + (Math.random()*2-1)*dmax;
+  let cy = easy ? (lo+hi)/2 : FL.lastCy + (FL.rng()*2-1)*dmax;
   cy = Math.max(lo, Math.min(hi, Math.max(FL.lastCy-dmax, Math.min(FL.lastCy+dmax, cy)))); FL.lastCy = cy;
   const w = FV.ROCK_W*K;
-  FL.obs.push({ kind:'crag', x:W+w*0.1, w, top:cy-gap/2, bot:cy+gap/2, passed:false, seed:Math.random() });
-  if(Math.random()<0.6) FL.obs.push({ kind:'gem', x:W+w*0.1+w/2, y:cy, r:H*0.026 });
+  FL.obs.push({ kind:'crag', x:W+w*0.1, w, top:cy-gap/2, bot:cy+gap/2, passed:false, seed:FL.rng() });
+  if(FL.rng()<0.6) FL.obs.push({ kind:'gem', x:W+w*0.1+w/2, y:cy, r:H*0.026 });
 }
 function circleRect(cx,cy,r, x,y,w,h){ const nx=Math.max(x,Math.min(cx,x+w)), ny=Math.max(y,Math.min(cy,y+h)); return (cx-nx)**2+(cy-ny)**2 < r*r; }
 // caja de choque: elipse al 75 % del sprite (cuerpo y cabeza, sin alas ni cola)
@@ -1837,6 +1983,7 @@ function loopFlight(now){
 function stepFlight(dt){
   const H=FL.H, W=FL.W, K=fk(), n=FL.passes, v=flSpeed(n);
   FL.t += dt; FL.bgX += v*dt; FL.v=v;
+  while(FL.trail.length <= FL.t/TRAIL_DT) FL.trail.push(Math.round(FL.y/H*1000));
   if(FL.tapQ){ if(performance.now()-FL.tapQ < FV.BUF) doFlap(); FL.tapQ=null; }
   FL.vy += FV.GRAV*K*dt; FL.vy = Math.min(FL.vy, FV.VMAX*K); FL.y += FL.vy*dt; FL.flapT=Math.max(0,FL.flapT-dt);
   const target = Math.max(-25, Math.min(70, FL.vy/(FV.VMAX*K)*35))*Math.PI/180; FL.rot += (target-FL.rot)*Math.min(1, 12*dt);
@@ -1849,7 +1996,7 @@ function stepFlight(dt){
   // flechas desde el obstáculo 15, con aviso ⚠ 0,8 s antes
   if(n>=FV.ARROW_FROM){
     if(FL.nextArrow==null) FL.nextArrow = FL.t + 1;
-    if(FL.t>FL.nextArrow){ FL.arrows.push({ x:W+H*0.02, y:H*(0.12+Math.random()*0.7), w:H*0.13, h:H*0.022, warn:FV.WARN }); FL.nextArrow = FL.t + 2.6 + Math.random()*1.8; }
+    if(FL.t>FL.nextArrow){ FL.arrows.push({ x:W+H*0.02, y:H*(0.12+FL.rng()*0.7), w:H*0.13, h:H*0.022, warn:FV.WARN }); FL.nextArrow = FL.t + 2.6 + FL.rng()*1.8; }
   }
   let touching=false;
   for(const o of FL.obs){
@@ -1878,6 +2025,7 @@ function stepFlight(dt){
   FL.obs = FL.obs.filter(o=>o.x>-H*0.4 && !(o.kind==='gem' && o.got)); FL.arrows = FL.arrows.filter(a=>a.x>-a.w);
   FL.parts.forEach(p=>{ p.x+=p.vx*dt; p.y+=p.vy*dt; p.life-=dt; }); FL.parts=FL.parts.filter(p=>p.life>0);
   if(e.y+e.b > H*0.9) return crashFlight();
+  stepChallenge(dt);
   $('fScore').textContent = FL.score; $('fTime').style.width = Math.max(0, 100-FL.t/FLIGHT_SECS*100)+'%';
   if(FL.t >= FLIGHT_SECS){ FL.completed=true; FL.score+=50; endFlight(); }
 }
@@ -1890,18 +2038,23 @@ function endFlight(){
   FL.over=true; FL.running=false;
   const score=FL.score, prevBest=S.flightBest||0, record = score>prevBest;
   if(record) S.flightBest=score;
+  const prevTrail = S.flightTrail && Number.isInteger(S.flightTrail.score) ? S.flightTrail.score : -1;
+  if(score > prevTrail && FL.trail && FL.trail.length>=4){ FL.trail.push(Math.round(FL.y/FL.H*1000)); S.flightTrail = { v:TRAIL_V, score, seed:FL.seed>>>0, trail:encodeTrail(FL.trail.slice(0,1200)), at:Date.now() }; FL.newTrail=true; }
   S.flightLast=score; let rw=null;
   if(FL.rewardRun){ rw=flightReward(score); S.coins=(S.coins||0)+rw.coins; S.flightRewardLast={day:today(), score, ...rw}; }
   save(); renderCoins();
   if(rw) gainXP(rw.xp);
+  if(FL.newTrail){ FL.newTrail=false; pushGhost(); }
   FL.result={score, record, prevBest, rw, completed:FL.completed};
   $('fScore').textContent = score;
   setTimeout(()=>flightOverlay('end'), 650);
 }
 function flightOverlay(kind){
+  if(kind==='end' && FL.challenge) return challengeOverlay();
   const o=$('fOver'); o.innerHTML=''; o.classList.remove('hidden');
   const card=el('div','fcard');
   if(kind==='start'){
+    if(FL.challenge) card.appendChild(el('p','freward',`👻 Reto contra ${FL.challenge.name}: supera ${FL.challenge.best}` + (FL.challenge.ghost?'':' (sin fantasma: solo la barra)')));
     card.appendChild(el('h3',null,'Entrenamiento de vuelo'));
     card.appendChild(el('p',null,`Toca la pantalla (o pulsa espacio) para aletear. Esquiva rocas, nubarrones y flechas durante ${FLIGHT_SECS} segundos y recoge gemas.`));
     card.appendChild(el('p','fbest',`Récord: ${S.flightBest||0}`));
@@ -1946,6 +2099,7 @@ function drawFlight(){
     c.fillStyle='#c9d3dc'; c.beginPath(); c.moveTo(a.x,a.y); c.lineTo(a.x+a.w*0.2,a.y-a.h); c.lineTo(a.x+a.w*0.2,a.y+a.h); c.fill();
     c.fillStyle='#e2483d'; c.fillRect(a.x+a.w*0.85,a.y-a.h*0.8,a.w*0.15,a.h*1.6); }
   FL.parts.forEach(p=>{ c.globalAlpha=Math.max(0,p.life*2); c.fillStyle=p.c; c.beginPath(); c.arc(p.x,p.y,p.r,0,7); c.fill(); }); c.globalAlpha=1;
+  drawGhost(c);
   const nowS=performance.now(), side=sideFrame(nowS), px=W*FV.X;
   if(side){ const sw=FL.sw||H*0.13, sh=sw*0.75; c.save(); c.translate(px, FL.y);
     const rot = FL.running||FL.over ? FL.rot : Math.sin(nowS/400)*0.06; c.rotate(rot);
@@ -1956,7 +2110,7 @@ function drawFlight(){
   c.restore();
 }
 function stopFlight(){ if(FL.running){ crashFlight(); } cancelAnimationFrame(FL.raf); FL.running=false; }
-function closeFlight(){ stopFlight(); openPlay(); }
+function closeFlight(){ stopFlight(); exitChallenge(); openPlay(); }
 
 /* ======================= TARJETA PARA COMPARTIR ======================= */
 let cardFmt='story', cardBlob=null;
@@ -2262,7 +2416,9 @@ function subscribeInbox(){
 }
 async function handleFriendReq(id){
   S.reqSeen ||= {}; CLOUD.reqSeenBusy ||= new Set();
+  if(ID_RE.test(id)){ const fm=(S.friends||[]).find(f=>f.id===id); if(fm && fm.mutual!==true){ fm.mutual=true; localStorage.setItem(KEY, JSON.stringify(S)); } }
   if(!ID_RE.test(id) || id===S.id || S.reqSeen[id] || CLOUD.reqSeenBusy.has(id)) return;
+  { const fm=(S.friends||[]).find(f=>f.id===id); if(fm && fm.mutual!==true){ fm.mutual=true; localStorage.setItem(KEY, JSON.stringify(S)); } }
   if((S.friends||[]).some(f=>f.id===id)){ S.reqSeen[id] = 1; localStorage.setItem(KEY, JSON.stringify(S)); return; }
   CLOUD.reqSeenBusy.add(id);
   try{
@@ -2272,6 +2428,7 @@ async function handleFriendReq(id){
     const name = (typeof d.name==='string' && d.name.trim()) ? d.name.trim().slice(0,18) : 'Un dragón';
     if((S.friends||[]).length >= 40){ S.reqSeen[id] = 1; save(); return; }
     addFriend({ id, name, key:d.key, eq:{}, lvl:1, flightBest: Number.isInteger(d.flightBest) ? d.flightBest : undefined });
+    { const fm=S.friends.find(f=>f.id===id); if(fm) fm.mutual=true; }
     S.reqSent ||= {}; S.reqSent[id] = 1;                                // ya existe su aviso hacia mí: no hace falta devolverlo
     S.reqSeen[id] = 1;
     applyFriendDoc(id, d); save();
@@ -2458,9 +2615,10 @@ function addFriend(inv){
   const ex = S.friends.find(f=>f.id===inv.id);
   if(ex){ ex.name=inv.name; ex.key=inv.key; ex.eq=inv.eq||{}; ex.lvl=inv.lvl||1; normFriend(ex);
     if(typeof inv.flightBest === 'number') ex.flightBest = Math.max(ex.flightBest ?? 0, inv.flightBest);   // un récord solo sube
+    if(inv.to && inv.to===S.id) ex.mutual = true;
     if(inv.to && inv.to===S.id && syncStreak(ex, inv.streak, inv.streakDay)) inv.synced = ex.streak;
     save(); return false; }
-  S.friends.push({ id:inv.id, name:inv.name, key:inv.key, eq:inv.eq||{}, lvl:inv.lvl||1, since:today(), streak:0, streakDay:null, bestStreak:0, flightBest: typeof inv.flightBest==='number' ? inv.flightBest : null }); save(); return true;
+  S.friends.push({ id:inv.id, name:inv.name, key:inv.key, eq:inv.eq||{}, lvl:inv.lvl||1, since:today(), streak:0, streakDay:null, bestStreak:0, flightBest: typeof inv.flightBest==='number' ? inv.flightBest : null, ...(inv.to && inv.to===S.id ? {mutual:true} : {}) }); save(); return true;
 }
 function closeModal(){ $('modal').classList.add('hidden'); $('modalCard').innerHTML=''; }
 function modal(build){ const c=$('modalCard'); c.innerHTML=''; c.classList.remove('trivia','lvlup'); c.classList.remove('fade'); void c.offsetWidth; c.classList.add('fade'); build(c);
@@ -2920,7 +3078,8 @@ if(localStorage.getItem('valle-dragon-tapped')) $('tapHint').classList.add('hidd
 $('shareBtn').onclick = share;
 $('aboutBtn').onclick = ()=>showResult(byKey(S.key), true);
 $('shopBtn').onclick = openShop;
-$('flightBtn').onclick = openFlight;
+$('retoBtn').onclick=()=>openChallenge();
+$('flightBtn').onclick = ()=>{ exitChallenge(); openFlight(); };
 $('cardBtn').onclick = openCard;
 $('flightBackBtn').onclick = closeFlight;
 $('cardBackBtn').onclick = ()=>openProfile();
@@ -2961,7 +3120,7 @@ window.__park = { play:playDate, get state(){ return park; } };
 window.__shop = { ITEMS };
 window.__skills = { SKILLS, use:useSkill, levelInfo, gainXP };
 window.__streak = { bumpStreak, syncStreak, sharedStreak };
-window.__flight = { FL, start:startFlight, flap, reward:flightReward, FV, flHit, flSpeed };
+window.__flight = { FL, openChallenge, startChallenge, mutualFriends, encodeTrail, decodeTrail, start:startFlight, flap, reward:flightReward, FV, flHit, flSpeed };
 window.__app = { get state(){ return S; }, DRAGONS };
 window.__d3 = { itemCanvas, itemThumb, D3, dragonCanvas, dragonThumb, chibiMarkup, get main(){ return mainView && mainView.view; }, get views(){ return [...D3.views].filter(v=>v.host.isConnected).map(v=>({ host:v.host.id||v.host.className, expr:v.curName, sig:v.sig, live:v.host.classList.contains('live'), act:v.act&&v.act.id })); } };
 </script>

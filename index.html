@@ -498,6 +498,7 @@ html.tapped #hint{display:none}
 .flight-wrap{height:calc(100vh - 40px);height:calc(100dvh - 40px);max-height:none;margin:0 -16px;border-radius:0;border:0}
 #flight main,#flight{margin-top:-12px}
 html.flying,html.flying body{overflow:hidden;overscroll-behavior:none;min-height:0}
+.fcard .fhint{opacity:.6;font-size:13px;margin-top:8px}.fcard .fmedal{opacity:.85;margin:0}
 .fx-close{position:absolute;top:max(10px, calc(env(safe-area-inset-top) + 6px));left:max(10px, calc(env(safe-area-inset-left) + 6px));z-index:6;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(20,15,30,.55);color:#fff;font-size:20px;font-weight:900;cursor:pointer}
 .fhud{left:64px;top:max(10px, calc(env(safe-area-inset-top) + 6px));left:max(64px, calc(env(safe-area-inset-left) + 60px))}
 .fscore{font-family:var(--ui)}
@@ -1195,7 +1196,7 @@ function goTab(tab){
 function openPlay(){ if(!S.bonded) return; decay(); show('play'); renderPlay(); }
 function renderPlay(){
   if(!S.bonded) return;
-  $('playFlightTxt').textContent = `Récord ${S.flightBest||0} · ` + (flightRewardAvailable() ? 'primera partida del día: XP y 🪙' : 'hoy ya cobraste: modo práctica');
+  $('playFlightTxt').textContent = `Récord ${S.flightBest||0} · ` + (flightRewardAvailable() ? `${FLIGHT_TRIES-flightTriesToday().n} partidas con premio hoy (cuenta la mejor)` : 'hoy ya jugaste tus 3 con premio: práctica');
   renderTriviaBtn(); renderCoins(); renderPlayRank();
 }
 function openFriends(){ if(!S.bonded) return; decay(); show('friends'); renderFriends(); }
@@ -1329,7 +1330,7 @@ function render(){
   }
   viewerApi?.setMood?.(S.hunger, effHappy(), S.fun);
   renderFriends(); renderCta(); renderBadges();
-  if($('flightNote')) $('flightNote').textContent = (S.flightDay===today() ? '🪽 Hoy ya cobraste el vuelo: lo demás es práctica.' : '🪽 Tu primer vuelo de hoy da XP y monedas.') + ` Récord: ${S.flightBest||0}`;
+  if($('flightNote')) $('flightNote').textContent = (!flightRewardAvailable() ? '🪽 Hoy ya jugaste tus 3 vuelos con premio: lo demás es práctica.' : '🪽 Tus 3 primeros vuelos de hoy dan XP y monedas (cuenta el mejor).') + ` Récord: ${S.flightBest||0}`;
 }
 // el botón principal siempre muestra lo siguiente importante del día
 function nextTask(){
@@ -1686,7 +1687,15 @@ function unequip(slot){ const eq={...(S.eq||{})}; delete eq[slot]; S.eq=eq; save
 const FLIGHT_SECS = 30;
 const flightReward = score => ({ coins: Math.max(2, Math.min(25, Math.round(score/8))), xp: Math.max(5, Math.min(50, Math.round(score/4))) });
 const FL = { running:false, over:false, raf:0 };
-function flightRewardAvailable(){ return S.flightDay !== today(); }
+const FLIGHT_TRIES = 3, MEDALS = [[10,'⭐'],[25,'⭐⭐'],[50,'⭐⭐⭐']];
+// S.flightTries = {day, n, best, coins, xp}: campo nuevo y opcional. Partidas antiguas: si S.flightDay es hoy, ya se cobró (como antes).
+function flightTriesToday(){
+  const t = S.flightTries;
+  if(t && t.day===today()) return t;
+  return { day:today(), n: S.flightDay===today() ? FLIGHT_TRIES : 0, best:-1, coins:0, xp:0 };
+}
+function flightRewardAvailable(){ return flightTriesToday().n < FLIGHT_TRIES; }
+const medalOf = passes => { let m=null; for(const [n,ic] of MEDALS) if(passes>=n) m={n,ic}; return m; };
 async function openFlight(){
   if(!S.bonded) return;
   decay(); show('flight');
@@ -1929,7 +1938,7 @@ const flSpeed = n => Math.min(FV.SPEED_MAX, FV.SPEED0 + FV.SPEED_N*n)*fk();
 function resetFlight(){
   const H=FL.H, W=FL.W;
   Object.assign(FL, { t:0, y:H*0.42, vy:0, rot:0, score:0, passes:0, gems:0, obs:[], arrows:[], parts:[], slot:0, lastCy:H*0.45, nextArrow:null,
-    touchT:0, tapQ:null, paused:false, acc:0, trail:[], beat:false, ghostDx:0, ghostEnd:null, chPaid:false, tapAt:0, over:false, running:false, flapT:0, shake:0, completed:false, bgX:0, minReact:Infinity,
+    touchT:0, tapQ:null, paused:false, acc:0, medal:null, medalAt:0, overAt:0, trail:[], beat:false, ghostDx:0, ghostEnd:null, chPaid:false, tapAt:0, over:false, running:false, flapT:0, shake:0, completed:false, bgX:0, minReact:Infinity,
     stars: Array.from({length:40},()=>[Math.random()*W, Math.random()*H*0.6, Math.random()*1.5+0.5]) });
   FL.seed = (FL.challenge && FL.challenge.ghost && FL.challenge.ghost.seed!=null) ? FL.challenge.ghost.seed : (Math.random()*4294967296)>>>0;
   FL.rng = mulberry32(FL.seed);
@@ -1939,7 +1948,7 @@ function startFlight(){
   if(FL.running) return;
   const buffered = FL.tapBuf && performance.now()-FL.tapBuf < FV.BUF; FL.tapBuf=0;   // toque justo antes de empezar: cuenta
   clearTimeout(FL.endT); resetFlight(); FL.running=true; FL.rewardRun = flightRewardAvailable();
-  if(FL.rewardRun){ S.flightDay = today(); save(); }          // se marca al empezar: abandonar no da otra oportunidad
+  if(FL.rewardRun){ const t=flightTriesToday(); t.n++; S.flightTries=t; FL.tryN=t.n; save(); }   // cuenta como intento al empezar; se cobra al terminar
   S.flightRuns=(S.flightRuns||0)+1; save();
   $('fOver').classList.add('hidden'); FL.last=performance.now(); flap(); if(buffered) FL.tapQ=performance.now();
   cancelAnimationFrame(FL.raf); FL.raf=requestAnimationFrame(loopFlight);
@@ -2046,8 +2055,11 @@ function stepFlight(dt){
   FL.parts.forEach(p=>{ p.x+=p.vx*dt; p.y+=p.vy*dt; p.life-=dt; }); FL.parts=FL.parts.filter(p=>p.life>0);
   if(e.y+e.b > H*0.9) return crashFlight();
   stepChallenge(dt);
-  $('fScore').textContent = FL.score; $('fTime').style.width = Math.max(0, 100-FL.t/FLIGHT_SECS*100)+'%';
-  if(FL.t >= FLIGHT_SECS){ FL.completed=true; FL.score+=50; endFlight(); }
+  $('fScore').textContent = FL.score;
+  { const nx=MEDALS.find(([n])=>FL.passes<n), pv=[...MEDALS].reverse().find(([n])=>FL.passes>=n); const a=pv?pv[0]:0, z=nx?nx[0]:a||1;
+    $('fTime').style.width = (nx ? (FL.passes-a)/(z-a)*100 : 100)+'%'; }
+  const md=medalOf(FL.passes); if(md && (!FL.medal || md.n>FL.medal.n)){ FL.medal=md; FL.medalAt=performance.now();
+    for(let i=0;i<14;i++) FL.parts.push({x:FL.W*0.5,y:FL.H*0.3,vx:(Math.random()-.5)*FL.H*0.8,vy:(Math.random()-.5)*FL.H*0.8,life:0.8,c:'#FFC94D',r:FL.H*0.008}); }
 }
 function crashFlight(){
   FL.shake=0.3;
@@ -2061,11 +2073,16 @@ function endFlight(){
   const prevTrail = S.flightTrail && Number.isInteger(S.flightTrail.score) ? S.flightTrail.score : -1;
   if(score > prevTrail && FL.trail && FL.trail.length>=4){ FL.trail.push(Math.round(FL.y/FL.H*1000)); S.flightTrail = { v:TRAIL_V, score, seed:FL.seed>>>0, trail:encodeTrail(FL.trail.slice(0,1200)), at:Date.now() }; FL.newTrail=true; }
   S.flightLast=score; let rw=null;
-  if(FL.rewardRun){ rw=flightReward(score); S.coins=(S.coins||0)+rw.coins; S.flightRewardLast={day:today(), score, ...rw}; }
+  const medal=medalOf(FL.passes); if(medal && medal.n>(S.flightMedal|0)) S.flightMedal=medal.n;     // mejor medalla (aditivo)
+  if(FL.rewardRun){ const t=flightTriesToday(); const full=flightReward(score);
+    if(score > t.best){ rw={ coins:Math.max(0, full.coins-(t.coins|0)), xp:Math.max(0, full.xp-(t.xp|0)), full }; t.best=score; t.coins=full.coins; t.xp=full.xp;
+      S.coins=(S.coins||0)+rw.coins; S.flightRewardLast={day:today(), score, coins:full.coins, xp:full.xp}; }
+    else rw={ coins:0, xp:0, full:flightReward(t.best), kept:t.best };
+    S.flightTries=t; FL.tryN=t.n; }
   save(); renderCoins();
   if(rw) gainXP(rw.xp);
   if(FL.newTrail){ FL.newTrail=false; pushGhost(); }
-  FL.result={score, record, prevBest, rw, completed:FL.completed};
+  FL.result={score, record, prevBest, rw, completed:FL.completed, medal, passes:FL.passes, tryN:FL.tryN||0}; FL.overAt=performance.now();
   $('fScore').textContent = score;
   clearTimeout(FL.endT); FL.endT = setTimeout(()=>{ if(FL.over && !FL.running) flightOverlay('end'); }, 650);
 }
@@ -2076,21 +2093,22 @@ function flightOverlay(kind){
   if(kind==='start'){
     if(FL.challenge) card.appendChild(el('p','freward',`👻 Reto contra ${FL.challenge.name}: supera ${FL.challenge.best}` + (FL.challenge.ghost?'':' (sin fantasma: solo la barra)')));
     card.appendChild(el('h3',null,'Entrenamiento de vuelo'));
-    card.appendChild(el('p',null,`Toca la pantalla (o pulsa espacio) para aletear. Esquiva rocas, nubarrones y flechas durante ${FLIGHT_SECS} segundos y recoge gemas.`));
+    card.appendChild(el('p',null,`Toca la pantalla (o pulsa espacio) para aletear. Esquiva rocas, nubarrones y flechas todo lo que puedas y recoge gemas. Medallas: ⭐ 10, ⭐⭐ 25 y ⭐⭐⭐ 50 obstáculos.`));
     card.appendChild(el('p','fbest',`Récord: ${S.flightBest||0}`));
     const rw = flightRewardAvailable();
-    card.appendChild(el('p', rw?'freward':'fpractice', rw ? '🎁 Primera partida de hoy: gana XP y monedas según tu puntuación.' : '🎯 Modo práctica: la recompensa de hoy ya está cobrada. Vuelve mañana para otra.'));
+    card.appendChild(el('p', rw?'freward':'fpractice', rw ? `🎁 Partida con premio ${flightTriesToday().n+1} de ${FLIGHT_TRIES}: cobras al terminar y cuenta la mejor de las 3.` : '🎯 Modo práctica: hoy ya jugaste tus 3 partidas con premio. Vuelve mañana.'));
   } else {
     const R=FL.result;
-    card.appendChild(el('h3',null, R.completed ? '¡Entrenamiento completado!' : '¡Choque!'));
+    card.appendChild(el('h3',null, R.medal ? `${R.medal.ic} ¡Medalla de ${R.medal.n}!` : '¡Choque!'));
     card.appendChild(el('div','fbig', String(R.score)));
+    card.appendChild(el('p','fmedal', `${R.passes} obstáculos` + (R.medal ? '' : ` · ⭐ a los ${(MEDALS.find(([n])=>R.passes<n)||[10])[0]}`)));
     card.appendChild(el('p','fbest', R.record ? `🏆 ¡Nuevo récord! (antes ${R.prevBest})` : `Récord: ${S.flightBest||0}`));
-    card.appendChild(el('p', R.rw?'freward':'fpractice', R.rw ? `🎁 Recompensa de hoy: +${R.rw.coins} 🪙 y +${R.rw.xp} XP` : '🎯 Partida de práctica: sin recompensa hasta mañana.'));
+    card.appendChild(el('p', R.rw?'freward':'fpractice', R.rw ? (R.rw.kept!=null ? `🎁 Partida ${R.tryN}/${FLIGHT_TRIES}: tu mejor de hoy sigue siendo ${R.rw.kept} (+${R.rw.full.coins} 🪙 ya cobradas)` : `🎁 Partida ${R.tryN}/${FLIGHT_TRIES}: +${R.rw.coins} 🪙 y +${R.rw.xp} XP` + (R.rw.coins<R.rw.full.coins ? ` (mejora: total hoy ${R.rw.full.coins} 🪙)` : '')) : '🎯 Partida de práctica: sin recompensa hasta mañana.'));
     const rk=el('button','frank', `🏆 Ranking de vuelo: ${myRankText()}`); rk.id='flightRankBtn'; rk.onclick=e=>{ e.stopPropagation(); showFlightRanking(); }; card.appendChild(rk);
   }
-  const go=el('button','btn red', kind==='start' ? '¡A volar!' : (flightRewardAvailable()?'Volar otra vez':'Otra vez (práctica)')); go.id='flightGoBtn';
+  const go=el('button','btn red', kind==='start' ? '¡A volar!' : (flightRewardAvailable()?`Volar otra vez (${flightTriesToday().n+1}/${FLIGHT_TRIES})`:'Otra vez (práctica)')); go.id='flightGoBtn';
   go.onclick=e=>{ e.stopPropagation(); startFlight(); };
-  card.appendChild(go); o.appendChild(card);
+  card.appendChild(go); if(kind!=='start') card.appendChild(el('p','fhint','Toca en cualquier sitio para volver a volar')); o.appendChild(card);
 }
 function drawFlight(){
   const c=FL.ctx, W=FL.W, H=FL.H; if(!c) return;
@@ -2120,6 +2138,9 @@ function drawFlight(){
     c.fillStyle='#e2483d'; c.fillRect(a.x+a.w*0.85,a.y-a.h*0.8,a.w*0.15,a.h*1.6); }
   FL.parts.forEach(p=>{ c.globalAlpha=Math.max(0,p.life*2); c.fillStyle=p.c; c.beginPath(); c.arc(p.x,p.y,p.r,0,7); c.fill(); }); c.globalAlpha=1;
   drawGhost(c);
+  if(FL.medal && performance.now()-FL.medalAt < 1200){ c.save(); c.globalAlpha=Math.min(1,(1200-(performance.now()-FL.medalAt))/300); c.textAlign='center';
+    c.font=`900 ${Math.round(H*0.04)}px Nunito, sans-serif`; c.fillStyle='#FFC94D'; c.strokeStyle='#2b0d04'; c.lineWidth=H*0.006;
+    const tx=`${FL.medal.ic} ¡${FL.medal.n} obstáculos!`; c.strokeText(tx,W/2,H*0.3); c.fillText(tx,W/2,H*0.3); c.restore(); }
   const nowS=performance.now(), side=sideFrame(nowS), px=W*FV.X;
   if(side){ const sw=FL.sw||H*0.13, sh=sw*0.75; c.save(); c.translate(px, FL.y);
     const rot = FL.running||FL.over ? FL.rot : Math.sin(nowS/400)*0.06; c.rotate(rot);
@@ -3106,7 +3127,9 @@ $('cardBackBtn').onclick = ()=>openProfile();
 $('cardShareBtn').onclick = shareCard;
 $('cardDlBtn').onclick = downloadCard;
 document.querySelectorAll('#cardFmt .tab').forEach(t=>t.onclick=()=>{ cardFmt=t.dataset.f; drawCardPreview(); });
-$('flightCanvas').addEventListener('pointerdown', e=>{ e.preventDefault(); flap(); });
+function quickRetry(){ if(FL.over && !FL.running && !FL.paused && FL.overAt && performance.now()-FL.overAt > 600 && $('modal').classList.contains('hidden')){ if(FL.challenge) FL.chPaid=false; startFlight(); return true; } return false; }
+$('flightCanvas').addEventListener('pointerdown', e=>{ e.preventDefault(); if(!quickRetry()) flap(); });
+$('fOver').addEventListener('pointerdown', e=>{ if(e.target.closest('button')) return; if(quickRetry()) e.preventDefault(); });
 document.addEventListener('keydown', e=>{ if($('flight').classList.contains('hidden') || !$('modal').classList.contains('hidden')) return; if(e.code==='Space'||e.code==='ArrowUp'){ e.preventDefault(); if(FL.running) flap(); else if(!$('fOver').classList.contains('hidden')) startFlight(); } });
 window.addEventListener('resize', ()=>{ if(!$('flight').classList.contains('hidden') && !FL.running){ fitFlight(); drawFlight(); } });
 $('shopBackBtn').onclick = ()=>openCare();
@@ -3142,7 +3165,7 @@ window.__park = { play:playDate, get state(){ return park; } };
 window.__shop = { ITEMS };
 window.__skills = { SKILLS, use:useSkill, levelInfo, gainXP };
 window.__streak = { bumpStreak, syncStreak, sharedStreak };
-window.__flight = { FL, pause:pauseFlight, resume:resumeFlight, openChallenge, startChallenge, mutualFriends, encodeTrail, decodeTrail, start:startFlight, flap, reward:flightReward, FV, flHit, flSpeed };
+window.__flight = { FL, quickRetry, triesToday:()=>flightTriesToday(), pause:pauseFlight, resume:resumeFlight, openChallenge, startChallenge, mutualFriends, encodeTrail, decodeTrail, start:startFlight, flap, reward:flightReward, FV, flHit, flSpeed };
 window.__app = { get state(){ return S; }, DRAGONS };
 window.__d3 = { itemCanvas, itemThumb, D3, dragonCanvas, dragonThumb, chibiMarkup, get main(){ return mainView && mainView.view; }, get views(){ return [...D3.views].filter(v=>v.host.isConnected).map(v=>({ host:v.host.id||v.host.className, expr:v.curName, sig:v.sig, live:v.host.classList.contains('live'), act:v.act&&v.act.id })); } };
 </script>

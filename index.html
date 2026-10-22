@@ -497,8 +497,9 @@ html.tapped #hint{display:none}
 .chip.on{border-color:var(--primary);background:rgba(255,122,89,.16)}
 .flight-wrap{height:calc(100vh - 40px);height:calc(100dvh - 40px);max-height:none;margin:0 -16px;border-radius:0;border:0}
 #flight main,#flight{margin-top:-12px}
-.fx-close{position:absolute;top:10px;left:10px;z-index:6;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(20,15,30,.55);color:#fff;font-size:20px;font-weight:900;cursor:pointer}
-.fhud{left:64px}
+html.flying,html.flying body{overflow:hidden;overscroll-behavior:none;min-height:0}
+.fx-close{position:absolute;top:max(10px, calc(env(safe-area-inset-top) + 6px));left:max(10px, calc(env(safe-area-inset-left) + 6px));z-index:6;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(20,15,30,.55);color:#fff;font-size:20px;font-weight:900;cursor:pointer}
+.fhud{left:64px;top:max(10px, calc(env(safe-area-inset-top) + 6px));left:max(64px, calc(env(safe-area-inset-left) + 60px))}
 .fscore{font-family:var(--ui)}
 .fcard{background:var(--surface);backdrop-filter:none;-webkit-backdrop-filter:none}
 .fcard h3{color:var(--text)}
@@ -703,7 +704,7 @@ h1,h2,h3,.cinzel{font-family:var(--epic);letter-spacing:.04em}
 @keyframes skGold{0%,100%{filter:drop-shadow(0 8px 18px rgba(0,0,0,.45))}35%,75%{filter:drop-shadow(0 0 26px #ffd34d) drop-shadow(0 0 10px #fff3c4) brightness(1.12)}}
 #layerView>.dv,#layerView>.d3fx{top:60px;bottom:6px;left:34px;right:34px;width:auto;height:auto}
 @media (prefers-reduced-motion: reduce){.dv .chibi *{animation-duration:6s!important}}
-.frace{position:absolute;top:44px;left:64px;right:12px;height:22px;pointer-events:none;display:flex;align-items:center;gap:8px;font:800 12px Nunito,sans-serif;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.frace{position:absolute;top:max(44px, calc(env(safe-area-inset-top) + 40px));left:64px;right:12px;height:22px;pointer-events:none;display:flex;align-items:center;gap:8px;font:800 12px Nunito,sans-serif;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6)}
 .frace .rbar{position:relative;flex:1;height:8px;border-radius:6px;background:rgba(255,255,255,.22)}
 .frace .rbar i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:linear-gradient(90deg,#FFC94D,#FF7A59)}
 .frace .rme{position:absolute;top:-6px;font-size:15px}.frace .rgo{position:absolute;right:-6px;top:-7px;font-size:15px}
@@ -1168,6 +1169,7 @@ const TAB_OF = { care:'dragon', shop:'tienda', play:'jugar', friends:'amigos', p
 let curScreen = null, navPop = false;
 function show(id){
   screens.forEach(s => $(s).classList.toggle('hidden', s!==id));
+  document.documentElement.classList.toggle('flying', id==='flight');   // en el vuelo la página no se desplaza (el ✕ siempre arriba)
   window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
   const tab = (S && S.bonded) ? TAB_OF[id] : null;
   $('tabbar').classList.toggle('hidden', !tab);
@@ -1452,7 +1454,7 @@ function gainXP(n){
   if(L.lvl > prev){
     S.levelSeen = L.lvl; save();
     const news = SKILLS.filter(s=>s.lvl>prev && s.lvl<=L.lvl);
-    const tryShow = () => { if(!$('modal').classList.contains('hidden')) return setTimeout(tryShow, 700); showLevelUp(L.lvl, news); };
+    const tryShow = () => { if(!$('modal').classList.contains('hidden') || FL.running) return setTimeout(tryShow, 700); showLevelUp(L.lvl, news); };   // nunca encima de una partida en marcha
     setTimeout(tryShow, 900);
   }
 }
@@ -1690,7 +1692,7 @@ async function openFlight(){
   decay(); show('flight');
   const cv = $('flightCanvas');
   await flightSprites(byKey(S.key), S.eq);
-  fitFlight(); resetFlight(); drawFlight();
+  clearTimeout(FL.endT); fitFlight(); resetFlight(); drawFlight();
   flightOverlay('start');
 }
 // ===== Sprite de perfil de Diseñador (dragon-review/vuelo_sprite.js) =====
@@ -1927,7 +1929,7 @@ const flSpeed = n => Math.min(FV.SPEED_MAX, FV.SPEED0 + FV.SPEED_N*n)*fk();
 function resetFlight(){
   const H=FL.H, W=FL.W;
   Object.assign(FL, { t:0, y:H*0.42, vy:0, rot:0, score:0, passes:0, gems:0, obs:[], arrows:[], parts:[], slot:0, lastCy:H*0.45, nextArrow:null,
-    touchT:0, tapQ:null, trail:[], beat:false, ghostDx:0, ghostEnd:null, chPaid:false, tapAt:0, over:false, running:false, flapT:0, shake:0, completed:false, bgX:0, minReact:Infinity,
+    touchT:0, tapQ:null, paused:false, acc:0, trail:[], beat:false, ghostDx:0, ghostEnd:null, chPaid:false, tapAt:0, over:false, running:false, flapT:0, shake:0, completed:false, bgX:0, minReact:Infinity,
     stars: Array.from({length:40},()=>[Math.random()*W, Math.random()*H*0.6, Math.random()*1.5+0.5]) });
   FL.seed = (FL.challenge && FL.challenge.ghost && FL.challenge.ghost.seed!=null) ? FL.challenge.ghost.seed : (Math.random()*4294967296)>>>0;
   FL.rng = mulberry32(FL.seed);
@@ -1936,7 +1938,7 @@ function resetFlight(){
 function startFlight(){
   if(FL.running) return;
   const buffered = FL.tapBuf && performance.now()-FL.tapBuf < FV.BUF; FL.tapBuf=0;   // toque justo antes de empezar: cuenta
-  resetFlight(); FL.running=true; FL.rewardRun = flightRewardAvailable();
+  clearTimeout(FL.endT); resetFlight(); FL.running=true; FL.rewardRun = flightRewardAvailable();
   if(FL.rewardRun){ S.flightDay = today(); save(); }          // se marca al empezar: abandonar no da otra oportunidad
   S.flightRuns=(S.flightRuns||0)+1; save();
   $('fOver').classList.add('hidden'); FL.last=performance.now(); flap(); if(buffered) FL.tapQ=performance.now();
@@ -1944,6 +1946,7 @@ function startFlight(){
 }
 function flap(){
   if(FL.over) return;
+  if(FL.paused){ if($('modal').classList.contains('hidden')) resumeFlight(); return; }
   if(!FL.running){ FL.tapBuf=performance.now(); return; }
   doFlap();
 }
@@ -1973,12 +1976,29 @@ function circleRect(cx,cy,r, x,y,w,h){ const nx=Math.max(x,Math.min(cx,x+w)), ny
 // caja de choque: elipse al 75 % del sprite (cuerpo y cabeza, sin alas ni cola)
 function flHit(){ const sw=FL.sw, sh=sw*0.75; return { x:FL.W*FV.X + sw*0.1, y:FL.y - sh*0.05, a:sw*0.354, b:sh*0.333 }; }
 function ellRect(e, x,y,w,h){ const s=e.a/e.b; return circleRect(e.x, e.y*s, e.a, x, y*s, w, h*s); }
+const FL_STEP = 1/120;   // física a paso fijo: igual a 30, 60 o 120 fps y el margen de 80 ms se mide de verdad
 function loopFlight(now){
   const dt = Math.min(0.05, (now-FL.last)/1000); FL.last=now;
-  if(FL.running && !FL.over) stepFlight(dt);
+  if(FL.running && !FL.over && !FL.paused && !$('modal').classList.contains('hidden')) pauseFlight();   // algo tapó la partida
+  if(FL.running && !FL.over && !FL.paused){ FL.acc = (FL.acc||0) + dt;
+    while(FL.acc >= FL_STEP && FL.running && !FL.over){ stepFlight(FL_STEP); FL.acc -= FL_STEP; } }
+  else if(FL.paused){ /* quieto */ }
   else { FL.parts.forEach(p=>{ p.x+=p.vx*dt; p.y+=p.vy*dt; p.life-=dt; }); FL.parts=FL.parts.filter(p=>p.life>0); FL.shake=Math.max(0,FL.shake-dt); }
   drawFlight();
   if(FL.running || FL.parts.length || FL.shake>0) FL.raf=requestAnimationFrame(loopFlight);
+}
+function pauseFlight(){
+  if(!FL.running || FL.over || FL.paused) return;
+  FL.paused = true; FL.tapQ = null;
+  const o=$('fOver'); o.innerHTML=''; o.classList.remove('hidden');
+  const card=el('div','fcard'); card.appendChild(el('h3',null,'⏸ Pausa'));
+  const go=el('button','btn red','▶ Seguir'); go.id='flightResumeBtn'; go.onclick=e=>{ e.stopPropagation(); resumeFlight(); };
+  card.appendChild(go); o.appendChild(card);
+}
+function resumeFlight(){
+  if(!FL.paused) return;
+  FL.paused = false; FL.acc = 0; FL.last = performance.now(); $('fOver').classList.add('hidden');
+  cancelAnimationFrame(FL.raf); FL.raf = requestAnimationFrame(loopFlight);
 }
 function stepFlight(dt){
   const H=FL.H, W=FL.W, K=fk(), n=FL.passes, v=flSpeed(n);
@@ -2047,7 +2067,7 @@ function endFlight(){
   if(FL.newTrail){ FL.newTrail=false; pushGhost(); }
   FL.result={score, record, prevBest, rw, completed:FL.completed};
   $('fScore').textContent = score;
-  setTimeout(()=>flightOverlay('end'), 650);
+  clearTimeout(FL.endT); FL.endT = setTimeout(()=>{ if(FL.over && !FL.running) flightOverlay('end'); }, 650);
 }
 function flightOverlay(kind){
   if(kind==='end' && FL.challenge) return challengeOverlay();
@@ -3111,6 +3131,8 @@ else if(S.pendingKey && byKey(S.pendingKey)) showResult(byKey(S.pendingKey), fal
 else show('intro');
 handleIncomingInvite();
 if(S.bonded) cloudStart();
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') pauseFlight(); });
+window.addEventListener('scroll', ()=>{ if(document.documentElement.classList.contains('flying') && (scrollY||scrollX)) window.scrollTo(0,0); }, {passive:true});
 document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden' && CLOUD.db && S.bonded) cloudPush(false); });
 window.addEventListener('online', ()=>{ if(S.bonded){ if(!CLOUD.db){ CLOUD.started=false; cloudStart(); } else cloudPush(true); } });
 window.__cloud = { CLOUD, push:cloudPush, start:cloudStart, code:()=>backupCode(), pairId };
@@ -3120,7 +3142,7 @@ window.__park = { play:playDate, get state(){ return park; } };
 window.__shop = { ITEMS };
 window.__skills = { SKILLS, use:useSkill, levelInfo, gainXP };
 window.__streak = { bumpStreak, syncStreak, sharedStreak };
-window.__flight = { FL, openChallenge, startChallenge, mutualFriends, encodeTrail, decodeTrail, start:startFlight, flap, reward:flightReward, FV, flHit, flSpeed };
+window.__flight = { FL, pause:pauseFlight, resume:resumeFlight, openChallenge, startChallenge, mutualFriends, encodeTrail, decodeTrail, start:startFlight, flap, reward:flightReward, FV, flHit, flSpeed };
 window.__app = { get state(){ return S; }, DRAGONS };
 window.__d3 = { itemCanvas, itemThumb, D3, dragonCanvas, dragonThumb, chibiMarkup, get main(){ return mainView && mainView.view; }, get views(){ return [...D3.views].filter(v=>v.host.isConnected).map(v=>({ host:v.host.id||v.host.className, expr:v.curName, sig:v.sig, live:v.host.classList.contains('live'), act:v.act&&v.act.id })); } };
 </script>

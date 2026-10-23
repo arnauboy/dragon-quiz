@@ -501,6 +501,7 @@ html.tapped #hint{display:none}
 .lb-sample{align-self:center;font-size:12.5px;font-weight:800;padding:3px 10px;border-radius:999px;background:rgba(124,240,255,.14);border:1px dashed #7cf0ff;color:#bff6ff;margin:2px 0 4px}
 .lb-err,.lb-load{text-align:center;padding:24px 8px;font-family:var(--ui);font-size:17px;opacity:.85}
 @media (min-width:768px){ .lb-list{max-height:60vh} }
+.pcard .btn.rankopen{margin-top:10px}
 /* parque, vuelo y tarjeta */
 #park .panel,#card .panel{background:transparent;border:0;padding:0}
 .scene{margin:0;border-radius:var(--r-lg)}
@@ -841,7 +842,7 @@ h1,h2,h3,.cinzel{font-family:var(--epic);letter-spacing:.04em}
       <div id="playRank"></div>
       <p class="pnote" id="playRankNote"></p>
       <button class="btn wa hidden" id="playInviteBtn">💬 Invitar amigos a competir</button>
-      <button class="linkbtn" id="rankBtn">Ver ranking completo</button>
+      <button class="btn rankopen" id="rankBtn">🏆 Ver rankings</button>
     </div>
     <div class="pcard">
       <div class="pc-h"><span class="pc-ic">❓</span><div><b>Pregunta del día</b><small id="quizState"></small></div></div>
@@ -2972,13 +2973,20 @@ function renderPlayRank(){
   $('playRankNote').textContent = rankNote();
   const me = flightRanking().find(r=>r.me), n = flightRanking().length;
   $('playRankPos').textContent = n > 1 ? `Vas ${me.pos}º de ${n}` : 'Solo tú, de momento';
-  $('rankBtn').classList.toggle('hidden', n <= 6);
+  $('rankBtn').classList.remove('hidden');   // siempre visible: abre Mundo/Amigos
   $('playInviteBtn').classList.toggle('hidden', (S.friends||[]).length > 0);
 }
 /* --- ranking GLOBAL de vuelo: leaderboard/{lbId} (lbId = sha256(id:secreto), no revela el id del perfil) --- */
 const LB_N=50, LB_TTL=60000, LB_CACHE='valle-lb-cache';
 const LB_SAMPLE=[['Ascua','rojo-dorado',812],['Vientonegro','negro-plata',744],['Lirio','verde-hoja',690],['Brasa','naranja-fuego',611],['Niebla','azul-daga',540],['Trueno','marron-roca',498],['Escarcha','azul-daga',455],['Sombra','negro-plata',401],['Ámbar','naranja-fuego',377],['Cardo','verde-hoja',350],['Rubí','rojo-dorado',322],['Musgo','verde-hoja',301]];
-async function lbId(){ if(!S.id||!S.cloudSecret) return null; try{ const h=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(S.id+':'+S.cloudSecret)); return [...new Uint8Array(h)].slice(0,12).map(b=>b.toString(16).padStart(2,'0')).join(''); }catch(e){ return null; } }
+async function sha24(t){ try{ const h=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return [...new Uint8Array(h)].slice(0,12).map(b=>b.toString(16).padStart(2,'0')).join(''); }catch(e){ return null; } }
+// lbId: entrada "nueva" = sha256('lb:'+id) (la misma que usa el relleno inicial, así no se duplica);
+// si ya existía una entrada antigua sha256(id:secreto) (creada con la versión 8d1b16f), se sigue usando esa.
+let LB_ID=null;
+async function lbId(){ if(LB_ID) return LB_ID; if(!S.id) return null; const nu=await sha24('lb:'+S.id); if(NOCLOUD || !S.cloudSecret) return nu;
+  const old=await sha24(S.id+':'+S.cloudSecret);
+  try{ const r=await withTimeout(fetch(`${FS_REST}/leaderboard/${old}?key=${FB_CFG.apiKey}`), 6000); if(r.status===200){ LB_ID=old; return old; } if(r.status===404 || r.status===403){ LB_ID=nu; return nu; } }catch(e){}
+  return null; }   // sin red: no se decide (no se escribe) hasta poder comprobarlo
 function lbKeyOk(k){ return typeof k==='string' && /^[a-z]{2,12}-[a-z]{2,12}$/.test(k); }
 function fsVal(v){ if(!v) return null; if('integerValue' in v) return +v.integerValue; if('stringValue' in v) return v.stringValue; if('mapValue' in v){ const o={}; Object.entries(v.mapValue.fields||{}).forEach(([k,x])=>o[k]=fsVal(x)); return o; } return null; }
 const FS_REST=`https://firestore.googleapis.com/v1/projects/${FB_CFG.projectId}/databases/(default)/documents`;
@@ -3445,7 +3453,7 @@ window.__park = { play:playDate, get state(){ return park; } };
 window.__shop = { ITEMS };
 window.__skills = { SKILLS, use:useSkill, levelInfo, gainXP };
 window.__streak = { bumpStreak, syncStreak, sharedStreak };
-window.__rank = { show:showFlightRanking, close:closeModal, lbId, lbFetch };
+window.__rank = { show:showFlightRanking, close:closeModal, lbId, lbFetch, sha24, resetId:()=>{LB_ID=null;} };
 window.__flight = { FL, quickRetry, triesToday:()=>flightTriesToday(), pause:pauseFlight, resume:resumeFlight, openChallenge, startChallenge, mutualFriends, encodeTrail, decodeTrail, start:startFlight, flap, reward:flightReward, FV, flHit, flSpeed, step:stepFlight, resetFlight };
 window.__app = { get state(){ return S; }, DRAGONS };
 window.__d3 = { itemCanvas, itemThumb, D3, dragonCanvas, dragonThumb, chibiMarkup, get main(){ return mainView && mainView.view; }, get views(){ return [...D3.views].filter(v=>v.host.isConnected).map(v=>({ host:v.host.id||v.host.className, expr:v.curName, sig:v.sig, live:v.host.classList.contains('live'), act:v.act&&v.act.id })); } };

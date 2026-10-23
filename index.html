@@ -489,6 +489,18 @@ html.tapped #hint{display:none}
 .sheet-foot button{color:var(--xp);font-family:var(--ui);font-weight:800;text-decoration:none}
 .skill .who b,.skill button,.friend .who b{font-family:var(--ui)}
 .skill button{background:linear-gradient(180deg,#FF8D6E,#FF6A47);color:var(--primary-ink);border:0}
+.lb-modal{max-height:88vh;max-height:88dvh;display:flex;flex-direction:column}
+.lb-title{font-family:'Cinzel',var(--ui);letter-spacing:.04em;text-align:center;color:var(--gold2);text-shadow:0 2px 0 rgba(0,0,0,.4)}
+.lb-tabs{justify-content:center}
+.lb-world{display:flex;flex-direction:column;min-height:120px}
+.lb-list{max-height:52vh;max-height:52dvh}
+.rank-row.podium{background:linear-gradient(90deg,rgba(201,162,92,.22),rgba(255,255,255,.03));border-color:rgba(201,162,92,.55)}
+.rank-row.podium.p1{background:linear-gradient(90deg,rgba(255,201,77,.32),rgba(255,255,255,.03));border-color:#FFC94D}
+.rank-row.podium .rpos{font-size:22px}
+.lb-me .rname{text-align:left}.lb-me{position:sticky;bottom:0;border-top:1px dashed var(--gold);padding-top:6px;margin-top:2px}
+.lb-sample{align-self:center;font-size:12.5px;font-weight:800;padding:3px 10px;border-radius:999px;background:rgba(124,240,255,.14);border:1px dashed #7cf0ff;color:#bff6ff;margin:2px 0 4px}
+.lb-err,.lb-load{text-align:center;padding:24px 8px;font-family:var(--ui);font-size:17px;opacity:.85}
+@media (min-width:768px){ .lb-list{max-height:60vh} }
 /* parque, vuelo y tarjeta */
 #park .panel,#card .panel{background:transparent;border:0;padding:0}
 .scene{margin:0;border-radius:var(--r-lg)}
@@ -2620,7 +2632,7 @@ async function cloudPush(force){
   if(backupDue && bj.length <= 40000){ CLOUD.lastBackup = Date.now();
     tasks.push(setDoc(doc(CLOUD.db,'backups',`${S.id}_${S.cloudSecret}`), { id:S.id, data:bj, v:SCHEMA, updatedAt:serverTimestamp() }).then(()=>{ CLOUD.last.b = bj; })); }
   else if(bj !== CLOUD.last.b) scheduleCloud(61000);
-  try{ await withTimeout(Promise.all(tasks), 12000); if(tasks.length){ CLOUD.ok = Date.now(); localStorage.setItem(CLOUD_AT_KEY, String(CLOUD.ok)); } CLOUD.err=null; return true; }
+  try{ await withTimeout(Promise.all(tasks), 12000); lbPush(); if(tasks.length){ CLOUD.ok = Date.now(); localStorage.setItem(CLOUD_AT_KEY, String(CLOUD.ok)); } CLOUD.err=null; return true; }
   catch(e){ console.warn('No se pudo subir a la nube', e); CLOUD.err = String(e && e.message || e); return false; }
 }
 function scheduleCloud(ms){
@@ -2876,7 +2888,7 @@ function addFriend(inv){
   S.friends.push({ id:inv.id, name:inv.name, key:inv.key, eq:inv.eq||{}, lvl:inv.lvl||1, since:today(), streak:0, streakDay:null, bestStreak:0, flightBest: typeof inv.flightBest==='number' ? inv.flightBest : null, ...(inv.to && inv.to===S.id ? {mutual:true} : {}) }); save(); return true;
 }
 function closeModal(){ $('modal').classList.add('hidden'); $('modalCard').innerHTML=''; }
-function modal(build){ const c=$('modalCard'); c.innerHTML=''; c.classList.remove('trivia','lvlup'); c.classList.remove('fade'); void c.offsetWidth; c.classList.add('fade'); build(c);
+function modal(build){ const c=$('modalCard'); c.innerHTML=''; c.classList.remove('trivia','lvlup','lb-modal'); c.classList.remove('fade'); void c.offsetWidth; c.classList.add('fade'); build(c);
   if(c.classList.contains('trivia')){ const x=el('button','modal-x','✕'); x.setAttribute('aria-label','Cerrar'); x.onclick=closeModal; c.prepend(x); const cb=$('quizCloseBtn'); if(cb){ cb.className='linkbtn'; } }
   $('modal').classList.remove('hidden'); }
 function el(tag, cls, text){ const e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
@@ -2963,12 +2975,66 @@ function renderPlayRank(){
   $('rankBtn').classList.toggle('hidden', n <= 6);
   $('playInviteBtn').classList.toggle('hidden', (S.friends||[]).length > 0);
 }
+/* --- ranking GLOBAL de vuelo: leaderboard/{lbId} (lbId = sha256(id:secreto), no revela el id del perfil) --- */
+const LB_N=50, LB_TTL=60000, LB_CACHE='valle-lb-cache';
+const LB_SAMPLE=[['Ascua','rojo-dorado',812],['Vientonegro','negro-plata',744],['Lirio','verde-hoja',690],['Brasa','naranja-fuego',611],['Niebla','azul-daga',540],['Trueno','marron-roca',498],['Escarcha','azul-daga',455],['Sombra','negro-plata',401],['Ámbar','naranja-fuego',377],['Cardo','verde-hoja',350],['Rubí','rojo-dorado',322],['Musgo','verde-hoja',301]];
+async function lbId(){ if(!S.id||!S.cloudSecret) return null; try{ const h=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(S.id+':'+S.cloudSecret)); return [...new Uint8Array(h)].slice(0,12).map(b=>b.toString(16).padStart(2,'0')).join(''); }catch(e){ return null; } }
+function lbKeyOk(k){ return typeof k==='string' && /^[a-z]{2,12}-[a-z]{2,12}$/.test(k); }
+function fsVal(v){ if(!v) return null; if('integerValue' in v) return +v.integerValue; if('stringValue' in v) return v.stringValue; if('mapValue' in v){ const o={}; Object.entries(v.mapValue.fields||{}).forEach(([k,x])=>o[k]=fsVal(x)); return o; } return null; }
+const FS_REST=`https://firestore.googleapis.com/v1/projects/${FB_CFG.projectId}/databases/(default)/documents`;
+async function lbFetch(force){
+  const myId=await lbId(), myBest=S.flightBest|0;
+  if(NOCLOUD){ const rows=LB_SAMPLE.map(([name,key,best],i)=>({id:'ej'+i,name,key:byKey(key)?key:DRAGONS[(i*5)%DRAGONS.length].key,best})); return {rows, sample:true, myId, at:Date.now()}; }
+  if(!force){ try{ const c=JSON.parse(sessionStorage.getItem(LB_CACHE)||'null'); if(c && Date.now()-c.at<LB_TTL && c.myBest===myBest) return {...c, cached:true, myId}; }catch(e){} }
+  const q=(body,kind)=>withTimeout(fetch(`${FS_REST}:${kind}?key=${FB_CFG.apiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(async r=>{ const j=await r.json().catch(()=>null); if(!r.ok) throw new Error((j&&j[0]&&j[0].error&&j[0].error.status)||('HTTP '+r.status)); return j; }), 8000);
+  const sq={from:[{collectionId:'leaderboard'}],orderBy:[{field:{fieldPath:'best'},direction:'DESCENDING'}],limit:LB_N};
+  const j=await q({structuredQuery:sq},'runQuery');
+  const rows=(j||[]).filter(x=>x.document).map(x=>{ const f=x.document.fields||{}; return { id:x.document.name.split('/').pop(), name:String(fsVal(f.name)||'Dragón').slice(0,18), key:fsVal(f.key), eq:fsVal(f.equipped)||{}, best:fsVal(f.best)|0 }; }).filter(r=>lbKeyOk(r.key));
+  let above=null;
+  if(myId && !rows.some(r=>r.id===myId) && myBest>0){ try{ const a=await q({structuredAggregationQuery:{structuredQuery:{from:[{collectionId:'leaderboard'}],where:{fieldFilter:{field:{fieldPath:'best'},op:'GREATER_THAN',value:{integerValue:String(myBest)}}},limit:100},aggregations:[{alias:'n',count:{}}]}},'runAggregationQuery');
+      above=+(a&&a[0]&&a[0].result&&a[0].result.aggregateFields&&a[0].result.aggregateFields.n&&a[0].result.aggregateFields.n.integerValue); }catch(e){} }
+  const out={rows, above:Number.isFinite(above)?above:null, at:Date.now(), myBest};
+  try{ sessionStorage.setItem(LB_CACHE, JSON.stringify(out)); }catch(e){}
+  return {...out, myId};
+}
+async function lbPush(){   // se llama tras subir el perfil; si las reglas aún no existen falla en silencio
+  if(NOCLOUD || !CLOUD.db || !S.bonded || !(S.flightBest>0)) return;
+  const id=await lbId(); if(!id) return; const p=publicProfile(); const sig=id+'|'+p.name+'|'+p.key+'|'+p.flightBest+'|'+JSON.stringify(p.equipped);
+  if(CLOUD.lbSig===sig) return;
+  try{ const { doc, setDoc, serverTimestamp } = CLOUD.fs; await withTimeout(setDoc(doc(CLOUD.db,'leaderboard',id), { name:p.name, key:p.key, equipped:p.equipped, best:p.flightBest, v:1, updatedAt:serverTimestamp() }), 10000); CLOUD.lbSig=sig; try{ sessionStorage.removeItem(LB_CACHE); }catch(e){} }
+  catch(e){ CLOUD.lbErr=String(e&&e.code||e); }
+}
+function lbRow(r,me){ const d=byKey(r.key)||byKey(S.key); const row=el('div','rank-row lb'+(me?' me':'')+(r.pos<=3?' podium p'+r.pos:''));
+  row.appendChild(el('span','rpos', r.pos? (['🥇','🥈','🥉'][r.pos-1] || r.pos+'º') : '·'));
+  if(d) row.appendChild(miniChibi(d, r.eq||{})); row.appendChild(el('b','rname', me? `${r.name} (tú)` : r.name)); row.appendChild(el('span','rbest', String(r.best))); return row; }
+async function renderGlobalRank(box, force){
+  box.innerHTML=''; box.appendChild(el('div','lb-load','🐉 …'));
+  let res; try{ res=await lbFetch(force); }catch(e){
+    box.innerHTML=''; const off=!navigator.onLine; box.appendChild(el('div','lb-err', off?'📴 Sin conexión':'🔒 El ranking mundial aún no está abierto'));
+    const r=el('button','btn ghost', '🔄'); r.id='lbRetry'; r.setAttribute('aria-label','Reintentar'); r.onclick=()=>renderGlobalRank(box,true); box.appendChild(r); box.dataset.state='error'; return; }
+  box.innerHTML=''; box.dataset.state=res.sample?'sample':'ok';
+  if(res.sample) box.appendChild(el('div','lb-sample','🧪 Datos de ejemplo (sin nube)'));
+  const rows=res.rows.slice().sort((a,b)=>b.best-a.best); rows.forEach((r,i)=>r.pos=i+1);
+  const myBest=S.flightBest|0; let mine=rows.find(r=>r.id===res.myId);
+  const list=el('div','rank-list lb-list'); list.id='lbList';
+  if(!rows.length) list.appendChild(el('div','lb-err','🌙 —'));
+  rows.forEach(r=>list.appendChild(lbRow(r, r===mine)));
+  box.appendChild(list);
+  if(!mine){ const pos = res.sample ? rows.filter(r=>r.best>myBest).length+1 : (res.above!=null ? res.above+1 : (rows.length<LB_N ? rows.filter(r=>r.best>myBest).length+1 : null));
+    const me={name:S.name, key:S.key, eq:S.eq||{}, best:myBest, pos}; const f=el('div','lb-me'); f.id='lbMe'; f.appendChild(lbRow(me,true)); if(!pos) f.querySelector('.rpos').textContent=`${LB_N}+`; else if(pos>100) f.querySelector('.rpos').textContent='100+'; box.appendChild(f); }
+  else setTimeout(()=>{ const m=list.querySelector('.me'); if(m && m.scrollIntoView) m.scrollIntoView({block:'nearest'}); },50);
+}
 function showFlightRanking(){
   modal(c=>{
-    c.appendChild(el('h3', null, '🏆 Ranking de vuelo'));
-    c.appendChild(rankListEl('rankList'));
-    c.appendChild(el('p','kind', rankNote()));
+    c.classList.add('lb-modal');
+    c.appendChild(el('h3', 'lb-title', '🏆 Ranking de vuelo'));
+    const tabs=el('div','tabs lb-tabs'); const tw=el('button','tab on','🌍 Mundo'); tw.id='lbTabWorld'; const tf=el('button','tab','👥 Amigos'); tf.id='lbTabFriends'; tabs.appendChild(tw); tabs.appendChild(tf); c.appendChild(tabs);
+    const gw=el('div','lb-world'); gw.id='lbWorld'; c.appendChild(gw);
+    const fr=el('div','lb-friends hidden'); fr.id='lbFriends'; fr.appendChild(rankListEl('rankList')); fr.appendChild(el('p','kind', rankNote())); c.appendChild(fr);
+    tw.onclick=()=>{ tw.classList.add('on'); tf.classList.remove('on'); gw.classList.remove('hidden'); fr.classList.add('hidden'); };
+    tf.onclick=()=>{ tf.classList.add('on'); tw.classList.remove('on'); fr.classList.remove('hidden'); gw.classList.add('hidden'); };
     const ok=el('button','btn ghost','Cerrar'); ok.id='rankCloseBtn'; ok.onclick=closeModal; c.appendChild(ok);
+    renderGlobalRank(gw);
   });
 }
 function renderFriends(){
@@ -3379,6 +3445,7 @@ window.__park = { play:playDate, get state(){ return park; } };
 window.__shop = { ITEMS };
 window.__skills = { SKILLS, use:useSkill, levelInfo, gainXP };
 window.__streak = { bumpStreak, syncStreak, sharedStreak };
+window.__rank = { show:showFlightRanking, close:closeModal, lbId, lbFetch };
 window.__flight = { FL, quickRetry, triesToday:()=>flightTriesToday(), pause:pauseFlight, resume:resumeFlight, openChallenge, startChallenge, mutualFriends, encodeTrail, decodeTrail, start:startFlight, flap, reward:flightReward, FV, flHit, flSpeed, step:stepFlight, resetFlight };
 window.__app = { get state(){ return S; }, DRAGONS };
 window.__d3 = { itemCanvas, itemThumb, D3, dragonCanvas, dragonThumb, chibiMarkup, get main(){ return mainView && mainView.view; }, get views(){ return [...D3.views].filter(v=>v.host.isConnected).map(v=>({ host:v.host.id||v.host.className, expr:v.curName, sig:v.sig, live:v.host.classList.contains('live'), act:v.act&&v.act.id })); } };
